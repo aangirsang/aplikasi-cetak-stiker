@@ -1,0 +1,134 @@
+.master-data {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.level-data,
+.kategori-data {
+    height: 87vh;
+    background: var(--color-white);
+    padding: var(--card-padding);
+    padding-bottom: 1rem;
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--box-shadow);
+    transition: all 300ms ease;
+}
+
+.list-view{
+    margin-top: 1rem;
+    height: 71vh;
+    padding: 12px;
+    border-radius: var(--border-radius-2);
+    background: var(--color-white);
+
+    border: 1px solid #dcdcdc;
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.btn-master-data {
+    margin-top: 1rem;
+    width: 100%;
+}
+
+
+.list-item{
+    color: var(--color-dark);
+    padding: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 300ms ease;
+}
+
+.list-item h3 {
+    font-weight: 500;
+}
+
+.list-item:hover {
+    background: var(--color-light);
+    color: var(--color-primary);
+    padding-left: 2rem;
+}
+
+.list-item:hover button{
+    margin-right: 0.5rem;
+}
+
+.delete-btn span {
+    font-size: 1.1rem;
+}
+
+.delete-btn button:hover,
+.delete-btn button:hover > span{
+    background: transparent;
+    color: var(--color-primary);
+}
+
+/* COBA CUSTOM INPUT */
+.form-group {
+    width: 300px;
+}
+
+.input-group {
+    position: relative;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 14px 12px;
+    border: 2px solid #999;
+    border-radius: 8px;
+    outline: none;
+    font-size: 16px;
+    background: transparent;
+    transition: border-color 0.3s ease;
+}
+
+.input-group input:focus {
+    border-color: #007bff;
+}
+
+/* LABEL DEFAULT = jadi placeholder */
+.input-group label {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: white;
+    padding: 0 5px;
+    color: #888;
+    pointer-events: none;
+
+    transition: all 0.3s ease;
+}
+
+/* Saat input aktif / ada isi */
+.input-group input:focus + label,
+.input-group input:not(:placeholder-shown) + label {
+    top: 0;
+    left: 10px;
+    font-size: 12px;
+    color: #007bff;
+    transform: translateY(-50%);
+}
+
+/* POPUP TAMBAH DATA */
+.content-popup-tambah-master-data {
+    padding: var(--card-padding);
+    border-radius: var(--border-radius-2);
+    background: var(--color-background);
+
+    width: 30rem;
+    height: 10rem;
+}
+.content-popup-tambah-master-data .form-group {
+    width: 100%;
+}

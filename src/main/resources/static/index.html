@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Rumah BUMN Batu Bara</title>
+
+    <!-- Material Symbols -->
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp" />
+
+    <!-- Panggil CSS -->
+    <link rel="stylesheet" href="css/variable.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/data-master/data-master.css">
+</head>
+<body>
+    <div class="container">
+        <aside>
+            <!-------------------- LOGO -------------------->
+            <div class="top">
+                <div class="logo">
+                    <img src="./assets/images/Logo-RB.png" alt="Logo RB">
+                    <div class="logo-text">
+                        <h2><span class="rb-1">Rumah</span></h2>
+                        <h1><span class="rb-2">BUMN</span></h1>
+                        <h3><span class="rb-3">Batu Bara</span></h3>
+                    </div>
+                </div>
+            </div>
+            <!-------------------- SIDEBAR -------------------->
+            <div class="sidebar">
+                <a onclick="loadPage('dashboard')" class="active">
+                    <span class="material-symbols-sharp">grid_view</span>
+                    <h3>Dashboard</h3>
+                </a>
+
+                <a onclick="toggleSubmenu('submenu-master', 'master-arrow')" class="menu-item">
+                    <span class="material-symbols-sharp">inventory</span>
+                    <h3>Data Master</h3>
+                    <span id="master-arrow" class="material-symbols-sharp">expand_more</span>
+                </a>
+                <div class="submenu" id="submenu-master">
+                    <a onclick="loadPage('pengguna')">
+                        <h4>Data Pengguna</h4>
+                    </a>
+                    <a onclick="loadPage('master-data')">
+                        <h4>Master Data</h4>
+                    </a>
+                    <a onclick="loadPage('pembelian')">
+                        <h4>Data Pembelian</h4>
+                    </a>
+                </div>
+
+                <a onclick="toggleSubmenu('submenu-umkm', 'umkm-arrow')" class="menu-item">
+                    <span class="material-symbols-sharp">inventory</span>
+                    <h3>Data UMKM</h3>
+                    <span id="umkm-arrow" class="material-symbols-sharp">expand_more</span>
+
+                </a>
+                <div class="submenu" id="submenu-umkm">
+                    <a onclick="loadPage('umkm')">
+                        <h4>Data UMKM</h4>
+                    </a>
+                    <a onclick="loadPage('stiker')">
+                        <h4>Data Stiker</h4>
+                    </a>
+                </div>
+
+                <a onclick="loadPage('orderan')">
+                    <span class="material-symbols-sharp">inventory</span>
+                    <h3>Data Orderan</h3>
+                </a>
+                <a class="last">
+                    <span class="material-symbols-sharp">logout</span>
+                    <h3>Logout</h3>
+                </a>
+            </div>
+        </aside>
+
+        <!-------------------- MAIN -------------------->
+        <main class="main">
+            <!--NAVBAR-->
+            <header class="navbar">
+                <h1 id="page-title">Dashboard</h1>
+                <div class="kanan">
+                    <!--PROFILE ACCOUNT-->
+                    <div id="profile-container"></div>
+                </div>
+            </header>
+
+            <!--CONTENT-->
+            <section id="content" class="content">
+
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/global.js"></script>
+    <script type="module" src="js/index.js"></script>
+    <script type="module" src="js/master-data/master-data.js"></script>
+</body>
+</html>
