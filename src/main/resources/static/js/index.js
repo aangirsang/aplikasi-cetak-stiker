@@ -16,9 +16,6 @@ async function loadPage(page) {
 
         const response = await fetch(`pages/${page}.html`);
 
-        console.log(response.status);
-        console.log(response.ok);
-
         if (!response.ok) {
             throw new Error(`HTTP Error ${response.status}`);
         }

@@ -27,6 +27,7 @@ class SecurityConfig {
                 // endpoint public
                 it.requestMatchers(
 
+                    "/",
                     "/login",
                     "/error",
 
@@ -47,7 +48,7 @@ class SecurityConfig {
 
                 // selain itu wajib login
                 it.anyRequest()
-                    .authenticated()
+                    .permitAll()
             }
 
             .formLogin {

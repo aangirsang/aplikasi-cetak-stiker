@@ -7,7 +7,6 @@ import jakarta.persistence.OneToMany
 import jakarta.persistence.ManyToMany
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.lang.Long
 import java.lang.RuntimeException
 import kotlin.reflect.KClass
 
@@ -45,8 +44,10 @@ open class EntityDeletionService(
                 // OneToMany
                 Attribute.PersistentAttributeType.ONE_TO_MANY -> {
                     val mappedBy = field?.getAnnotation(OneToMany::class.java)?.mappedBy
-                    val targetEntity = field?.getAnnotation(OneToMany::class.java)?.targetEntity
-                        ?: (attr.javaType as? Class<*>) ?: return
+                    val targetEntity = field
+                        ?.getAnnotation(OneToMany::class.java)
+                        ?.targetEntity
+                        ?: attr.javaType.let { it as Class<*> }
                     if (!mappedBy.isNullOrEmpty()) {
                         val entityName = getClassSimpleName(targetEntity)
                         val jpql = "SELECT COUNT(e) FROM $entityName e WHERE e.$mappedBy = :entity"
@@ -81,7 +82,7 @@ open class EntityDeletionService(
                 Attribute.PersistentAttributeType.MANY_TO_MANY -> {
                     val mappedBy = field?.getAnnotation(ManyToMany::class.java)?.mappedBy
                     val targetEntity = field?.getAnnotation(ManyToMany::class.java)?.targetEntity
-                        ?: (attr.javaType as? Class<*>) ?: return
+                        ?: (attr.javaType) ?: return
                     if (!mappedBy.isNullOrEmpty()) {
                         val entityName = getClassSimpleName(targetEntity)
                         val jpql = "SELECT COUNT(e) FROM $entityName e JOIN e.$mappedBy c WHERE c = :entity"

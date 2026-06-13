@@ -129,7 +129,7 @@ button:hover > span{
     display: flex;
     justify-content: end;
     gap: 1.6rem;
-    margin-top: .5rem;
+    margin-top: auto;
 }
 
 /* ----------- ERROR VALIDASI ----------- */

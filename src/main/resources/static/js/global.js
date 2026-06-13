@@ -1,3 +1,4 @@
+const BASE_URL = "http://localhost:8080/"
 const getEl = id => document.getElementById(id);
 const getValue = id => getEl(id).value.trim();
 function tandaiInvalid(el){

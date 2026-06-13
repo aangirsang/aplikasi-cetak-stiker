@@ -62,12 +62,21 @@
     margin-right: 0.5rem;
 }
 
-.delete-btn span {
+.action-btn {
+    margin-left: auto;
+    display: flex;
+    gap: .5rem; /* jarak tombol */
+}
+
+.delete-btn span,
+.update-btn span {
     font-size: 1.1rem;
 }
 
 .delete-btn button:hover,
-.delete-btn button:hover > span{
+.delete-btn button:hover > span,
+.update-btn button:hover,
+.update-btn button:hover > span{
     background: transparent;
     color: var(--color-primary);
 }
@@ -102,7 +111,7 @@
     left: 12px;
     top: 50%;
     transform: translateY(-50%);
-    background: white;
+    background: var(--color-background);
     padding: 0 5px;
     color: #888;
     pointer-events: none;
@@ -121,14 +130,18 @@
 }
 
 /* POPUP TAMBAH DATA */
-.content-popup-tambah-master-data {
+.content-popup-master-data {
     padding: var(--card-padding);
     border-radius: var(--border-radius-2);
     background: var(--color-background);
 
+    display: flex;
+    flex-direction: column;
+
     width: 30rem;
-    height: 10rem;
+    height: 15rem;
 }
-.content-popup-tambah-master-data .form-group {
+.content-popup-master-data .form-group {
     width: 100%;
+    margin-top: 1rem;
 }

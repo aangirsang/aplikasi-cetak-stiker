@@ -9,25 +9,54 @@
         <div id="kategori-list" class="list-view"></div>
         <button id="btn-tambah-kategori" class="btn-master-data">Tambah Data Kategori</button>
     </div>
-    <div id="popup-tambah-master-data" class="popup">
-        <div class="content-popup-tambah-master-data">
+    <div id="popup-master-data" class="popup">
+        <div class="content-popup-master-data">
+            <h2 id="popup-master-data-title">Tambah Data</h2>
             <div class="form-group">
                 <div class="input-group">
                     <input
                             type="text"
-                            id="popup-tambah-master-data-input"
+                            id="popup-master-data-input"
                             placeholder=" "
+                            autocomplete="off"
                     >
 
-                    <label for="popup-tambah-master-data-input">
+                    <label for="popup-master-data-input" id="popup-master-data-label">
                         Data Level
                     </label>
                 </div>
-                <div class="popup-actions">
-                    <button type="button" id="btn-simpan-master-data">Simpan</button>
-                    <button type="button" id="btn-batal-master-data">Batal</button>
-                </div>
             </div>
+            <div class="popup-actions">
+                <button type="button" id="btn-simpan-master-data">Simpan</button>
+                <button type="button" id="btn-batal-master-data">Batal</button>
+            </div>
+        </div>
+    </div>
+    <div id="popup-konfirmasi" class="popup">
+        <div class="content-popup-master-data">
+
+            <h2 id="popup-konfirmasi-title">
+                Konfirmasi Hapus
+            </h2>
+
+            <p id="popup-konfirmasi-message">
+                Apakah Anda yakin?
+            </p>
+
+            <div class="popup-actions">
+                <button
+                        type="button"
+                        id="btn-konfirmasi-hapus">
+                    Hapus
+                </button>
+
+                <button
+                        type="button"
+                        id="btn-batal-hapus">
+                    Batal
+                </button>
+            </div>
+
         </div>
     </div>
 </div>
