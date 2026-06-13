@@ -11,13 +11,13 @@ import java.lang.RuntimeException
 import kotlin.reflect.KClass
 
 @Service
-open class EntityDeletionService(
+class EntityDeletionService(
     private val entityManager: EntityManager
 ) {
 
     /** Safe delete dengan pengecekan relasi */
     @Transactional
-    open fun <T : Any> safeDelete(entityClass: Class<T>, id: Any) {
+    fun <T : Any> safeDelete(entityClass: Class<T>, id: Any) {
         val visited = mutableSetOf<Pair<Class<*>, Any>>()
         val entity = entityManager.find(entityClass, id)
             ?: throw RuntimeException("${entityClass.simpleName} dengan id $id tidak ditemukan")
