@@ -1,0 +1,90 @@
+/* ==========================================
+   POPUP DATA PENGGUNA
+========================================== */
+
+.content-popup-data-pengguna{
+    width: 60rem;
+    max-width: 95vw;
+    min-height: 41.5rem;
+
+    padding: var(--card-padding);
+    border-radius: var(--card-border-radius);
+
+    background: var(--color-background);
+
+    box-sizing: border-box;
+}
+
+/* ==========================================
+   GRID FORM
+========================================== */
+
+.form-grid{
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 1.6rem;
+    align-items: stretch;
+}
+
+/* ==========================================
+   CARD LEFT & RIGHT
+========================================== */
+
+.form-left,
+.form-right{
+    display: flex;
+    flex-direction: column;
+
+    min-height: 31rem;
+
+    gap: 1.5rem;
+    margin-top: 1rem;
+
+    background: var(--color-white);
+    padding: var(--card-padding);
+
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--box-shadow);
+
+    transition: all 300ms ease;
+    box-sizing: border-box;
+}
+
+/* ==========================================
+   IMAGE BOX
+========================================== */
+
+.data-pengguna .image-box{
+    width: 100%;
+    height: 23rem; /* ukuran tetap */
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    overflow: hidden;
+
+    border-radius: var(--border-radius-2);
+    background: var(--color-white);
+
+    flex-shrink: 0; /* cegah mengecil */
+    cursor: pointer;
+}
+
+.data-pengguna .image-box img{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.image-box .input-file{
+    display: none;
+}
+
+.password-group input.error{
+    border: 1px solid #dc3545 !important;
+}
+
+.password-group input.success{
+    border: 1px solid #28a745 !important;
+}

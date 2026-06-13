@@ -8,8 +8,9 @@ async function loadPage(page) {
 
     const pageTitles = {
         dashboard: 'Dashboard',
-        orderan: 'Data Orderan',
-        'master-data': 'Master Data'
+        'master-data/data-pengguna': 'Data Pengguna',
+        'master-data/master-data': 'Master Data',
+        orderan: 'Data Orderan'
     };
 
     try {
@@ -29,9 +30,16 @@ async function loadPage(page) {
         title.innerHTML = pageTitle;
         document.title = pageTitle;
 
-        if(page === 'master-data') {
-            initMasterData();
+        const pageHandlers = {
+            'master-data/data-pengguna': () => {
+                initDataPengguna();
+            },
+            'master-data/master-data': () => {
+                initMasterData();
+            }
         }
+
+        pageHandlers[page]?.();
 
     } catch (e) {
 

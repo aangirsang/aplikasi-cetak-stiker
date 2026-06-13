@@ -22,9 +22,6 @@ const popupConfig = {
 };
 
 
-const BASE_URL_LEVEL = `${BASE_URL}api/data-level`;
-const BASE_URL_KATEGORI = `${BASE_URL}api/data-kategori`;
-
 async function initMasterData() {
     await bersihMasterData();
 

@@ -1,0 +1,167 @@
+<div class="data-pengguna">
+    <!-- SEARCH -->
+    <div class="search-bar">
+        <div class="search-box">
+            <span class="material-symbols-sharp">search</span>
+            <label>
+                <input type="text" id="cari-data-pengguna" placeholder="Cari Data Pengguna">
+            </label>
+        </div>
+        <button class="add-btn" id="btn-tambah-data-pengguna">
+            <span class="material-symbols-sharp">add</span>
+            Tambah Pengguna
+        </button>
+    </div>
+    <!-- TABLE -->
+    <div class="table-page-container">
+        <div class="tabel-card">
+            <table class="tbl-data-pengguna">
+                <thead>
+                <tr>
+                    <th onclick="sortTablePengguna('namaLengkap')">Nama Lengkap</th>
+                    <th onclick="sortTablePengguna('namaPengguna')">Nama  Akun</th>
+                    <th onclick="sortTablePengguna('level')">Level</th>
+                    <th onclick="sortTablePengguna('status')">Status</th>
+                    <th>Edit</th>
+                </tr>
+                </thead>
+                <tbody id="tbl-body-data-pengguna"></tbody>
+            </table>
+        </div>
+        <div id="pagination" class="pagination"></div>
+    </div>
+    <!--POPUP HAPUS-->
+    <div id="popup-hapus" class="popup">
+        <div class="popup-content-hapus">
+            <h2>Konfirmasi</h2>
+            <p>Yakin ingin menghapus pengguna?</p>
+            <div class="popup-actions">
+                <button id="konfirmasi-hapus-btn">Hapus</button>
+                <button id="batal-btn">Batal</button>
+            </div>
+        </div>
+    </div>
+    <!--POPUP PENGGUNA-->
+    <div id="popup-data-pengguna" class="popup">
+        <div class="content-popup-data-pengguna">
+            <h2 id="popup-data-pengguna-title">Data Pengguna</h2>
+
+            <form id="form-popup-data-pengguna">
+                <div class="form-grid">
+                    <div class="form-left">
+                        <div class="input-group">
+                            <input
+                                    type="text"
+                                    id="popup-data-pengguna-nama-lengkap"
+                                    placeholder=" "
+                                    autocomplete="off">
+
+                            <label for="popup-data-pengguna-nama-lengkap">
+                                Nama Lengkap
+                            </label>
+                        </div>
+
+                        <div class="input-group">
+                            <input
+                                    type="text"
+                                    id="popup-data-pengguna-nama-pengguna"
+                                    placeholder=" "
+                                    autocomplete="off">
+
+                            <label for="popup-data-pengguna-nama-pengguna">
+                                Nama Pengguna
+                            </label>
+                        </div>
+
+                        <div class="custom-select" id="custom-select">
+                            <label class="select-label">Pilih Level</label>
+                            <div class="select-box">
+                                <span id="selected-text" class="empty"></span>
+                                <span class="arrow">▼</span>
+                            </div>
+                            <div class="options" id="level-options"></div>
+                        </div>
+
+                        <div class="form-group-radio">
+                            <div class="radio-group" id="popup-data-pengguna-status-grup">
+                                <label class="radio-floating-label">Status</label>
+                                <label class="radio-item">
+                                    <input
+                                            type="radio"
+                                            name="popup-data-pengguna-status"
+                                            value="true">
+                                    <span>Aktif</span>
+                                </label>
+
+                                <label class="radio-item">
+                                    <input
+                                            type="radio"
+                                            name="popup-data-pengguna-status"
+                                            value="false">
+                                    <span>Non-Aktif</span>
+                                </label>
+                            </div>
+                        </div>
+
+
+                        <div class="input-group">
+                            <div class="password-group">
+                                <input
+                                        type="password"
+                                        id="popup-data-pengguna-kata-sandi"
+                                        placeholder=" ">
+                                <label for="popup-data-pengguna-kata-sandi">Kata Sandi</label>
+                                <button
+                                        type="button"
+                                        class="toggle-password"
+                                        onclick="
+                                        togglePassword('popup-data-pengguna-kata-sandi', this)">
+                                    <span class="material-symbols-sharp">visibility</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <div class="password-group">
+                                <input
+                                        type="password"
+                                        id="popup-data-pengguna-ulangi-kata-sandi"
+                                        placeholder=" ">
+                                <label for="popup-data-pengguna-ulangi-kata-sandi">Ulangi Kata Sandi</label>
+                                <button
+                                        type="button"
+                                        class="toggle-password"
+                                        onclick="
+                                        togglePassword('popup-data-pengguna-ulangi-kata-sandi', this)">
+                                    <span class="material-symbols-sharp">visibility</span>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="form-right">
+                        <!-- Preview -->
+                        <div class="image-box">
+                            <img id="popup-data-pengguna-preview-image" alt="Foto Pengguna">
+                        </div>
+
+                        <!-- Tombol Cari -->
+                        <button type="button" id="btn-popup-data-pengguna-cari-gambar">Cari Gambar</button>
+
+                        <!-- Input File -->
+                        <div class="input-file">
+                            <input type="file" id="popup-data-pengguna-file-input" accept="image/*" hidden>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="popup-actions">
+                    <button type="button" id="btn-popup-data-pengguna-simpan">Simpan</button>
+                    <button type="button" id="btn-popup-data-pengguna-batal">Batal</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
