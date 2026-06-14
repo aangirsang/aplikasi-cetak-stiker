@@ -35,6 +35,9 @@ dependencies {
 
 	runtimeOnly("org.xerial:sqlite-jdbc")
 
+	implementation("net.coobird:thumbnailator:0.4.20")
+	implementation("org.sejda.imageio:webp-imageio:0.1.6")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-security-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")

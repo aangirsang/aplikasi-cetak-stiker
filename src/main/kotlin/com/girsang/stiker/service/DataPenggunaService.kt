@@ -61,7 +61,7 @@ class DataPenggunaService(
             dataPengguna.pathGambar
 
         // level
-        dataPengguna.dataLevel?.id?.let {
+        dataPengguna.dataLevel.id.let {
 
             val level =
                 dataLevelRepo

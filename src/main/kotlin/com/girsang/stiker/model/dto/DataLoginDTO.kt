@@ -1,4 +1,4 @@
-package com.girsang.stiker.model.DTO
+package com.girsang.stiker.model.dto
 
 data class DataLoginDTO(
     val namaPengguna: String,

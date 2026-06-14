@@ -1,0 +1,19 @@
+.popup-content-hapus {
+    width: 30rem;
+    height: 12rem;
+
+    padding: var(--card-padding);
+    border-radius: var(--card-border-radius);
+
+    background: var(--color-white);
+
+    box-sizing: border-box;
+}
+
+.popup-content-hapus p {
+    margin-top: 1rem;
+}
+
+.popup-content-hapus .popup-actions {
+    margin-top: 1rem;
+}

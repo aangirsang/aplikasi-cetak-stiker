@@ -1,7 +1,7 @@
 package com.girsang.stiker.controller
 
 
-import com.girsang.stiker.model.DTO.DataLoginDTO
+import com.girsang.stiker.model.dto.DataLoginDTO
 import com.girsang.stiker.model.entity.DataPengguna
 import com.girsang.stiker.service.DataPenggunaService
 import jakarta.validation.Valid

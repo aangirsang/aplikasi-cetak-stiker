@@ -16,6 +16,7 @@ let isEdit = false;
 async function initDataPengguna() {
     await loadTablePengguna();
     setDefaultGambarPengguna();
+    await initPopupHapus();
 
     getEl("cari-data-pengguna").addEventListener("input", async function(){
         searchKeywordPengguna = this.value.trim().toLowerCase();
@@ -242,7 +243,7 @@ function createRowPengguna(item){
                         <span class="material-symbols-sharp">edit</span>
                     </button>
 
-                    <button onclick="showPopupHapus('${item.id}')">
+                    <button onclick="konfirmasiHapusPengguna('${item.id}')">
                         <span class="material-symbols-sharp">delete</span>
                     </button>
                 </div>
@@ -314,9 +315,12 @@ function isiPopupDataPengguna(data){
     }
 
     // set image
-    getEl("popup-data-pengguna-preview-image").src =
-        data.gambar ||
-        noImagePerson;
+    getEl(
+        "popup-data-pengguna-preview-image"
+    ).src =
+        data.pathGambar
+            ? `http://localhost:8080${data.pathGambar}`
+            : noImagePerson;
 }
 function closePopupPengguna(){
     getEl("popup-data-pengguna").classList.remove("show");
@@ -401,44 +405,26 @@ function setDefaultGambarPengguna(){
     };
 }
 function cariGambar() {
-    getEl("popup-data-pengguna-file-input").click();
+    const input = getEl("popup-data-pengguna-file-input");
+    input.value = ""; // 🔥 penting biar event selalu trigger
+    input.click();
 }
 function handlePreviewGambar(event) {
-
-    const file =
-        event.target.files[0];
-
+    const file = event.target.files[0];
     if (!file) return;
 
-    // validasi file gambar
-    if (
-        !file.type.startsWith(
-            "image/"
-        )
-    ) {
-
-        alert(
-            "File harus berupa gambar"
-        );
-
+    if (!file.type.startsWith("image/")) {
+        alert("File harus berupa gambar");
         event.target.value = "";
         return;
     }
 
-    const previewImage =
-        getEl(
-            "popup-data-pengguna-preview-image"
-        );
+    const previewImage = getEl("popup-data-pengguna-preview-image");
 
-    const reader =
-        new FileReader();
-
-    reader.onload =
-        function (e) {
-
-            previewImage.src =
-                e.target.result;
-        };
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        previewImage.src = e.target.result;
+    };
 
     reader.readAsDataURL(file);
 }
@@ -508,7 +494,6 @@ function validasiSimpanDataPengguna() {
 
     return valid;
 }
-
 async function simpanDataPengguna() {
     if(
         !validasiSimpanDataPengguna()
@@ -528,7 +513,7 @@ async function simpanDataPengguna() {
         );
 
     const pathGambar =
-        fileInput.files[0]?.name ?? "";
+        await uploadGambarPengguna();
 
     console.log(`${BASE_URL_PENGGUNA}/${selectedPengguna}`)
     console.log(selectedLevel);
@@ -596,7 +581,104 @@ async function simpanDataPengguna() {
     }
 
 }
+async function uploadGambarPengguna() {
+
+    const fileInput =
+        getEl(
+            "popup-data-pengguna-file-input"
+        );
+
+    const files =
+        fileInput.files;
+
+    if(!files.length){
+        return "";
+    }
+
+    const formData =
+        new FormData();
+
+    Array.from(files)
+        .forEach(file => {
+            formData.append(
+                "files",
+                file
+            );
+        });
+
+    const response =
+        await fetch(
+            "http://localhost:8080/api/upload/gambar",
+            {
+                method: "POST",
+                body: formData
+            }
+        );
+
+    if(!response.ok){
+        throw new Error(
+            "Gagal upload gambar"
+        );
+    }
+
+    const result =
+        await response.json();
+
+    // ambil gambar pertama
+    return result[0]?.path ?? "";
+}
+
+async function hapusDataPengguna(id){
+
+    try {
+
+        const response =
+            await fetch(
+                `${BASE_URL_PENGGUNA}/${id}`,
+                {
+                    method: "DELETE"
+                }
+            );
+
+        if(!response.ok){
+
+            const errorData =
+                await response.json();
+
+            throw new Error(
+                errorData.message ||
+                "Gagal menghapus pengguna"
+            );
+        }
+
+        await loadTablePengguna();
+
+    } catch (e){
+
+        alert(e.message);
+    }
+}
+function konfirmasiHapusPengguna(id){
+
+    showPopupHapus({
+
+        title:
+            "Konfirmasi Hapus",
+
+        message:
+            "Yakin ingin menghapus pengguna ini?",
+
+        onConfirm:
+            async () => {
+
+                await hapusDataPengguna(
+                    id
+                );
+            }
+    });
+}
 
 window.initDataPengguna = initDataPengguna;
 window.sortTablePengguna = sortTablePengguna;
 window.showPopupPengguna = showPopupPengguna;
+window.konfirmasiHapusPengguna = konfirmasiHapusPengguna;
