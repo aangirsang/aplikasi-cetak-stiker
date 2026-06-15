@@ -10,7 +10,7 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 
 @Entity
-data class DataPengguna(
+class DataPengguna(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
