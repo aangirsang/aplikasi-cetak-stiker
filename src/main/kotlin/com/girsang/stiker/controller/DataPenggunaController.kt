@@ -66,7 +66,7 @@ class DataPenggunaController(private val service: DataPenggunaService) {
             val update = service.update(id, request)
             ResponseEntity.ok(update)
 
-        } catch (e: NoSuchElementException) {
+        } catch (_: NoSuchElementException) {
             ResponseEntity.status(404)
                 .body(mapOf("message" to "Pengguna tidak ditemukan"))
 
@@ -81,7 +81,7 @@ class DataPenggunaController(private val service: DataPenggunaService) {
         return try {
             service.hapus(id)
             ResponseEntity.ok(mapOf("message" to "Data pengguna Berhasil Dihapus"))
-        } catch (e: NoSuchElementException){
+        } catch (_: NoSuchElementException){
             ResponseEntity.status(404).body(mapOf("message" to "Pengguna Tidak Ditemukan"))
         }
     }

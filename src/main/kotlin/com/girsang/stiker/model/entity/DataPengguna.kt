@@ -8,14 +8,13 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
-import jakarta.validation.constraints.NotBlank
 
 @Entity
 data class DataPengguna(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+    var id: Long = 0,
 
     var namaLengkap: String = "",
 
@@ -26,7 +25,7 @@ data class DataPengguna(
     var kataSandi: String = "",
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "data_level_id")
+    @JoinColumn
     var dataLevel: DataLevel,
 
     var status: Boolean = true,
