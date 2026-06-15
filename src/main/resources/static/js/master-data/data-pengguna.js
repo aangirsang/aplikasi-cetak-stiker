@@ -13,6 +13,8 @@ let selectedPengguna = null;
 
 let isEdit = false;
 
+let pathGambarLama = "";
+
 async function initDataPengguna() {
     await loadTablePengguna();
     setDefaultGambarPengguna();
@@ -103,10 +105,13 @@ function bersihPopupDataPengguna(){
         "popup-data-pengguna-preview-image"
     ).src = noImagePerson;
 
+    getEl("popup-data-pengguna-file-input").value = "";
+
     // reset selected level
     selectedLevel = null;
     selectedPengguna = null;
     isEdit = false;
+    pathGambarLama = "";
 }
 function resetCustomSelect(){
 
@@ -293,6 +298,8 @@ function showPopupPengguna(id = null){
 }
 function isiPopupDataPengguna(data){
 
+    pathGambarLama = data.pathGambar ?? "";
+
     getEl("popup-data-pengguna-nama-lengkap").value = data.namaLengkap ?? "";
     getEl("popup-data-pengguna-nama-pengguna").value = data.namaPengguna ?? "";
 
@@ -315,9 +322,21 @@ function isiPopupDataPengguna(data){
     }
 
     // set image
-    getEl(
-        "popup-data-pengguna-preview-image"
-    ).src =
+    const previewImage =
+        getEl("popup-data-pengguna-preview-image");
+
+    showPreviewLoading();
+
+    previewImage.onload = () => {
+        hidePreviewLoading();
+    };
+
+    previewImage.onerror = () => {
+        hidePreviewLoading();
+        previewImage.src = noImagePerson;
+    };
+
+    previewImage.src =
         data.pathGambar
             ? `http://localhost:8080${data.pathGambar}`
             : noImagePerson;
@@ -410,19 +429,30 @@ function cariGambar() {
     input.click();
 }
 function handlePreviewGambar(event) {
+
     const file = event.target.files[0];
+
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-        alert("File harus berupa gambar");
+        showToast("File harus berupa gambar", "warning");
         event.target.value = "";
         return;
     }
 
-    const previewImage = getEl("popup-data-pengguna-preview-image");
+    const previewImage =
+        getEl("popup-data-pengguna-preview-image");
+
+    showPreviewLoading();
 
     const reader = new FileReader();
+
     reader.onload = function (e) {
+
+        previewImage.onload = () => {
+            hidePreviewLoading();
+        };
+
         previewImage.src = e.target.result;
     };
 
@@ -455,17 +485,30 @@ function validateUlangiPassword(){
 function validasiSimpanDataPengguna() {
     let valid = true;
 
-    [
-        "popup-data-pengguna-nama-lengkap",
-        "popup-data-pengguna-nama-pengguna",
-        "popup-data-pengguna-kata-sandi",
-        "popup-data-pengguna-ulangi-kata-sandi"
-    ].forEach(id => {
-        if(!getValue(id)){
-            tandaiInvalid(getEl(id));
-            valid = false;
-        }
-    });
+    if(isEdit) {
+        [
+            "popup-data-pengguna-nama-lengkap",
+            "popup-data-pengguna-nama-pengguna",
+        ].forEach(id => {
+            if(!getValue(id)){
+                tandaiInvalid(getEl(id));
+                valid = false;
+            }
+        });
+    } else {
+        [
+            "popup-data-pengguna-nama-lengkap",
+            "popup-data-pengguna-nama-pengguna",
+            "popup-data-pengguna-kata-sandi",
+            "popup-data-pengguna-ulangi-kata-sandi"
+        ].forEach(id => {
+            if(!getValue(id)){
+                tandaiInvalid(getEl(id));
+                valid = false;
+            }
+        });
+    }
+
 
     // Level
     const level = getEl('selected-text').textContent.trim();
@@ -492,6 +535,9 @@ function validasiSimpanDataPengguna() {
         valid = false;
     }
 
+    if(!valid){
+        showToast("Mohon Lengkapi Data!!", "warning");
+    }
     return valid;
 }
 async function simpanDataPengguna() {
@@ -507,18 +553,21 @@ async function simpanDataPengguna() {
         document.querySelector(
             'input[name="popup-data-pengguna-status"]:checked'
         )?.value === "true";
-    const fileInput =
-        getEl(
-            "popup-data-pengguna-file-input"
-        );
 
-    const pathGambar =
-        await uploadGambarPengguna();
+
+    let pathGambar = pathGambarLama;
+
+    if(isGambarBerubah()){
+        pathGambar = await uploadGambarPengguna();
+    }
+
+    console.log(`Gambar Berubah = ${isGambarBerubah()}`)
 
     console.log(`${BASE_URL_PENGGUNA}/${selectedPengguna}`)
     console.log(selectedLevel);
     try {
         if(isEdit){
+            console.log(kataSandi)
             const response = await fetch(`${BASE_URL_PENGGUNA}/${selectedPengguna}`, {
                 method: 'PUT',
                 headers: {
@@ -576,8 +625,13 @@ async function simpanDataPengguna() {
 
         bersihPopupDataPengguna();
         await loadTablePengguna();
+
+        showToast(
+            "Data pengguna berhasil disimpan",
+            "success"
+        );
     } catch (e) {
-        alert(e.message);
+        showToast(e.message, "error");
     }
 
 }
@@ -627,7 +681,6 @@ async function uploadGambarPengguna() {
     // ambil gambar pertama
     return result[0]?.path ?? "";
 }
-
 async function hapusDataPengguna(id){
 
     try {
@@ -653,9 +706,11 @@ async function hapusDataPengguna(id){
 
         await loadTablePengguna();
 
+        showToast("Data Berhasil Dihapus!!", "success")
+
     } catch (e){
 
-        alert(e.message);
+        showToast(e.message, "error");
     }
 }
 function konfirmasiHapusPengguna(id){
@@ -676,6 +731,21 @@ function konfirmasiHapusPengguna(id){
                 );
             }
     });
+}
+function showPreviewLoading() {
+    getEl("preview-loading").classList.add("show");
+}
+function hidePreviewLoading() {
+    getEl("preview-loading").classList.remove("show");
+}
+function isGambarBerubah(){
+
+    const fileInput =
+        getEl(
+            "popup-data-pengguna-file-input"
+        );
+
+    return fileInput.files.length > 0;
 }
 
 window.initDataPengguna = initDataPengguna;

@@ -1,5 +1,7 @@
 package com.girsang.stiker.service
 
+import com.girsang.stiker.model.dto.DataPenggunaCreateRequest
+import com.girsang.stiker.model.dto.DataPenggunaUpdateRequest
 import com.girsang.stiker.model.entity.DataPengguna
 import com.girsang.stiker.repository.DataLevelRepository
 import com.girsang.stiker.repository.DataPenggunaRepository
@@ -16,29 +18,40 @@ class DataPenggunaService(
     fun semuaPengguna(): List<DataPengguna> = repo.findAll()
     fun cariID(id: Long): Optional<DataPengguna> = repo.findById(id)
 
-    fun simpan(dataPengguna: DataPengguna): DataPengguna {
-        if (repo.existsByNamaPengguna(dataPengguna.namaPengguna)) {
+    fun simpan(request: DataPenggunaCreateRequest): DataPengguna {
+        if (repo.existsByNamaPengguna(request.namaPengguna)) {
             throw IllegalArgumentException("Nama pengguna sudah digunakan")
         }
-        return repo.save(dataPengguna)
-    }
-    fun update(
-        id: Long,
-        dataPengguna: DataPengguna
-    ): DataPengguna {
 
-        val dataLama =
-            repo.findById(id)
-                .orElseThrow {
-                    NoSuchElementException(
-                        "Data pengguna dengan id $id tidak ditemukan"
-                    )
-                }
+        val level =
+            dataLevelRepo.findById(
+                request.dataLevel.id
+            ).orElseThrow()
+
+        val pengguna =
+            DataPengguna(
+                namaLengkap = request.namaLengkap,
+                namaPengguna = request.namaPengguna,
+                kataSandi = request.kataSandi,
+                status = request.status,
+                pathGambar = request.pathGambar,
+                dataLevel = level
+            )
+
+        return repo.save(pengguna)
+    }
+    fun update(id: Long, request: DataPenggunaUpdateRequest): DataPengguna {
+
+        val dataLama = repo.findById(id).orElseThrow {
+            NoSuchElementException(
+                "Data pengguna dengan id $id tidak ditemukan"
+            )
+        }
 
         // cek username duplicate
         val usernameDipakai =
             repo.existsByNamaPenggunaAndIdNot(
-                dataPengguna.namaPengguna,
+                request.namaPengguna,
                 id
             )
 
@@ -49,47 +62,31 @@ class DataPenggunaService(
         }
 
         dataLama.namaLengkap =
-            dataPengguna.namaLengkap
+            request.namaLengkap
 
         dataLama.namaPengguna =
-            dataPengguna.namaPengguna
+            request.namaPengguna
 
         dataLama.status =
-            dataPengguna.status
+            request.status
 
         dataLama.pathGambar =
-            dataPengguna.pathGambar
+            request.pathGambar
 
-        // level
-        dataPengguna.dataLevel.id.let {
+        val level =
+            dataLevelRepo.findById(
+                request.dataLevel.id
+            ).orElseThrow()
 
-            val level =
-                dataLevelRepo
-                    .findById(it)
-                    .orElseThrow {
-                        NoSuchElementException(
-                            "Level tidak ditemukan"
-                        )
-                    }
+        dataLama.dataLevel = level
 
-            dataLama.dataLevel =
-                level
-        }
-
-        // password optional
-        if (
-            !dataPengguna.kataSandi
-                .isNullOrBlank()
-        ) {
+        // hanya update password jika diisi
+        if(!request.kataSandi.isNullOrBlank()){
             dataLama.kataSandi =
-
-                    dataPengguna.kataSandi
-
+                request.kataSandi
         }
 
-        return repo.save(
-            dataLama
-        )
+        return repo.save(dataLama)
     }
     fun hapus(id: Long){
         if(repo.existsById(id)){

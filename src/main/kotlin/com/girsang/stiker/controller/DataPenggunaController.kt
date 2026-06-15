@@ -2,6 +2,8 @@ package com.girsang.stiker.controller
 
 
 import com.girsang.stiker.model.dto.DataLoginDTO
+import com.girsang.stiker.model.dto.DataPenggunaCreateRequest
+import com.girsang.stiker.model.dto.DataPenggunaUpdateRequest
 import com.girsang.stiker.model.entity.DataPengguna
 import com.girsang.stiker.service.DataPenggunaService
 import jakarta.validation.Valid
@@ -39,11 +41,13 @@ class DataPenggunaController(private val service: DataPenggunaService) {
 
     @PostMapping
     fun simpan(
-        @Valid @RequestBody pengguna: DataPengguna
+        @Valid
+        @RequestBody
+        request: DataPenggunaCreateRequest
     ): ResponseEntity<Any> {
 
         return try {
-            val save = service.simpan(pengguna)
+            val save = service.simpan(request)
             ResponseEntity.ok(save)
 
         } catch (e: IllegalArgumentException) {
@@ -55,11 +59,11 @@ class DataPenggunaController(private val service: DataPenggunaService) {
     @PutMapping("/{id}")
     fun update(
         @PathVariable id: Long,
-        @Valid @RequestBody pengguna: DataPengguna
+        @Valid @RequestBody request: DataPenggunaUpdateRequest
     ): ResponseEntity<Any> {
 
         return try {
-            val update = service.update(id, pengguna)
+            val update = service.update(id, request)
             ResponseEntity.ok(update)
 
         } catch (e: NoSuchElementException) {

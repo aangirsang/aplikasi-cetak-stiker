@@ -44,7 +44,7 @@ class UploadService(
             UploadResponse(
                 namaFile = fileName,
                 path =
-                    "/uploads/images/$fileName"
+                    "/uploads/gambar/$fileName"
             )
         }
     }

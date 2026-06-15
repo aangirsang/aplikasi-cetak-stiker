@@ -12,18 +12,16 @@ import jakarta.validation.constraints.NotBlank
 
 @Entity
 data class DataPengguna(
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
-    @field:NotBlank(message = "Nama lengkap tidak boleh kosong")
     var namaLengkap: String = "",
 
-    @field:NotBlank(message = "Nama pengguna tidak boleh kosong")
     @Column(nullable = false, unique = true)
     var namaPengguna: String = "",
 
-    @field:NotBlank(message = "Kata sandi tidak boleh kosong")
     @Column(nullable = false)
     var kataSandi: String = "",
 
