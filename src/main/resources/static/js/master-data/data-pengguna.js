@@ -14,6 +14,8 @@ let selectedPengguna = null;
 let isEdit = false;
 
 let pathGambarLama = "";
+let selectedWebpFile = null;
+
 
 async function initDataPengguna() {
     await loadTablePengguna();
@@ -112,6 +114,7 @@ function bersihPopupDataPengguna(){
     selectedPengguna = null;
     isEdit = false;
     pathGambarLama = "";
+    selectedWebpFile = null;
 }
 function resetCustomSelect(){
 
@@ -428,35 +431,194 @@ function cariGambar() {
     input.value = ""; // 🔥 penting biar event selalu trigger
     input.click();
 }
-function handlePreviewGambar(event) {
+async function handlePreviewGambar(event) {
 
     const file = event.target.files[0];
 
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-        showToast("File harus berupa gambar", "warning");
+
+        showToast(
+            "File harus berupa gambar",
+            "warning"
+        );
+
         event.target.value = "";
         return;
     }
 
-    const previewImage =
-        getEl("popup-data-pengguna-preview-image");
+    try {
 
-    showPreviewLoading();
+        showPreviewLoading();
 
-    const reader = new FileReader();
+        const webpFile =
+            await convertToWebp(
+                file,
+                2048,
+                0.8
+            );
 
-    reader.onload = function (e) {
+        selectedWebpFile =
+            webpFile;
+
+        const previewImage =
+            getEl(
+                "popup-data-pengguna-preview-image"
+            );
 
         previewImage.onload = () => {
             hidePreviewLoading();
         };
 
-        previewImage.src = e.target.result;
-    };
+        previewImage.src =
+            URL.createObjectURL(
+                webpFile
+            );
 
-    reader.readAsDataURL(file);
+        const ukuranAwal =
+            (file.size / 1024 / 1024)
+                .toFixed(2);
+
+        const ukuranWebp =
+            (
+                webpFile.size /
+                1024 /
+                1024
+            ).toFixed(2);
+
+        console.log(
+            `Asli: ${ukuranAwal} MB`
+        );
+
+        console.log(
+            `WebP: ${ukuranWebp} MB`
+        );
+
+    } catch(error){
+
+        hidePreviewLoading();
+
+        showToast(
+            "Gagal memproses gambar",
+            "error"
+        );
+
+        console.error(error);
+    }
+}
+function convertToWebp(
+    file,
+    maxSize = 2048,
+    quality = 0.8
+) {
+
+    return new Promise(
+        (resolve, reject) => {
+
+            const img =
+                new Image();
+
+            img.onload = () => {
+
+                let width =
+                    img.width;
+
+                let height =
+                    img.height;
+
+                if(
+                    width > maxSize ||
+                    height > maxSize
+                ){
+
+                    const ratio =
+                        Math.min(
+                            maxSize / width,
+                            maxSize / height
+                        );
+
+                    width =
+                        Math.round(
+                            width * ratio
+                        );
+
+                    height =
+                        Math.round(
+                            height * ratio
+                        );
+                }
+
+                const canvas =
+                    document.createElement(
+                        "canvas"
+                    );
+
+                canvas.width =
+                    width;
+
+                canvas.height =
+                    height;
+
+                const ctx =
+                    canvas.getContext(
+                        "2d"
+                    );
+
+                ctx.drawImage(
+                    img,
+                    0,
+                    0,
+                    width,
+                    height
+                );
+
+                canvas.toBlob(
+                    blob => {
+
+                        if(!blob){
+
+                            reject(
+                                new Error(
+                                    "Gagal convert WebP"
+                                )
+                            );
+
+                            return;
+                        }
+
+                        const webpFile =
+                            new File(
+                                [blob],
+                                file.name.replace(
+                                    /\.[^.]+$/,
+                                    ".webp"
+                                ),
+                                {
+                                    type:
+                                        "image/webp"
+                                }
+                            );
+
+                        resolve(
+                            webpFile
+                        );
+
+                    },
+                    "image/webp",
+                    quality
+                );
+            };
+
+            img.onerror =
+                reject;
+
+            img.src =
+                URL.createObjectURL(
+                    file
+                );
+        }
+    );
 }
 function validateUlangiPassword(){
 
@@ -637,28 +799,17 @@ async function simpanDataPengguna() {
 }
 async function uploadGambarPengguna() {
 
-    const fileInput =
-        getEl(
-            "popup-data-pengguna-file-input"
-        );
-
-    const files =
-        fileInput.files;
-
-    if(!files.length){
+    if(!selectedWebpFile){
         return "";
     }
 
     const formData =
         new FormData();
 
-    Array.from(files)
-        .forEach(file => {
-            formData.append(
-                "files",
-                file
-            );
-        });
+    formData.append(
+        "files",
+        selectedWebpFile
+    );
 
     const response =
         await fetch(
@@ -678,7 +829,6 @@ async function uploadGambarPengguna() {
     const result =
         await response.json();
 
-    // ambil gambar pertama
     return result[0]?.path ?? "";
 }
 async function hapusDataPengguna(id){

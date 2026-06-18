@@ -1,11 +1,11 @@
 package com.girsang.stiker.controller
 
 
-import com.girsang.stiker.model.dto.DataLoginDTO
 import com.girsang.stiker.model.dto.DataPenggunaCreateRequest
 import com.girsang.stiker.model.dto.DataPenggunaUpdateRequest
 import com.girsang.stiker.model.entity.DataPengguna
 import com.girsang.stiker.service.DataPenggunaService
+import jakarta.servlet.http.HttpSession
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -27,16 +27,32 @@ class DataPenggunaController(private val service: DataPenggunaService) {
     }
 
     @PostMapping("/login")
-    fun login(@RequestBody dto: DataLoginDTO): ResponseEntity<Any> {
+    fun login(
+        @RequestParam username: String,
+        @RequestParam password: String,
+        session: HttpSession
+    ): ResponseEntity<Any> {
 
-        val pengguna = service.login(dto.namaPengguna, dto.kataSandi)
+        val pengguna =
+            service.login(
+                username,
+                password
+            )
+                ?: return ResponseEntity
+                    .badRequest()
+                    .body("Username atau password salah")
 
-        return if (pengguna != null) {
-            ResponseEntity.ok(pengguna)
-        } else {
-            ResponseEntity.status(401)
-                .body(mapOf("error" to "Nama pengguna atau kata sandi salah"))
-        }
+        session.setAttribute(
+            "LOGIN_USER",
+            pengguna
+        )
+
+        return ResponseEntity.ok(
+            mapOf(
+                "success" to true,
+                "nama" to pengguna.namaLengkap
+            )
+        )
     }
 
     @PostMapping
@@ -89,9 +105,5 @@ class DataPenggunaController(private val service: DataPenggunaService) {
     @GetMapping("/ping")
     fun ping(): ResponseEntity<Map<String, String>>{
     return ResponseEntity.ok(mapOf("Status Server " to "Terhubung"))
-    }
-    @GetMapping("/count")
-    fun countPengguna(): Long {
-        return service.count()
     }
 }

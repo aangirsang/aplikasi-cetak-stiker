@@ -5,6 +5,7 @@ import com.girsang.stiker.model.dto.DataPenggunaUpdateRequest
 import com.girsang.stiker.model.entity.DataPengguna
 import com.girsang.stiker.repository.DataLevelRepository
 import com.girsang.stiker.repository.DataPenggunaRepository
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.util.Optional
 
@@ -12,7 +13,8 @@ import java.util.Optional
 @Service
 class DataPenggunaService(
     private val repo: DataPenggunaRepository,
-    private val dataLevelRepo: DataLevelRepository
+    private val dataLevelRepo: DataLevelRepository,
+    private val passwordEncoder: PasswordEncoder
 ) {
 
     fun semuaPengguna(): List<DataPengguna> = repo.findAll()
@@ -96,22 +98,29 @@ class DataPenggunaService(
         }
     }
     // 🔐 Fungsi Login
-    fun login(namaPengguna: String, kataSandi: String): DataPengguna? {
-        val pengguna = repo.findByNamaPengguna(namaPengguna)
+    fun login(
+        namaPengguna: String,
+        kataSandi: String
+    ): DataPengguna? {
 
-        // Jika username tidak ditemukan
-        if (pengguna == null) {
+        val pengguna =
+            repo.findByNamaPengguna(
+                namaPengguna
+            ) ?: return null
+
+        if (!pengguna.status) {
             return null
         }
 
-        // Jika password tidak cocok
-        if (pengguna.kataSandi != kataSandi) {
+        if (
+            !passwordEncoder.matches(
+                kataSandi,
+                pengguna.kataSandi
+            )
+        ) {
             return null
         }
 
         return pengguna
-    }
-    fun count(): Long {
-        return repo.count()
     }
 }

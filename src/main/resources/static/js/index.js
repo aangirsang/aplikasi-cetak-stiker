@@ -84,24 +84,62 @@ function toggleSubmenu(submenuId, arrowId){
 }
 
 // PROFILE
-const currentUser = {
-    name: 'Andri',
-    role: 'Administrator',
-    photo: './assets/images/profile.jpg'
-};
-document.getElementById('profile-container').innerHTML = `
-    <div class="profile">
+function updateProfile(user){
 
-        <div class="info">
-            <p>Hey, <b>${currentUser.name}</b></p>
-            <small class="text-muted">${currentUser.role}</small>
+    document.getElementById(
+        "profile-container"
+    ).innerHTML = `
+
+        <div class="profile">
+
+            <div class="info">
+                <p>
+                    Hey,
+                    <b>${user.namaLengkap}</b>
+                </p>
+
+                <small class="text-muted">
+                    ${user.level}
+                </small>
+            </div>
+
+            <div class="profile-photo">
+                <img
+                    src="${
+        user.pathGambar ??
+        './assets/images/profile.jpg'
+    }"
+                    alt="profile">
+            </div>
+
         </div>
+    `;
+}
 
-        <div class="profile-photo">
-            <img src="${currentUser.photo}" alt="profile">
-        </div>
+function logout(){
 
-    </div>
-`;
+    localStorage.removeItem(
+        "currentUser"
+    );
+
+    document
+        .getElementById(
+            "login-overlay"
+        )
+        .classList.remove(
+        "hidden"
+    );
+
+    document
+        .getElementById(
+            "profile-container"
+        )
+        .innerHTML = "";
+}
+
+window.logout = logout;
+
 window.loadPage = loadPage;
 window.toggleSubmenu = toggleSubmenu;
+window.updateProfile = updateProfile;
+window.logout = logout;

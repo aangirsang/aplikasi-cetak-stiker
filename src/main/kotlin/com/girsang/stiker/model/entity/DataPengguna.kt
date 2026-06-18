@@ -22,7 +22,7 @@ class DataPengguna(
     var namaPengguna: String = "",
 
     @Column(nullable = false)
-    var kataSandi: String = "",
+    var kataSandi: String? = "",
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn
