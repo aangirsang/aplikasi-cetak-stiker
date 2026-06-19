@@ -29,5 +29,6 @@ class DataPengguna(
     var dataLevel: DataLevel,
 
     var status: Boolean = true,
+
     var pathGambar: String = ""
 )

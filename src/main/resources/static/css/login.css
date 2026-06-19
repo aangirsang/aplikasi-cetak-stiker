@@ -30,65 +30,26 @@
 
     padding: 30px;
 
-    box-shadow: 0 20px 40px rgba(0,0,0,.2);
+
+    box-shadow: var(--box-shadow);
 }
 
-.login-header{
-
+.login-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
-
-    margin-bottom: 25px;
+    gap: 1rem;
 }
 
-.login-header img{
+.form-login{
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
 
-    width: 80px;
-
-    margin-bottom: 10px;
+    gap: 1.5rem;
 }
 
-.login-header h2{
-
-    margin-bottom: 5px;
-}
-
-.form-group{
-
-    margin-bottom: 15px;
-}
-
-.form-group label{
-
-    display: block;
-
-    margin-bottom: 5px;
-}
-
-.form-group input{
-
-    width: 100%;
-
-    padding: 10px;
-
-    border: 1px solid #ddd;
-
-    border-radius: 8px;
-
-    box-sizing: border-box;
-}
-
-.login-card button{
-
-    width: 100%;
-
-    padding: 12px;
-
-    border: none;
-
-    border-radius: 8px;
-
-    cursor: pointer;
-}
 
 #login-error{
 

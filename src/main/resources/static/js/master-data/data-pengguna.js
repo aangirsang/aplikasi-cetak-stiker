@@ -341,8 +341,10 @@ function isiPopupDataPengguna(data){
 
     previewImage.src =
         data.pathGambar
-            ? `http://localhost:8080${data.pathGambar}`
+            ? `${BASE_URL}${data.pathGambar}`
             : noImagePerson;
+
+    console.log(previewImage.src);
 }
 function closePopupPengguna(){
     getEl("popup-data-pengguna").classList.remove("show");

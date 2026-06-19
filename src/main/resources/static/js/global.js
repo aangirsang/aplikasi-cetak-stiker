@@ -1,7 +1,12 @@
-const BASE_URL = "http://localhost:8080/"
-const BASE_URL_PENGGUNA = `${BASE_URL}api/data-pengguna`;
-const BASE_URL_LEVEL = `${BASE_URL}api/data-level`;
-const BASE_URL_KATEGORI = `${BASE_URL}api/data-kategori`;
+const BASE_URL = "http://localhost:8080"
+
+const BASE_URL_PENGGUNA = `${BASE_URL}/api/data-pengguna`;
+const BASE_URL_LEVEL = `${BASE_URL}/api/data-level`;
+const BASE_URL_KATEGORI = `${BASE_URL}/api/data-kategori`;
+
+const BASE_URL_UMKM = `${BASE_URL}/api/data-umkm`;
+
+const BASE_URL_LOGIN = `${BASE_URL}/api/auth/login`;
 
 const getEl = id => document.getElementById(id);
 const getValue = id => getEl(id).value.trim();

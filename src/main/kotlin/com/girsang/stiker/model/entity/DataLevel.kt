@@ -15,7 +15,7 @@ import jakarta.validation.constraints.NotBlank
 data class DataLevel (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+    var id: Long = 0,
 
     @field:NotBlank(message = "Data Level tidak boleh kosong")
     var level: String = "",

@@ -1,0 +1,249 @@
+<div class="data-umkm">
+    <div class="search-bar">
+        <div class="search-box">
+            <span class="material-symbols-sharp">search</span>
+            <label>
+                <input type="text" id="txt-cari-data-umkm" placeholder="Cari Data UMKM">
+            </label>
+        </div>
+        <button class="add-btn" id="btn-tambah-data-umkm">
+            <span class="material-symbols-sharp">add</span>
+            Tambah Anggota UMKM
+        </button>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-container">
+        <div class="tabel-card">
+            <table class="tbl-data-umkm">
+                <thead>
+                <tr>
+                    <th onclick="sortTabelUmkm('namaUsaha')">Nama Usaha</th>
+                    <th onclick="sortTabelUmkm('namaPemilik')">Nama  Pemilik</th>
+                    <th onclick="sortTabelUmkm('noTelep')">Telepon</th>
+                    <th onclick="sortTabelUmkm('kategori')">Kategori</th>
+                    <th onclick="sortTabelUmkm('status')">Status</th>
+                </tr>
+                </thead>
+                <tbody id="tbl-body-data-umkm"></tbody>
+            </table>
+        </div>
+        <div id="pagination" class="pagination"></div>
+    </div>
+
+    <!-- POPUP UMKM -->
+    <div class="popup" id="popup-data-umkm">
+        <div class="content-popup-data-umkm">
+            <form id="form-popup-data-umkm">
+                <h2 id="popup-data-umkm-title">Data UMKM</h2>
+                <div class="form-umkm-grid">
+                    <div class="form-umkm-kiri">
+                        <h3>Data Usaha</h3>
+
+                        <div class="input-group">
+                            <input
+                                    type="text"
+                                    id="popup-data-umkm-nama-usaha"
+                                    placeholder=" "
+                                    autocomplete="off">
+
+                            <label for="popup-data-umkm-nama-usaha">
+                                Nama Usaha
+                            </label>
+                        </div>
+
+                        <div class="custom-select" id="custom-select-data-umkm-kategori">
+                            <label class="select-label">Pilih Kategori</label>
+                            <div class="select-box">
+                                <span id="selected-text-data-umkm-kategori" class="empty"></span>
+                                <span class="arrow">▼</span>
+                            </div>
+                            <div class="options" id="options-data-umkm-kategori"></div>
+                        </div>
+
+                        <div class="textarea-group">
+                            <textarea
+                                    id="popup-data-umkm-deskripsi"
+                                    placeholder=" "
+                                    rows="7"></textarea>
+
+                            <label for="popup-data-umkm-deskripsi">
+                                Deskripsi Usaha
+                            </label>
+                        </div>
+
+                        <div class="form-group-radio">
+                            <div class="radio-group" id="popup-data-umkm-status-grup">
+                                <label class="radio-floating-label">Status</label>
+                                <label class="radio-item">
+                                    <input
+                                            type="radio"
+                                            name="popup-data-umkm-status"
+                                            value="true">
+                                    <span>Aktif</span>
+                                </label>
+
+                                <label class="radio-item">
+                                    <input
+                                            type="radio"
+                                            name="popup-data-umkm-status"
+                                            value="false">
+                                    <span>Non-Aktif</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-umkm-tengah">
+                        <h3>Data Pemilik</h3>
+
+                        <div class="input-group">
+                            <input
+                                    type="text"
+                                    id="popup-data-umkm-nama-pemilik"
+                                    placeholder=" "
+                                    autocomplete="off">
+
+                            <label for="popup-data-umkm-nama-pemilik">
+                                Nama Pemilik
+                            </label>
+                        </div>
+
+                        <div class="input-group">
+                            <input
+                                    type="text"
+                                    id="popup-data-umkm-ktp"
+                                    placeholder=" "
+                                    autocomplete="off">
+
+                            <label for="popup-data-umkm-ktp">
+                                Nomor Identitas/KTP
+                            </label>
+                        </div>
+
+                        <div class="form-group-radio">
+                            <div class="radio-group" id="popup-data-umkm-kelamin-grup">
+                                <label class="radio-floating-label">Status</label>
+                                <label class="radio-item">
+                                    <input
+                                            type="radio"
+                                            name="popup-data-umkm-kelamin"
+                                            value="true">
+                                    <span>Laki-Laki</span>
+                                </label>
+
+                                <label class="radio-item">
+                                    <input
+                                            type="radio"
+                                            name="popup-data-umkm-kelamin"
+                                            value="false">
+                                    <span>Perempuan</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="date-group">
+                            <input
+                                    type="date"
+                                    id="popup-data-umkm-tanggal-lahir">
+
+                            <label for="popup-data-umkm-tanggal-lahir">
+                                Tanggal Lahir
+                            </label>
+                        </div>
+
+                        <div class="textarea-group">
+                            <textarea
+                                    id="popup-data-umkm-alamat"
+                                    placeholder=" "
+                                    rows="4"></textarea>
+
+                            <label for="popup-data-umkm-alamat">
+                                Alamat Lengkap
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-umkm-kanan">
+                        <h3>Kontak</h3>
+
+                        <div class="input-group">
+                            <input
+                                    type="text"
+                                    id="popup-data-umkm-email"
+                                    placeholder=" "
+                                    autocomplete="off">
+
+                            <label for="popup-data-umkm-email">
+                                Alamat Email
+                            </label>
+                        </div>
+
+                        <div class="input-group">
+                            <input
+                                    type="text"
+                                    id="popup-data-umkm-telepon"
+                                    placeholder=" "
+                                    autocomplete="off">
+
+                            <label for="popup-data-umkm-telepon">
+                                Nomor Telepon
+                            </label>
+                        </div>
+
+                        <div class="input-group">
+                            <input
+                                    type="text"
+                                    id="popup-data-umkm-wa"
+                                    placeholder=" "
+                                    autocomplete="off">
+
+                            <label for="popup-data-umkm-wa">
+                                WhatsApp
+                            </label>
+                        </div>
+
+                        <div class="input-group">
+                            <input
+                                    type="text"
+                                    id="popup-data-umkm-instagram"
+                                    placeholder=" "
+                                    autocomplete="off">
+
+                            <label for="popup-data-umkm-instagram">
+                                Instagram
+                            </label>
+                        </div>
+
+                        <div class="input-group">
+                            <input
+                                    type="text"
+                                    id="popup-data-umkm-facebook"
+                                    placeholder=" "
+                                    autocomplete="off">
+
+                            <label for="popup-data-umkm-facebook">
+                                Facebook
+                            </label>
+                        </div>
+
+                        <div class="input-group">
+                            <input
+                                    type="text"
+                                    id="popup-data-umkm-tiktok"
+                                    placeholder=" "
+                                    autocomplete="off">
+
+                            <label for="popup-data-umkm-tiktok">
+                                Tiktok
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="popup-actions">
+                    <button type="button" id="btn-simpan-umkm">Simpan</button>
+                    <button type="button" id="btn-batal-umkm">Batal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

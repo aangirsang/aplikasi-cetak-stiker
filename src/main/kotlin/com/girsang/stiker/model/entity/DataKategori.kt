@@ -11,7 +11,7 @@ import jakarta.validation.constraints.NotBlank
 data class DataKategori (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+    var id: Long = 0,
 
     @field:NotBlank(message = "Data Kategori tidak boleh kosong")
     var kategori: String = "",

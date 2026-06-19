@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="css/popup/popup-konfirmasi-hapus.css">
     <link rel="stylesheet" href="css/data-master/data-pengguna.css">
     <link rel="stylesheet" href="css/data-master/data-master.css">
+    <link rel="stylesheet" href="css/data-umkm/data-umkm.css">
 </head>
 <body>
     <div class="container">
@@ -66,10 +67,10 @@
 
                 </a>
                 <div class="submenu" id="submenu-umkm">
-                    <a onclick="loadPage('umkm')">
+                    <a onclick="loadPage('data-umkm/data-umkm')">
                         <h4>Data UMKM</h4>
                     </a>
-                    <a onclick="loadPage('stiker')">
+                    <a onclick="loadPage('data-umkm/data-stiker')">
                         <h4>Data Stiker</h4>
                     </a>
                 </div>
@@ -103,46 +104,58 @@
         </main>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="js/global.js"></script>
-    <script src="js/components/popup-hapus.js"></script>
-    <script src="js/toast.js"></script>
-    <script type="module" src="js/index.js"></script>
-    <script type="module" src="js/master-data/data-pengguna.js"></script>
-    <script type="module" src="js/master-data/master-data.js"></script>
-    <script type="module" src="js/login.js"></script>
-
     <div id="login-overlay" class="login-overlay">
 
         <div class="login-card">
 
             <div class="login-header">
-                <img src="./assets/images/Logo-RB.png" alt="Logo">
-                <h2>Rumah BUMN Batu Bara</h2>
-                <p>Silakan login untuk melanjutkan</p>
+                <div class="top">
+                    <div class="logo">
+                        <img src="./assets/images/Logo-RB.png" alt="Logo RB">
+                        <div class="logo-text">
+                            <h2><span class="rb-1">Rumah</span></h2>
+                            <h1><span class="rb-2">BUMN</span></h1>
+                            <h3><span class="rb-3">Batu Bara</span></h3>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <p>Silakan login untuk melanjutkan Aplikasi</p>
+                </div>
             </div>
 
-            <form id="form-login">
+            <form id="form-login" class="form-login">
 
-                <div class="form-group">
-                    <label>Nama Pengguna</label>
+                <div class="input-group">
                     <input
                             type="text"
                             id="namaPengguna"
-                            required
-                    >
+                            placeholder=" "
+                            autocomplete="off">
+
+                    <label for="namaPengguna">
+                        Nama Pengguna
+                    </label>
                 </div>
 
-                <div class="form-group">
-                    <label>Kata Sandi</label>
-                    <input
-                            type="password"
-                            id="kataSandi"
-                            required
-                    >
+                <div class="input-group">
+                    <div class="password-group">
+                        <input
+                                type="password"
+                                id="kataSandi"
+                                placeholder=" ">
+                        <label for="kataSandi">Kata Sandi</label>
+                        <button
+                                type="button"
+                                class="toggle-password"
+                                onclick="
+                                        togglePassword('kataSandi', this)">
+                            <span class="material-symbols-sharp">visibility</span>
+                        </button>
+                    </div>
                 </div>
 
-                <button type="submit">
+                <button type="submit" class="btn-login">
                     Login
                 </button>
 
@@ -155,5 +168,18 @@
     </div>
 
     <div id="toast-container"></div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/global.js"></script>
+    <script src="js/components/popup-hapus.js"></script>
+    <script src="js/toast.js"></script>
+    <script type="module" src="js/index.js"></script>
+    <script type="module" src="js/master-data/data-pengguna.js"></script>
+    <script type="module" src="js/master-data/master-data.js"></script>
+    <script type="module" src="js/data-umkm/data-umkm.js"></script>
+    <script type="module" src="js/login.js"></script>
+
+
 </body>
 </html>

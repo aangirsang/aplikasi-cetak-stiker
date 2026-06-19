@@ -1,54 +1,26 @@
-const loginOverlay =
-    document.getElementById(
-        "login-overlay"
-    );
-
-const currentUser =
-    JSON.parse(
-        localStorage.getItem(
-            "currentUser"
-        )
-    );
+const loginOverlay = getEl("login-overlay");
+const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
 if (currentUser) {
+    updateProfile(currentUser);
 
-    updateProfile(
-        currentUser
-    );
-
-    loginOverlay.classList.add(
-        "hidden"
-    );
+    loginOverlay.classList.add("hidden");
+} else {
+    resetLoginForm();
 }
 
-document
-    .getElementById(
-        "form-login"
-    )
-    .addEventListener(
-        "submit",
-        doLogin
-    );
+getEl("form-login").addEventListener("submit", doLogin);
 
 async function doLogin(e){
 
     e.preventDefault();
 
-    const namaPengguna =
-        document.getElementById(
-            "namaPengguna"
-        ).value;
-
-    const kataSandi =
-        document.getElementById(
-            "kataSandi"
-        ).value;
+    const namaPengguna = getEl("namaPengguna").value;
+    const kataSandi = getEl("kataSandi").value;
 
     try{
-
         const response =
-            await fetch(
-                "/api/auth/login",
+            await fetch(BASE_URL_LOGIN,
                 {
                     method: "POST",
                     headers: {
@@ -62,43 +34,24 @@ async function doLogin(e){
                 }
             );
 
-        const result =
-            await response.json();
-
+        const result = await response.json();
         if(!result.success){
-
-            document
-                .getElementById(
-                    "login-error"
-                )
-                .innerText =
-                result.message;
+            getEl("login-error").innerText = result.message;
 
             return;
         }
 
-        localStorage.setItem(
-            "currentUser",
-            JSON.stringify(
-                result.data
-            )
+        localStorage.setItem("currentUser",
+            JSON.stringify(result.data)
         );
 
-        updateProfile(
-            result.data
-        );
+        updateProfile(result.data);
+        resetLoginForm();
 
-        loginOverlay.classList.add(
-            "hidden"
-        );
+        loginOverlay.classList.add("hidden");
 
     }catch(err){
-
-        document
-            .getElementById(
-                "login-error"
-            )
-            .innerText =
-            "Login gagal";
+        getEl("login-error")
+            .innerText = "Login gagal";
     }
 }

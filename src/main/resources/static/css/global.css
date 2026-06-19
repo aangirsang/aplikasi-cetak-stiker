@@ -59,7 +59,7 @@ small {
     font-size: 0.75rem;
 }
 
-input, text, button, select {
+input, text, textarea, button, select {
     font-family: var(--jenis-font), serif;
     color: var(--color-dark);
 }
@@ -607,6 +607,93 @@ table tbody tr:hover td{
     font-size: 12px;
     transform: translateY(-50%);
 }
+
+/* ==========================================
+   FLOATING DATE INPUT
+========================================== */
+
+.date-group{
+    position: relative;
+    width: 100%;
+}
+
+.date-group input[type="date"]{
+    width: 100%;
+    height: 50px;
+
+    padding: 0 16px;
+
+    border: var(--border-button);
+    border-radius: var(--border-radius-2);
+
+    background: transparent;
+    outline: none;
+}
+
+/* label selalu di atas */
+.date-group label{
+    position: absolute;
+
+    top: 0;
+    left: 10px;
+
+    transform: translateY(-50%);
+
+    background: var(--color-white);
+    color: var(--color-dark-variant);
+
+    padding: 0 5px;
+
+    font-size: 12px;
+    pointer-events: none;
+}
+
+/* ==========================================
+   FLOATING TEXTAREA
+========================================== */
+
+.textarea-group {
+    position: relative;
+}
+
+.textarea-group textarea{
+    width: 100%;
+    min-height: 120px;
+
+    padding: 16px;
+
+    border: var(--border-button);
+    border-radius: var(--border-radius-2);
+
+    outline: none;
+    background: transparent;
+
+    resize: none;
+}
+
+.textarea-group label{
+    position: absolute;
+
+    left: 12px;
+    top: 20px;
+
+    background: var(--color-white);
+    color: var(--color-dark-variant);
+
+    padding: 0 5px;
+
+    pointer-events: none;
+    transition: all .3s ease;
+}
+
+.textarea-group textarea:focus + label,
+.textarea-group textarea:not(:placeholder-shown) + label{
+    top: 0;
+    left: 10px;
+    font-size: 12px;
+    transform: translateY(-50%);
+}
+
 
 /* ==========================================
    PASSWORD INPUT

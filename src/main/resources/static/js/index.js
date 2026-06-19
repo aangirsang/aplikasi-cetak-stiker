@@ -1,7 +1,9 @@
 void loadPage('dashboard');
+
 const menuItems = document.querySelectorAll('.sidebar a');
 
 async function loadPage(page) {
+
 
     const content = document.getElementById('content');
     const title = document.getElementById('page-title');
@@ -10,6 +12,7 @@ async function loadPage(page) {
         dashboard: 'Dashboard',
         'master-data/data-pengguna': 'Data Pengguna',
         'master-data/master-data': 'Master Data',
+        'data-umkm/data-umkm': 'Data UMKM',
         orderan: 'Data Orderan'
     };
 
@@ -36,6 +39,9 @@ async function loadPage(page) {
             },
             'master-data/master-data': () => {
                 initMasterData();
+            },
+            'data-umkm/data-umkm': () => {
+                initDataUmkm();
             }
         }
 
@@ -86,10 +92,7 @@ function toggleSubmenu(submenuId, arrowId){
 // PROFILE
 function updateProfile(user){
 
-    document.getElementById(
-        "profile-container"
-    ).innerHTML = `
-
+    document.getElementById("profile-container").innerHTML = `
         <div class="profile">
 
             <div class="info">
@@ -105,10 +108,9 @@ function updateProfile(user){
 
             <div class="profile-photo">
                 <img
-                    src="${
-        user.pathGambar ??
-        './assets/images/profile.jpg'
-    }"
+                    src="${user.pathGambar
+                    ? `${BASE_URL}${user.pathGambar}`
+                    : noImagePerson}"
                     alt="profile">
             </div>
 
@@ -117,6 +119,8 @@ function updateProfile(user){
 }
 
 function logout(){
+
+    resetLoginForm();
 
     localStorage.removeItem(
         "currentUser"
@@ -137,9 +141,27 @@ function logout(){
         .innerHTML = "";
 }
 
-window.logout = logout;
+function resetLoginForm() {
+
+    /*
+    [
+        "namaPengguna",
+        "kataSandi"
+    ].forEach(id => {
+        document.getElementById(id).value = "";
+    });
+
+     */
+
+    getEl("namaPengguna").value = "admin";
+    getEl("kataSandi").value = "admin123";
+
+    getEl("login-error").textContent = "";
+    getEl("namaPengguna").focus();
+}
 
 window.loadPage = loadPage;
 window.toggleSubmenu = toggleSubmenu;
 window.updateProfile = updateProfile;
 window.logout = logout;
+window.resetLoginForm = resetLoginForm;
