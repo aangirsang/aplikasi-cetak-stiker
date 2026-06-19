@@ -8,7 +8,7 @@ import jakarta.persistence.Id
 import jakarta.validation.constraints.NotBlank
 
 @Entity
-data class DataKategori (
+class DataKategori (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0,

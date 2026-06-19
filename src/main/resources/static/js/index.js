@@ -24,9 +24,7 @@ async function loadPage(page) {
             throw new Error(`HTTP Error ${response.status}`);
         }
 
-        const data = await response.text();
-
-        content.innerHTML = data;
+        content.innerHTML = await response.text();
 
         const pageTitle = pageTitles[page] || 'Aplikasi';
 

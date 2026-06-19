@@ -1,13 +1,12 @@
 package com.girsang.stiker.model.entity
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import jakarta.persistence.*
 import jakarta.validation.constraints.*
 
 @Entity
 @JsonIgnoreProperties("hibernateLazyInitializer", "handler")
-data class DataStiker(
+class DataStiker(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

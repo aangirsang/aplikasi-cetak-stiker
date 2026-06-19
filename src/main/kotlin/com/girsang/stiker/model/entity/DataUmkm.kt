@@ -2,13 +2,12 @@ package com.girsang.stiker.model.entity
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.girsang.stiker.model.entity.DataKategori
 import jakarta.persistence.*
 import jakarta.validation.constraints.*
 
 @Entity
 @JsonIgnoreProperties("hibernateLazyInitializer", "handler")
-data class DataUmkm(
+class DataUmkm(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
