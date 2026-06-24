@@ -14,15 +14,14 @@
     </div>
     <!-- TABLE -->
     <div class="table-page-container">
-        <div class="tabel-card">
-            <table class="tbl-data-pengguna">
+        <div class="tabel-page-card">
+            <table class="tbl-data">
                 <thead>
                 <tr>
                     <th onclick="sortTablePengguna('namaLengkap')">Nama Lengkap</th>
                     <th onclick="sortTablePengguna('namaPengguna')">Nama  Akun</th>
                     <th onclick="sortTablePengguna('level')">Level</th>
                     <th onclick="sortTablePengguna('status')">Status</th>
-                    <th>Edit</th>
                 </tr>
                 </thead>
                 <tbody id="tbl-body-data-pengguna"></tbody>
@@ -134,10 +133,6 @@
                         <!-- Preview -->
                         <div class="image-box">
                             <img id="popup-data-pengguna-preview-image" alt="Foto Pengguna">
-                            <div id="preview-loading" class="preview-loading">
-
-                                <div class="spinner"></div>
-                            </div>
                         </div>
 
                         <!-- Tombol Cari -->

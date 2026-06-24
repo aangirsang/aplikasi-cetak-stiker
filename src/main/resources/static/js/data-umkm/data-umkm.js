@@ -1,7 +1,6 @@
 
 let currentPageUmkm = 1;
 let cariDataUmkm = "";
-let openedDetailId = null;
 const rowsPerPageUmkm = 15;
 
 let sortFieldDataUmkm = "namaUsaha";
@@ -13,6 +12,7 @@ let selectedUmkm = null;
 let selectedKategori = null;
 
 let isEditModeUmkm = false;
+let openedDetailUmkmId = null;
 
 async function initDataUmkm(){
     bersihPopupDataUmkm();
@@ -20,6 +20,7 @@ async function initDataUmkm(){
     await loadTableDataUmkm();
     await initCustomSelectKategori();
     await initPopupHapus();
+    await initPopupLoading();
 
     getEl("btn-tambah-data-umkm").addEventListener("click", () => showPopupUmkm());
     getEl("btn-batal-umkm").addEventListener("click", closePopupUmkm);
@@ -28,9 +29,13 @@ async function initDataUmkm(){
     getEl("txt-cari-data-umkm").addEventListener("input", async function(){
         cariDataUmkm = this.value.trim().toLowerCase();
         currentPageUmkm = 1;
-        //openedDetailStiker = null;
+        openedDetailUmkmId = null;
         await loadTableDataUmkm();
     });
+
+    document.removeEventListener("click", closeDetailUmkmOutside);
+    document.addEventListener("click", closeDetailUmkmOutside);
+
 }
 
 // TABEL DATA UMKM
@@ -113,11 +118,17 @@ function getSortedDataUmkm(data){
 function renderTableUmkm(data){
     const tbody = getEl("tbl-body-data-umkm");
 
-    tbody.innerHTML = data.map(item => createRowUmkm(item)).join("");
+    tbody.innerHTML = data.map(item => {
+        const isOpened = openedDetailUmkmId === item.id;
+
+        return createRowUmkm(item, isOpened);
+    }).join("");
 }
-function createRowUmkm(item){
+function createRowUmkm(item, isOpened){
     return `
-        <tr>
+        <tr 
+        class="umkm-row ${isOpened ? 'selected' : ''}"
+        onclick="event.stopPropagation(); toggleDetailUmkm(${item.id})">
             <td>${item.namaUsaha}</td>
             <td>${item.namaPemilik}</td>
             <td>${item.noTelpon}</td>
@@ -137,6 +148,39 @@ function createRowUmkm(item){
                 </div>
             </td>
         </tr>
+        
+        <!-- DETAIL -->
+        <tr class="detail-table ${isOpened ? 'show' : ''}">
+            <td colspan="6">
+                <div class="detail-content">
+                    <table class="detail-horizontal-table">
+                        <thead>
+                            <tr>
+                                <th>Email</th>
+                                <th>Facebook</th>
+                                <th>Instagram</th>
+                                <th>WhatsApp</th>
+                                <th>Tanggal Registrasi</th>
+                                <th>Deskripsi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="detail-row">
+                                <td>${item.email}</td>
+                                <td>${item.facebook}</td>
+                                <td>${item.instagram}</td>
+                                <td>${item.whatsapp}</td>
+                                <td>${item.tglRegistrasi
+                                    ? new Date(item.tglRegistrasi)
+                                    .toISOString().split("T")[0]
+                                    : ""}</td>
+                                <td class="deskripsi-cell">${item.deskripsi}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </td>
+        </tr>
     `;
 }
 async function changePageUmkm(page){
@@ -151,6 +195,28 @@ async function sortTabelUmkm(field){
         sortDirectionUmkm = "asc";
     }
 
+    await loadTableDataUmkm();
+}
+
+// TABEL DETAIL
+async function toggleDetailUmkm(id){
+    openedDetailUmkmId = openedDetailUmkmId === id ? null : id;
+
+    await loadTableDataUmkm();
+
+    setTimeout(() => {
+        document.querySelector(".detail-table.show")?.scrollIntoView({
+            behavior:"smooth",
+            block:"nearest"
+        });
+    }, 50);
+}
+
+async function closeDetailUmkmOutside(event){
+    if(event.target.closest(".umkm-row, .detail-table")) return;
+    if(openedDetailUmkmId === null) return;
+
+    openedDetailUmkmId = null;
     await loadTableDataUmkm();
 }
 
@@ -275,8 +341,8 @@ function isiPopupDataUmkm(data){
 // FORM
 function bersihPopupDataUmkm(){
 
-
     [
+        "txt-cari-data-umkm",
         "popup-data-umkm-nama-usaha",
         "popup-data-umkm-deskripsi",
         "popup-data-umkm-nama-pemilik",
@@ -313,6 +379,7 @@ function bersihPopupDataUmkm(){
             "active"
         );
     isEditModeUmkm = false;
+    cariDataUmkm = "";
 }
 
 // CUSTOM SELECT
@@ -389,11 +456,7 @@ function validasiSimpanDataUmkm(){
     return valid;
 }
 async function simpanDataUmkm(){
-    if(
-        !validasiSimpanDataUmkm()
-    ){
-        return;
-    }
+    if (!validasiSimpanDataUmkm()) return;
 
     const namaUsaha = getValue("popup-data-umkm-nama-usaha");
     const namaPemilik = getValue("popup-data-umkm-nama-pemilik");
@@ -422,6 +485,12 @@ async function simpanDataUmkm(){
             : null;
 
     console.log(isEditModeUmkm)
+
+    showLoading(
+        isEditModeUmkm
+            ? "Mengubah Data..."
+            : "Menyimpan Data..."
+    );
 
     try {
         if(isEditModeUmkm){
@@ -524,13 +593,13 @@ async function simpanDataUmkm(){
 
     }  catch (e) {
         showToast(e.message, "warning");
+    } finally {
+        hideLoading();
     }
 }
 async function hapusDataUmkm(id) {
-    console.log(
-        "hapusDataUmkm dipanggil",
-        id,
-        new Date().toISOString()
+    showLoading(
+        "Menghapus Data..."
     );
 
     try {
@@ -553,8 +622,10 @@ async function hapusDataUmkm(id) {
                 "warning"
             );
         }
-    }   catch (e) {
+    } catch (e) {
         showToast(e.message, "warning");
+    } finally {
+        hideLoading();
     }
 }
 function konfirmasiHapusUmkm(id){
@@ -578,3 +649,4 @@ window.showPopupUmkm = showPopupUmkm;
 window.changePageUmkm = changePageUmkm;
 window.sortTabelUmkm = sortTabelUmkm;
 window.konfirmasiHapusUmkm = konfirmasiHapusUmkm;
+window.toggleDetailUmkm = toggleDetailUmkm;

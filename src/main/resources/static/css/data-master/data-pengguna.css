@@ -90,3 +90,10 @@
 .password-group input.success{
     border: 1px solid #28a745 !important;
 }
+
+
+.pengguna-row:hover td {
+    color: var(--color-primary);
+    transform: translateX(6px);
+}
+

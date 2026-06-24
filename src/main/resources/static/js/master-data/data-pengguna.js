@@ -21,6 +21,7 @@ async function initDataPengguna() {
     await loadTablePengguna();
     setDefaultGambarPengguna();
     await initPopupHapus();
+    await initPopupLoading();
 
     getEl("cari-data-pengguna").addEventListener("input", async function(){
         searchKeywordPengguna = this.value.trim().toLowerCase();
@@ -83,64 +84,8 @@ async function initDataPengguna() {
         }
     });
 }
-function bersihPopupDataPengguna(){
 
-    // reset input
-    [
-        "popup-data-pengguna-nama-lengkap",
-        "popup-data-pengguna-nama-pengguna",
-        "popup-data-pengguna-kata-sandi",
-        "popup-data-pengguna-ulangi-kata-sandi"
-    ].forEach(id => getEl(id).value = "");
-
-    // reset radio
-    document.querySelectorAll('input[name="popup-data-pengguna-status"]')
-        .forEach(input => {
-        input.checked = false;
-    });
-
-    // reset custom select
-    resetCustomSelect();
-
-    // reset image
-    getEl(
-        "popup-data-pengguna-preview-image"
-    ).src = noImagePerson;
-
-    getEl("popup-data-pengguna-file-input").value = "";
-
-    // reset selected level
-    selectedLevel = null;
-    selectedPengguna = null;
-    isEdit = false;
-    pathGambarLama = "";
-    selectedWebpFile = null;
-}
-function resetCustomSelect(){
-
-    const customSelect =
-        getEl("custom-select");
-
-    const selectedText =
-        getEl("selected-text");
-
-    // reset text
-    selectedText.textContent = "";
-
-    // reset class
-    selectedText.classList
-        .add("empty");
-
-    // reset selected value
-    selectedLevel = null;
-
-    // reset state
-    customSelect.classList
-        .remove(
-            "filled",
-            "active"
-        );
-}
+// TABEL DATA PENGGUNA
 async function loadTablePengguna(){
 
     try{
@@ -238,7 +183,7 @@ function renderTablePengguna(data){
 function createRowPengguna(item){
 
     return `
-        <tr>
+        <tr class="pengguna-row">
             <td>${item.namaLengkap}</td>
             <td>${item.namaPengguna}</td>
             <td>${item.dataLevel.level}</td>
@@ -273,6 +218,72 @@ async function changePagePengguna(page){
     currentPagePengguna = page;
     await loadTablePengguna();
 }
+
+// LOAD DATA LEVEL
+async function fetchDataLevel(){
+
+    const response = await fetch(BASE_URL_LEVEL);
+
+    if(!response.ok){
+        throw new Error("Gagal mengambil data level");
+    }
+
+    return await response.json();
+}
+function renderLevelOptions(){
+
+    const optionsContainer = getEl("level-options");
+
+    optionsContainer.innerHTML =
+        dataLevel.map(level => `
+            <div
+                class="option"
+                data-id="${level.id}"
+            >
+                ${level.level}
+            </div>
+        `).join("");
+
+    initOptionLevel();
+}
+function initOptionLevel(){
+
+    const customSelect = getEl("custom-select");
+    const selectedText = getEl("selected-text");
+
+    document.querySelectorAll("#level-options .option")
+        .forEach(option => {
+
+            option.addEventListener(
+                "click",
+                function(){
+                    selectedText.textContent =
+                        this.textContent;
+
+                    selectedText.classList
+                        .remove("empty");
+
+                    const levelId =
+                        this.dataset.id;
+
+                    selectedLevel =
+                        dataLevel.find(
+                            level =>
+                                String(level.id)
+                                === String(levelId)
+                        );
+
+                    customSelect.classList
+                        .add("filled");
+
+                    customSelect.classList
+                        .remove("active");
+                }
+            );
+        });
+}
+
+// POPUP
 function showPopupPengguna(id = null){
 
     const popup = getEl("popup-data-pengguna");
@@ -283,8 +294,8 @@ function showPopupPengguna(id = null){
 
     if(id){
         const data = dataPengguna.find(
-                item => String(item.id) === String(id)
-            );
+            item => String(item.id) === String(id)
+        );
 
         popupTitle.textContent = "Edit Data Pengguna";
 
@@ -328,14 +339,14 @@ function isiPopupDataPengguna(data){
     const previewImage =
         getEl("popup-data-pengguna-preview-image");
 
-    showPreviewLoading();
+    showLoading("Memuat Gambar...");
 
     previewImage.onload = () => {
-        hidePreviewLoading();
+        hideLoading();
     };
 
     previewImage.onerror = () => {
-        hidePreviewLoading();
+        hideLoading();
         previewImage.src = noImagePerson;
     };
 
@@ -349,68 +360,343 @@ function isiPopupDataPengguna(data){
 function closePopupPengguna(){
     getEl("popup-data-pengguna").classList.remove("show");
 }
-async function fetchDataLevel(){
 
-    const response = await fetch(BASE_URL_LEVEL);
+// FORM
+function bersihPopupDataPengguna(){
 
-    if(!response.ok){
-        throw new Error("Gagal mengambil data level");
+    // reset input
+    [
+        "popup-data-pengguna-nama-lengkap",
+        "popup-data-pengguna-nama-pengguna",
+        "popup-data-pengguna-kata-sandi",
+        "popup-data-pengguna-ulangi-kata-sandi"
+    ].forEach(id => getEl(id).value = "");
+
+    // reset radio
+    document.querySelectorAll('input[name="popup-data-pengguna-status"]')
+        .forEach(input => {
+            input.checked = false;
+        });
+
+    // reset custom select
+    resetCustomSelect();
+
+    // reset image
+    getEl(
+        "popup-data-pengguna-preview-image"
+    ).src = noImagePerson;
+
+    getEl("popup-data-pengguna-file-input").value = "";
+
+    // reset selected level
+    selectedLevel = null;
+    selectedPengguna = null;
+    isEdit = false;
+    pathGambarLama = "";
+    selectedWebpFile = null;
+}
+
+// CUSTOM SELECT
+function resetCustomSelect(){
+
+    const customSelect =
+        getEl("custom-select");
+
+    const selectedText =
+        getEl("selected-text");
+
+    // reset text
+    selectedText.textContent = "";
+
+    // reset class
+    selectedText.classList
+        .add("empty");
+
+    // reset selected value
+    selectedLevel = null;
+
+    // reset state
+    customSelect.classList
+        .remove(
+            "filled",
+            "active"
+        );
+}
+
+// CRUD PENGGUNA
+function validateUlangiPassword(){
+
+    const password = getEl("popup-data-pengguna-kata-sandi");
+    const ulangiPassword = getEl("popup-data-pengguna-ulangi-kata-sandi");
+
+    const passwordValue = password.value.trim();
+    const ulangiPasswordValue = ulangiPassword.value.trim();
+
+    // reset class
+    ulangiPassword.classList.remove("error","success");
+
+    // kalau kosong jangan merah
+    if(!ulangiPasswordValue){
+        return;
     }
 
-    return await response.json();
+    // cek sama / tidak
+    if(passwordValue !== ulangiPasswordValue) {
+        ulangiPassword.classList.add("error");
+
+    } else {
+        ulangiPassword.classList.add("success");
+    }
 }
-function renderLevelOptions(){
+function validasiSimpanDataPengguna() {
+    let valid = true;
 
-    const optionsContainer = getEl("level-options");
+    if(isEdit) {
+        [
+            "popup-data-pengguna-nama-lengkap",
+            "popup-data-pengguna-nama-pengguna",
+        ].forEach(id => {
+            if(!getValue(id)){
+                tandaiInvalid(getEl(id));
+                valid = false;
+            }
+        });
+    } else {
+        [
+            "popup-data-pengguna-nama-lengkap",
+            "popup-data-pengguna-nama-pengguna",
+            "popup-data-pengguna-kata-sandi",
+            "popup-data-pengguna-ulangi-kata-sandi"
+        ].forEach(id => {
+            if(!getValue(id)){
+                tandaiInvalid(getEl(id));
+                valid = false;
+            }
+        });
+    }
 
-    optionsContainer.innerHTML =
-        dataLevel.map(level => `
-            <div
-                class="option"
-                data-id="${level.id}"
-            >
-                ${level.level}
-            </div>
-        `).join("");
 
-    initOptionEvents();
+    // Level
+    const level = getEl('selected-text').textContent.trim();
+
+    if (level === "") {
+        tandaiInvalid(getEl('custom-select'));
+        valid = false;
+    }
+
+    // status
+    const status = document.querySelector('input[name="popup-data-pengguna-status"]:checked');
+
+    if (!status) {
+        tandaiInvalid(getEl('popup-data-pengguna-status-grup'));
+        valid = false;
+    }
+
+    const sandi = getValue('popup-data-pengguna-kata-sandi').trim();
+    const ulangiSandi = getValue('popup-data-pengguna-ulangi-kata-sandi').trim();
+
+    if(sandi !== ulangiSandi){
+        tandaiInvalid(getEl('popup-data-pengguna-kata-sandi'));
+        tandaiInvalid(getEl('popup-data-pengguna-ulangi-kata-sandi'));
+        valid = false;
+    }
+
+    if(!valid){
+        showToast("Mohon Lengkapi Data!!", "warning");
+    }
+    return valid;
 }
-function initOptionEvents(){
+async function simpanDataPengguna() {
+    if (!validasiSimpanDataPengguna()) return;
 
-    const customSelect = getEl("custom-select");
-    const selectedText = getEl("selected-text");
+    const namaLengkap = getValue("popup-data-pengguna-nama-lengkap");
+    const namaPengguna = getValue("popup-data-pengguna-nama-pengguna");
+    const kataSandi = getValue("popup-data-pengguna-kata-sandi");
+    const status =
+        document.querySelector(
+            'input[name="popup-data-pengguna-status"]:checked'
+        )?.value === "true";
 
-    document.querySelectorAll("#level-options .option")
-        .forEach(option => {
 
-            option.addEventListener(
-                "click",
-                function(){
-                    selectedText.textContent =
-                        this.textContent;
+    let pathGambar = pathGambarLama;
 
-                    selectedText.classList
-                        .remove("empty");
+    if(isGambarBerubah()){
+        pathGambar = await uploadGambarPengguna();
+    }
 
-                    const levelId =
-                        this.dataset.id;
+    console.log(`Gambar Berubah = ${isGambarBerubah()}`)
 
-                    selectedLevel =
-                        dataLevel.find(
-                            level =>
-                                String(level.id)
-                                === String(levelId)
-                        );
+    console.log(`${BASE_URL_PENGGUNA}/${selectedPengguna}`)
+    console.log(selectedLevel);
 
-                    customSelect.classList
-                        .add("filled");
+    showLoading(
+        isEdit
+            ? "Mengubah Data Pengguna..."
+            : "Menyimpan Data Pengguna..."
+    );
 
-                    customSelect.classList
-                        .remove("active");
+    try {
+        if(isEdit){
+            console.log(kataSandi)
+            const response = await fetch(`${BASE_URL_PENGGUNA}/${selectedPengguna}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    namaLengkap: namaLengkap,
+                    namaPengguna: namaPengguna,
+                    kataSandi: kataSandi,
+                    status: status,
+                    pathGambar: pathGambar,
+                    dataLevel: {
+                        id: selectedLevel.id
+                    }
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+
+                throw new Error(
+                    errorData.message ||
+                    "Gagal update pengguna"
+                );
+            }
+        } else {
+            const response = await fetch(BASE_URL_PENGGUNA, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    namaLengkap: namaLengkap,
+                    namaPengguna: namaPengguna,
+                    kataSandi: kataSandi,
+                    status: status,
+                    pathGambar: pathGambar,
+                    dataLevel: {
+                        id: selectedLevel.id
+                    }
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+
+                throw new Error(
+                    errorData.message ||
+                    "Gagal update pengguna"
+                );
+            }
+        }
+
+        closePopupPengguna();
+
+        bersihPopupDataPengguna();
+        await loadTablePengguna();
+
+        showToast(
+            "Data pengguna berhasil disimpan",
+            "success"
+        );
+    } catch (e) {
+        showToast(e.message, "error");
+    } finally {
+        hideLoading();
+    }
+
+}
+async function uploadGambarPengguna() {
+
+    if(!selectedWebpFile){
+        return "";
+    }
+
+    const formData =
+        new FormData();
+
+    formData.append(
+        "files",
+        selectedWebpFile
+    );
+
+    const response =
+        await fetch(
+            "http://localhost:8080/api/upload/gambar",
+            {
+                method: "POST",
+                body: formData
+            }
+        );
+
+    if(!response.ok){
+        throw new Error(
+            "Gagal upload gambar"
+        );
+    }
+
+    const result =
+        await response.json();
+
+    return result[0]?.path ?? "";
+}
+async function hapusDataPengguna(id){
+
+    showLoading("Menghapus Data Pengguna...");
+    try {
+
+        const response =
+            await fetch(
+                `${BASE_URL_PENGGUNA}/${id}`,
+                {
+                    method: "DELETE"
                 }
             );
-        });
+
+        if(!response.ok){
+
+            const errorData =
+                await response.json();
+
+            throw new Error(
+                errorData.message ||
+                "Gagal menghapus pengguna"
+            );
+        }
+
+        await loadTablePengguna();
+
+        showToast("Data Berhasil Dihapus!!", "success")
+
+    } catch (e){
+
+        showToast(e.message, "error");
+    } finally {
+        hideLoading();
+    }
 }
+function konfirmasiHapusPengguna(id){
+
+    showPopupHapus({
+
+        title:
+            "Konfirmasi Hapus",
+
+        message:
+            "Yakin ingin menghapus pengguna ini?",
+
+        onConfirm:
+            async () => {
+
+                await hapusDataPengguna(
+                    id
+                );
+            }
+    });
+}
+
+// GAMBAR
 function setDefaultGambarPengguna(){
 
     const img =
@@ -452,7 +738,7 @@ async function handlePreviewGambar(event) {
 
     try {
 
-        showPreviewLoading();
+        showLoading("Memuat Gambar...");
 
         const webpFile =
             await convertToWebp(
@@ -470,7 +756,7 @@ async function handlePreviewGambar(event) {
             );
 
         previewImage.onload = () => {
-            hidePreviewLoading();
+            hideLoading();
         };
 
         previewImage.src =
@@ -499,7 +785,7 @@ async function handlePreviewGambar(event) {
 
     } catch(error){
 
-        hidePreviewLoading();
+        hideLoading();
 
         showToast(
             "Gagal memproses gambar",
@@ -622,274 +908,6 @@ function convertToWebp(
         }
     );
 }
-function validateUlangiPassword(){
-
-    const password = getEl("popup-data-pengguna-kata-sandi");
-    const ulangiPassword = getEl("popup-data-pengguna-ulangi-kata-sandi");
-
-    const passwordValue = password.value.trim();
-    const ulangiPasswordValue = ulangiPassword.value.trim();
-
-    // reset class
-    ulangiPassword.classList.remove("error","success");
-
-    // kalau kosong jangan merah
-    if(!ulangiPasswordValue){
-        return;
-    }
-
-    // cek sama / tidak
-    if(passwordValue !== ulangiPasswordValue) {
-        ulangiPassword.classList.add("error");
-
-    } else {
-        ulangiPassword.classList.add("success");
-    }
-}
-function validasiSimpanDataPengguna() {
-    let valid = true;
-
-    if(isEdit) {
-        [
-            "popup-data-pengguna-nama-lengkap",
-            "popup-data-pengguna-nama-pengguna",
-        ].forEach(id => {
-            if(!getValue(id)){
-                tandaiInvalid(getEl(id));
-                valid = false;
-            }
-        });
-    } else {
-        [
-            "popup-data-pengguna-nama-lengkap",
-            "popup-data-pengguna-nama-pengguna",
-            "popup-data-pengguna-kata-sandi",
-            "popup-data-pengguna-ulangi-kata-sandi"
-        ].forEach(id => {
-            if(!getValue(id)){
-                tandaiInvalid(getEl(id));
-                valid = false;
-            }
-        });
-    }
-
-
-    // Level
-    const level = getEl('selected-text').textContent.trim();
-
-    if (level === "") {
-        tandaiInvalid(getEl('custom-select'));
-        valid = false;
-    }
-
-    // status
-    const status = document.querySelector('input[name="popup-data-pengguna-status"]:checked');
-
-    if (!status) {
-        tandaiInvalid(getEl('popup-data-pengguna-status-grup'));
-        valid = false;
-    }
-
-    const sandi = getValue('popup-data-pengguna-kata-sandi').trim();
-    const ulangiSandi = getValue('popup-data-pengguna-ulangi-kata-sandi').trim();
-
-    if(sandi !== ulangiSandi){
-        tandaiInvalid(getEl('popup-data-pengguna-kata-sandi'));
-        tandaiInvalid(getEl('popup-data-pengguna-ulangi-kata-sandi'));
-        valid = false;
-    }
-
-    if(!valid){
-        showToast("Mohon Lengkapi Data!!", "warning");
-    }
-    return valid;
-}
-async function simpanDataPengguna() {
-    if(
-        !validasiSimpanDataPengguna()
-    ){
-        return;
-    }
-    const namaLengkap = getValue("popup-data-pengguna-nama-lengkap");
-    const namaPengguna = getValue("popup-data-pengguna-nama-pengguna");
-    const kataSandi = getValue("popup-data-pengguna-kata-sandi");
-    const status =
-        document.querySelector(
-            'input[name="popup-data-pengguna-status"]:checked'
-        )?.value === "true";
-
-
-    let pathGambar = pathGambarLama;
-
-    if(isGambarBerubah()){
-        pathGambar = await uploadGambarPengguna();
-    }
-
-    console.log(`Gambar Berubah = ${isGambarBerubah()}`)
-
-    console.log(`${BASE_URL_PENGGUNA}/${selectedPengguna}`)
-    console.log(selectedLevel);
-    try {
-        if(isEdit){
-            console.log(kataSandi)
-            const response = await fetch(`${BASE_URL_PENGGUNA}/${selectedPengguna}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    namaLengkap: namaLengkap,
-                    namaPengguna: namaPengguna,
-                    kataSandi: kataSandi,
-                    status: status,
-                    pathGambar: pathGambar,
-                    dataLevel: {
-                        id: selectedLevel.id
-                    }
-                })
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-
-                throw new Error(
-                    errorData.message ||
-                    "Gagal update pengguna"
-                );
-            }
-        } else {
-            const response = await fetch(BASE_URL_PENGGUNA, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    namaLengkap: namaLengkap,
-                    namaPengguna: namaPengguna,
-                    kataSandi: kataSandi,
-                    status: status,
-                    pathGambar: pathGambar,
-                    dataLevel: {
-                        id: selectedLevel.id
-                    }
-                })
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-
-                throw new Error(
-                    errorData.message ||
-                    "Gagal update pengguna"
-                );
-            }
-        }
-
-        closePopupPengguna();
-
-        bersihPopupDataPengguna();
-        await loadTablePengguna();
-
-        showToast(
-            "Data pengguna berhasil disimpan",
-            "success"
-        );
-    } catch (e) {
-        showToast(e.message, "error");
-    }
-
-}
-async function uploadGambarPengguna() {
-
-    if(!selectedWebpFile){
-        return "";
-    }
-
-    const formData =
-        new FormData();
-
-    formData.append(
-        "files",
-        selectedWebpFile
-    );
-
-    const response =
-        await fetch(
-            "http://localhost:8080/api/upload/gambar",
-            {
-                method: "POST",
-                body: formData
-            }
-        );
-
-    if(!response.ok){
-        throw new Error(
-            "Gagal upload gambar"
-        );
-    }
-
-    const result =
-        await response.json();
-
-    return result[0]?.path ?? "";
-}
-async function hapusDataPengguna(id){
-
-    try {
-
-        const response =
-            await fetch(
-                `${BASE_URL_PENGGUNA}/${id}`,
-                {
-                    method: "DELETE"
-                }
-            );
-
-        if(!response.ok){
-
-            const errorData =
-                await response.json();
-
-            throw new Error(
-                errorData.message ||
-                "Gagal menghapus pengguna"
-            );
-        }
-
-        await loadTablePengguna();
-
-        showToast("Data Berhasil Dihapus!!", "success")
-
-    } catch (e){
-
-        showToast(e.message, "error");
-    }
-}
-function konfirmasiHapusPengguna(id){
-
-    showPopupHapus({
-
-        title:
-            "Konfirmasi Hapus",
-
-        message:
-            "Yakin ingin menghapus pengguna ini?",
-
-        onConfirm:
-            async () => {
-
-                await hapusDataPengguna(
-                    id
-                );
-            }
-    });
-}
-function showPreviewLoading() {
-    getEl("preview-loading").classList.add("show");
-}
-function hidePreviewLoading() {
-    getEl("preview-loading").classList.remove("show");
-}
 function isGambarBerubah(){
 
     const fileInput =
@@ -899,6 +917,7 @@ function isGambarBerubah(){
 
     return fileInput.files.length > 0;
 }
+
 
 window.initDataPengguna = initDataPengguna;
 window.sortTablePengguna = sortTablePengguna;

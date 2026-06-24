@@ -34,7 +34,7 @@ class DataPenggunaService(
             DataPengguna(
                 namaLengkap = request.namaLengkap,
                 namaPengguna = request.namaPengguna,
-                kataSandi = request.kataSandi,
+                kataSandi = passwordEncoder.encode( request.kataSandi),
                 status = request.status,
                 pathGambar = request.pathGambar,
                 dataLevel = level
@@ -85,7 +85,9 @@ class DataPenggunaService(
         // hanya update password jika diisi
         if(!request.kataSandi.isNullOrBlank()){
             dataLama.kataSandi =
-                request.kataSandi
+                passwordEncoder.encode(
+                    request.kataSandi
+                )
         }
 
         return repo.save(dataLama)
