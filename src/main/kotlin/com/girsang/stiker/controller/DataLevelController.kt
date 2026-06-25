@@ -23,9 +23,14 @@ class DataLevelController(private val service: DataLevelService) {
     }
 
     @PostMapping
-    fun simpan(@Valid @RequestBody dataLevel: DataLevel): ResponseEntity<DataLevel> {
-        val simpan = service.simpan(dataLevel)
-        return ResponseEntity.status(201).body(simpan)
+    fun simpan(@Valid @RequestBody dataLevel: DataLevel): ResponseEntity<Any> {
+        return try {
+            val simpan = service.simpan(dataLevel)
+            ResponseEntity.ok(simpan)
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.status(400)
+                .body(mapOf("message" to e.message))
+        }
     }
 
     @PutMapping("/{id}")
@@ -33,8 +38,11 @@ class DataLevelController(private val service: DataLevelService) {
         return try {
             val update = service.update(id, dataLevel)
             ResponseEntity.ok(update)
-        } catch (e: NoSuchElementException) {
+        } catch (_: NoSuchElementException) {
             ResponseEntity.status(404).body(mapOf("message" to " Level Tidak Ditemukan"))
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.status(400)
+                .body(mapOf("message" to e.message))
         }
     }
 

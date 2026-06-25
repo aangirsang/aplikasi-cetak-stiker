@@ -1,7 +1,7 @@
 function showToast(
     message,
     type = "success",
-    duration = 3000
+    duration = 5000
 ){
 
     const container =

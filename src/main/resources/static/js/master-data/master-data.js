@@ -24,6 +24,7 @@ const popupConfig = {
 
 async function initMasterData() {
     await bersihMasterData();
+    await initPopupLoading();
 
     getEl("btn-tambah-level").addEventListener("click", () => showPopupTambahDataMaster("level"));
     getEl("btn-tambah-kategori").addEventListener("click", () => showPopupTambahDataMaster("kategori"));
@@ -38,59 +39,10 @@ async function bersihMasterData() {
 
     getEl("popup-master-data-input").value = "";
 }
-function showPopupTambahDataMaster(type){
 
-    const popup = getEl("popup-master-data");
-    const popupTitle = getEl("popup-master-data-title");
-    const popupLabel = getEl("popup-master-data-label");
-    const popupInput = getEl("popup-master-data-input");
 
-    popupState.mode = type;
-    popupState.action = "create";
-    popupState.id = null;
 
-    const config = popupConfig[type];
-
-    popupTitle.textContent = config.titleCreate;
-    popupLabel.textContent = config.label;
-
-    popupInput.value = "";
-
-    popup.classList.add("show");
-
-}
-function showPopupEditDataMaster(type, data) {
-
-    const popup = getEl("popup-master-data");
-    const popupTitle = getEl("popup-master-data-title");
-    const popupLabel = getEl("popup-master-data-label");
-    const popupInput = getEl("popup-master-data-input");
-
-    popupState.mode = type;
-    popupState.action = "edit";
-    popupState.id = data.id;
-
-    const config = popupConfig[type];
-
-    popupTitle.textContent = config.titleEdit;
-    popupLabel.textContent = config.label;
-
-    popupInput.value = data.nama;
-
-    popup.classList.add("show");
-}
-function tutupPopup() {
-    const popup = getEl("popup-master-data");
-    const popupInput = getEl("popup-master-data-input");
-
-    popup.classList.remove("show");
-
-    popupInput.value = "";
-
-    popupState.mode = null;
-    popupState.action = null;
-    popupState.id = null;
-}
+// LIST VIEW
 async function loadDataLevel() {
     const response = await fetch(BASE_URL_LEVEL)
     const data = await response.json();
@@ -147,45 +99,199 @@ async function loadDataKategori() {
 
     levelList.innerHTML = html;
 }
+
+// POPUP
+function showPopupTambahDataMaster(type){
+
+    const popup = getEl("popup-master-data");
+    const popupTitle = getEl("popup-master-data-title");
+    const popupLabel = getEl("popup-master-data-label");
+    const popupInput = getEl("popup-master-data-input");
+
+    popupState.mode = type;
+    popupState.action = "create";
+    popupState.id = null;
+
+    const config = popupConfig[type];
+
+    popupTitle.textContent = config.titleCreate;
+    popupLabel.textContent = config.label;
+
+    popupInput.value = "";
+
+    popup.classList.add("show");
+    popupInput.focus();
+
+}
+function showPopupEditDataMaster(type, data) {
+
+    const popup = getEl("popup-master-data");
+    const popupTitle = getEl("popup-master-data-title");
+    const popupLabel = getEl("popup-master-data-label");
+    const popupInput = getEl("popup-master-data-input");
+
+    popupState.mode = type;
+    popupState.action = "edit";
+    popupState.id = data.id;
+
+    const config = popupConfig[type];
+
+    popupTitle.textContent = config.titleEdit;
+    popupLabel.textContent = config.label;
+
+    popupInput.value = data.nama;
+
+    popup.classList.add("show");
+    popupInput.focus();
+}
+function tutupPopup() {
+    const popup = getEl("popup-master-data");
+    const popupInput = getEl("popup-master-data-input");
+
+    popup.classList.remove("show");
+
+    popupInput.value = "";
+
+    popupState.mode = null;
+    popupState.action = null;
+    popupState.id = null;
+}
+function showPopupKonfirmasi(mode, id, nama) {
+
+    deleteState.mode = mode;
+    deleteState.id = id;
+
+    getEl("popup-konfirmasi-title").textContent =
+        "Konfirmasi Hapus";
+
+    getEl("popup-konfirmasi-message").textContent =
+        `Yakin ingin menghapus ${nama}?`;
+
+    getEl("popup-konfirmasi")
+        .classList
+        .add("show");
+}
+function tutupPopupKonfirmasi() {
+
+    getEl("popup-konfirmasi")
+        .classList
+        .remove("show");
+
+    deleteState.mode = null;
+    deleteState.id = null;
+}
+
+// CRUD
 async function simpanMasterData() {
     const popupInput = getEl("popup-master-data-input");
 
     if(!validasiSimpan()) return;
 
     const nama = popupInput.value.trim();
+
+    showLoading("Menyimpan Data..");
+
     try {
 
         if (popupState.mode === "level") {
 
             if (popupState.action === "create") {
-                await simpanLevel(nama);
+                const response = await fetch(BASE_URL_LEVEL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        level: nama
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+
+                    throw new Error(
+                        errorData.message ||
+                        "Gagal simpan level"
+                    );
+                }
             } else {
-                await updateLevel(
-                    popupState.id,
-                    nama
-                );
+                const id = popupState.id;
+                const response = await fetch(`${BASE_URL_LEVEL}/${id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        level: nama
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+
+                    throw new Error(
+                        errorData.message ||
+                        "Gagal update level"
+                    );
+                }
             }
 
         } else if (popupState.mode === "kategori") {
 
             if (popupState.action === "create") {
-                await simpanKategori(nama);
+                const response = await fetch(BASE_URL_KATEGORI, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        kategori: nama
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+
+                    throw new Error(
+                        errorData.message ||
+                        "Gagal simpan kategori"
+                    );
+                }
             } else {
-                await updateKategori(
-                    popupState.id,
-                    nama
-                );
+                const id = popupState.id;
+                const response = await fetch(`${BASE_URL_KATEGORI}/${id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        kategori: nama
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+
+                    throw new Error(
+                        errorData.message ||
+                        "Gagal update kategori"
+                    );
+                }
             }
 
         }
 
         tutupPopup();
-
+        showToast(
+            "Data berhasil disimpan",
+            "success"
+        );
         await bersihMasterData();
 
     } catch (e) {
-        console.error(e);
-        alert("Gagal menyimpan data");
+        showToast(e.message, "error");
+    } finally {
+        hideLoading();
     }
 }
 function editLevel(id, nama) {
@@ -214,94 +320,6 @@ function validasiSimpan(){
 
     return valid;
 }
-async function simpanLevel(nama) {
-
-    const response = await fetch(BASE_URL_LEVEL, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            level: nama
-        })
-    });
-
-    if (!response.ok) {
-        throw new Error("Gagal simpan level");
-    }
-}
-async function updateLevel(id, nama) {
-
-    const response = await fetch(`${BASE_URL_LEVEL}/${id}`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            level: nama
-        })
-    });
-
-    if (!response.ok) {
-        throw new Error("Gagal update level");
-    }
-}
-async function simpanKategori(nama) {
-
-    const response = await fetch(BASE_URL_KATEGORI, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            kategori: nama
-        })
-    });
-
-    if (!response.ok) {
-        throw new Error("Gagal simpan kategori");
-    }
-}
-async function updateKategori(id, nama) {
-
-    const response = await fetch(`${BASE_URL_KATEGORI}/${id}`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            kategori: nama
-        })
-    });
-
-    if (!response.ok) {
-        throw new Error("Gagal update kategori");
-    }
-}
-function showPopupKonfirmasi(mode, id, nama) {
-
-    deleteState.mode = mode;
-    deleteState.id = id;
-
-    getEl("popup-konfirmasi-title").textContent =
-        "Konfirmasi Hapus";
-
-    getEl("popup-konfirmasi-message").textContent =
-        `Yakin ingin menghapus ${nama}?`;
-
-    getEl("popup-konfirmasi")
-        .classList
-        .add("show");
-}
-function tutupPopupKonfirmasi() {
-
-    getEl("popup-konfirmasi")
-        .classList
-        .remove("show");
-
-    deleteState.mode = null;
-    deleteState.id = null;
-}
 function hapusLevel(id, nama) {
     showPopupKonfirmasi(
         "level",
@@ -317,79 +335,75 @@ function hapusKategori(id, nama) {
     );
 }
 async function konfirmasiHapus() {
+    const id = deleteState.id;
+
+    showLoading("Menghapus Data..");
 
     try {
 
         if (deleteState.mode === "level") {
 
-            await deleteLevel(
-                deleteState.id
-            );
+            const response =
+                await fetch(
+                    `${BASE_URL_LEVEL}/${id}`,
+                    {
+                        method: "DELETE"
+                    }
+                );
+
+            if (!response.ok) {
+
+                const errorData =
+                    await response.json();
+
+                throw new Error(
+                    errorData.message ||
+                    errorData.error ||
+                    "Gagal hapus level"
+                );
+            }
 
         } else if (
             deleteState.mode === "kategori"
         ) {
 
-            await deleteKategori(
-                deleteState.id
-            );
+            const response =
+                await fetch(
+                    `${BASE_URL_KATEGORI}/${id}`,
+                    {method: "DELETE"}
+                );
+
+            if (!response.ok) {
+
+                const errorData =
+                    await response.json();
+
+                throw new Error(
+                    errorData.message ||
+                    errorData.error ||
+                    "Gagal hapus kategori"
+                );
+            }
         }
 
+        showToast(
+            "Data berhasil dihapus",
+            "success"
+        );
         tutupPopupKonfirmasi();
 
         await bersihMasterData();
 
     } catch (e) {
 
-        console.error(e);
+        console.error(e.message);
 
-        alert(
-            e.message ||
-            "Gagal menghapus data"
-        );
+        showToast(e.message, "error");
+    } finally {
+        hideLoading();
     }
 }
-async function deleteLevel(id) {
 
-    const response =
-        await fetch(
-            `${BASE_URL_LEVEL}/${id}`,
-            {
-                method: "DELETE"
-            }
-        );
-
-    if (!response.ok) {
-
-        const text =
-            await response.text();
-
-        throw new Error(
-            text || "Gagal hapus level"
-        );
-    }
-}
-async function deleteKategori(id) {
-
-    const response =
-        await fetch(
-            `${BASE_URL_KATEGORI}/${id}`,
-            {
-                method: "DELETE"
-            }
-        );
-
-    if (!response.ok) {
-
-        const text =
-            await response.text();
-
-        throw new Error(
-            text ||
-            "Gagal hapus kategori"
-        );
-    }
-}
 
 window.initMasterData = initMasterData;
 window.editLevel = editLevel;

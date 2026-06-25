@@ -23,18 +23,26 @@ class DataKategoriController(private val service: DataKategoriService) {
     }
 
     @PostMapping
-    fun simpan(@Valid @RequestBody dataKategori: DataKategori): ResponseEntity<DataKategori> {
-        val simpan = service.simpan(dataKategori)
-        return ResponseEntity.status(201).body(simpan)
+    fun simpan(@Valid @RequestBody dataKategori: DataKategori): ResponseEntity<Any> {
+        return try {
+            val simpan = service.simpan(dataKategori)
+            ResponseEntity.ok(simpan)
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.status(400)
+                .body(mapOf("message" to e.message))
+        }
     }
 
     @PutMapping("/{id}")
-    fun delete(@PathVariable id: Long, @RequestBody dataKategori: DataKategori): ResponseEntity<Any> {
+    fun update(@PathVariable id: Long, @RequestBody dataKategori: DataKategori): ResponseEntity<Any> {
         return try {
             val update = service.update(id, dataKategori)
             ResponseEntity.ok(update)
-        } catch (e: NoSuchElementException) {
+        } catch (_: NoSuchElementException) {
             ResponseEntity.status(404).body(mapOf("message" to " Kategori Tidak Ditemukan"))
+        } catch (e: IllegalArgumentException) {
+            ResponseEntity.status(400)
+                .body(mapOf("message" to e.message))
         }
     }
 
