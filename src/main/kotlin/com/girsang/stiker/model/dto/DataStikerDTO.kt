@@ -13,7 +13,9 @@ data class DataStikerDTO(
     var lebar: Int = 0,
     var ukuran: String = "",
     var catatan: String? = "",
-    var status: Boolean = true
+    var status: Boolean = true,
+    var pathGambar1: String = "",
+    var pathGambar2: String = ""
 ) {
     companion object {
         fun fromEntity(entity: DataStiker): DataStikerDTO {
@@ -27,7 +29,9 @@ data class DataStikerDTO(
                 lebar = entity.lebar,
                 ukuran = "${entity.panjang} X ${entity.lebar}",
                 catatan = entity.catatan,
-                status = entity.status
+                status = entity.status,
+                pathGambar1 = entity.pathGambar1,
+                pathGambar2 = entity.pathGambar2
             )
         }
     }

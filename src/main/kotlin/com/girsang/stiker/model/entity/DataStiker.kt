@@ -23,7 +23,7 @@ class DataStiker(
 
     @field:NotBlank(message = "Nama stiker tidak boleh kosong")
     @Column(nullable = false)
-    var namaStiker: String = "",
+    var namaStiker: String,
 
     @field:Positive(message = "Panjang harus lebih besar dari 0")
     @Column(nullable = false)
@@ -34,7 +34,7 @@ class DataStiker(
     var lebar: Int = 0,
 
     @Column(nullable = true, columnDefinition = "TEXT")
-    var catatan: String? = null,
+    var catatan: String? = "-",
 
     @Column(nullable = false)
     var status: Boolean = true,

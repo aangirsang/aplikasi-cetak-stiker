@@ -286,7 +286,7 @@ table tbody td{
     padding: 6px 10px;
 }
 
-.deskripsi-cell {
+.cell-panjang {
     width: 25rem;
     white-space: normal;
     overflow-wrap: break-word;
@@ -911,6 +911,53 @@ table tbody td{
 
     accent-color: var(--color-primary);
     cursor: pointer;
+}
+
+/* ==========================================
+   INPUT NUMBER
+========================================== */
+
+.input-satuan{
+    position: relative;
+    width: 100%;
+}
+
+.input-icon{
+    position: absolute;
+    left: 5px;
+    top: 0;
+    bottom: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: auto 0;
+
+    width: 20px;
+    height: 20px;
+
+    z-index: 2;
+    pointer-events: none;
+}
+
+.input-satuan input{
+    width: 100%;
+    padding-left: 30px;   /* ruang untuk svg */
+    padding-right: 25px;  /* ruang untuk cm */
+}
+
+.input-satuan span{
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-dark-variant);
+    pointer-events: none;
+}
+
+.input-satuan label {
+    left: 20px;
 }
 
 /* ==========================================

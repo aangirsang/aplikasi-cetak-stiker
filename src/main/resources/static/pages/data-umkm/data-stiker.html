@@ -1,0 +1,334 @@
+<div class="data-stiker">
+    <!-- SEARCH -->
+    <div class="search-bar">
+        <div class="search-box">
+            <span class="material-symbols-sharp">search</span>
+            <label>
+                <input type="text" id="search-stiker" placeholder="Cari Data Stiker">
+            </label>
+        </div>
+        <button class="add-btn" id="btn-tambah-data-stiker">
+            <span class="material-symbols-sharp">add</span>
+            Tambah Stiker
+        </button>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-page-container">
+        <div class="tabel-page-card">
+            <table class="tbl-data">
+                <thead>
+                    <tr>
+                        <th onclick="sortTableStiker('kodeStiker')">Kode Stiker</th>
+                        <th onclick="sortTableStiker('namaUsaha')">Nama Usaha</th>
+                        <th onclick="sortTableStiker('namaStiker')">Nama Stiker</th>
+                        <th onclick="sortTableStiker('ukuran')">Ukuran</th>
+                        <th onclick="sortTableStiker('status')">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="tbl-body-data-stiker"></tbody>
+            </table>
+        </div>
+        <div id="pagination" class="pagination"></div>
+    </div>
+
+    <!--POPUP HAPUS-->
+    <div id="popup-hapus-stiker" class="popup">
+        <div class="popup-content-hapus">
+            <h2>Konfirmasi</h2>
+            <p>Yakin ingin menghapus stiker?</p>
+            <div class="popup-actions">
+                <button id="hapus-stiker-btn">Hapus</button>
+                <button id="batal-hapus-stiker">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POPUP STIKER -->
+    <div class="popup" id="popup-data-stiker">
+        <div class="content-popup-data-stiker">
+            <form id="form-popup-data-stiker">
+                <h2>Data Stiker</h2>
+                <div class="form-stiker-grid">
+                    <div class="form-stiker-kiri">
+                        <h3>Data Usaha</h3>
+                        <div class="content-form-data-stiker">
+                            <div class="input-group">
+                                <input
+                                        type="text"
+                                        id="popup-data-stiker-nama-usaha"
+                                        placeholder=" "
+                                        autocomplete="off" readonly>
+
+                                <label for="popup-data-stiker-nama-usaha">
+                                    Nama Usaha
+                                </label>
+                            </div>
+                            <div class="input-group">
+                                <input
+                                        type="text"
+                                        id="popup-data-stiker-nama-pemilik"
+                                        placeholder=" "
+                                        autocomplete="off" readonly>
+
+                                <label for="popup-data-stiker-nama-pemilik">
+                                    Nama Pemilik
+                                </label>
+                            </div>
+                            <div class="input-group">
+                                <input
+                                        type="text"
+                                        id="popup-data-stiker-telepon"
+                                        placeholder=" "
+                                        autocomplete="off" readonly>
+
+                                <label for="popup-data-stiker-telepon">
+                                    Nomor Telepon
+                                </label>
+                            </div>
+                            <div class="textarea-group">
+                            <textarea
+                                    id="popup-data-stiker-alamat"
+                                    placeholder=" "
+                                    rows="4"
+                                    readonly></textarea>
+
+                                <label for="popup-data-stiker-alamat">
+                                    Alamat
+                                </label>
+                            </div>
+                            <button type="button" id="btn-popup-data-stiker-cari-umkm">Pilih UMKM</button>
+                        </div>
+                    </div>
+                    <div class="form-stiker-tengah">
+                        <h3>Data Stiker</h3>
+                        <div class="content-form-data-stiker">
+                            <div class="input-group">
+                                <input
+                                        type="text"
+                                        id="popup-data-stiker-kode"
+                                        placeholder=" "
+                                        autocomplete="off" readonly>
+
+                                <label for="popup-data-stiker-kode">
+                                    Kode Stiker
+                                </label>
+                            </div>
+                            <div class="input-group">
+                                <input
+                                        type="text"
+                                        id="popup-data-stiker-nama"
+                                        placeholder=" "
+                                        autocomplete="off">
+
+                                <label for="popup-data-stiker-nama">
+                                    Nama Stiker
+                                </label>
+                            </div>
+                            <div class="input-ukuran">
+                                <div class="input-group input-satuan">
+                                    <svg class="input-icon"
+                                         width="16"
+                                         height="30"
+                                         viewBox="0 0 16 38">
+                                        <line x1="8" y1="7" x2="8" y2="31"
+                                              stroke="#555"
+                                              stroke-width="1.8"/>
+                                        <polygon points="8,1 3,8 13,8" fill="#555"/>
+                                        <polygon points="8,37 3,30 13,30" fill="#555"/>
+                                    </svg>
+
+                                    <input
+                                            type="number"
+                                            id="popup-data-stiker-panjang"
+                                            placeholder=" "
+                                            min="0"
+                                            step="0.1"
+                                            autocomplete="off">
+
+                                    <label for="popup-data-stiker-panjang">
+                                        Panjang Stiker
+                                    </label>
+
+                                    <span>cm</span>
+
+                                </div>
+                                <div class="input-group input-satuan">
+                                    <svg class="input-icon"
+                                         width="30"
+                                         height="16"
+                                         viewBox="0 0 38 16">
+                                        <line x1="7" y1="8" x2="31" y2="8"
+                                              stroke="#555"
+                                              stroke-width="1.8"/>
+                                        <polygon points="1,8 8,3 8,13" fill="#555"/>
+                                        <polygon points="37,8 30,3 30,13" fill="#555"/>
+                                    </svg>
+                                    <input
+                                            type="number"
+                                            id="popup-data-stiker-lebar"
+                                            placeholder=" "
+                                            min="0"
+                                            step="0.1"
+                                            autocomplete="off">
+
+                                    <label for="popup-data-stiker-lebar">
+                                        Lebar Stiker
+                                    </label>
+                                    <span>cm</span>
+
+                                </div>
+                            </div>
+                            <div class="form-group-radio">
+                                <div class="radio-group" id="popup-data-stiker-status-grup">
+                                    <label class="radio-floating-label">Status</label>
+                                    <label class="radio-item">
+                                        <input
+                                                type="radio"
+                                                name="popup-data-stiker-status"
+                                                value="true">
+                                        <span>Aktif</span>
+                                    </label>
+
+                                    <label class="radio-item">
+                                        <input
+                                                type="radio"
+                                                name="popup-data-stiker-status"
+                                                value="false">
+                                        <span>Non-Aktif</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="textarea-group">
+                            <textarea
+                                    id="popup-data-stiker-catatan"
+                                    placeholder=" "
+                                    rows="4"></textarea>
+
+                                <label for="popup-data-stiker-catatan">
+                                    Catatan
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-stiker-kanan">
+                        <div class="desain-list">
+                            <!-- GAMBAR 1 -->
+                            <div class="desain-item">
+                                <button type="button"
+                                        class="menu-btn"
+                                        onclick="toggleMenuImageStiker(this,event)">
+                                    <span class="material-symbols-sharp">more_vert</span>
+                                </button>
+
+                                <div class="dropdown-menu">
+                                    <div onclick="pilihGambar(1)">Pilih Gambar</div>
+                                    <div onclick="hapusGambar(1)">Hapus Gambar</div>
+                                    <div onclick="lihatGambar(1)">Lihat Gambar</div>
+                                </div>
+
+                                <!-- PREVIEW -->
+                                <div class="preview-container"
+                                     id="preview-container-1">
+
+                                    <div class="loading-spinner"></div>
+
+                                    <img
+                                            id="preview-gambar-1"
+                                            class="preview-img"
+                                            src=""
+                                            alt="gambar"
+                                    >
+                                    <input type="file" id="popup-data-stiker-file-input-1" accept="image/*" hidden>
+                                </div>
+                            </div>
+
+                            <!-- GAMBAR 2 -->
+                            <div class="desain-item">
+
+                                <button type="button"
+                                        class="menu-btn"
+                                        onclick="toggleMenuImageStiker(this,event)">
+                                    <span class="material-symbols-sharp">more_vert</span>
+                                </button>
+
+                                <div class="dropdown-menu">
+                                    <div onclick="pilihGambar(2)">Pilih Gambar</div>
+                                    <div onclick="hapusGambar(2)">Hapus Gambar</div>
+                                    <div onclick="lihatGambar(2)">Lihat Gambar</div>
+                                </div>
+
+                                <!-- PREVIEW -->
+                                <div class="preview-container"
+                                     id="preview-container-2">
+
+                                    <div class="loading-spinner"></div>
+
+                                    <img
+                                            id="preview-gambar-2"
+                                            class="preview-img"
+                                            src=""
+                                            alt="gambar"
+                                    >
+                                    <input type="file" id="popup-data-stiker-file-input-2" accept="image/*" hidden>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="popup-actions">
+                    <button type="button" id="btn-popup-data-stiker-simpan">Simpan</button>
+                    <button type="button" id="btn-popup-data-stiker-batal">Batal</button>
+                </div>
+                <input type="file" id="upload-gambar-stiker" accept="image/*" hidden>
+            </form>
+        </div>
+    </div>
+
+    <!-- POPUP LIHAT GAMBAR -->
+    <div id="popup-lihat-gambar" class="popup">
+        <button type="button" onclick="tutupPopupStiker('popup-lihat-gambar')">
+            <span class="material-symbols-sharp">close</span>
+        </button>
+        <div class="popup-image-view">
+            <img id="img-fullscreen" src="" alt="Preview">
+        </div>
+    </div>
+    <!-- POPUP CARI UMKM -->
+    <div class="popup" id="popupStikerCariUmkm">
+        <div class="popup-content-stiker">
+            <form id="formStikerCariUmkm">
+                <h2>Data Umkm</h2>
+                <div class="search-bar">
+                    <div class="search-box">
+                        <span class="material-symbols-sharp">search</span>
+                        <label>
+                            <input type="text" id="cariUmkm" placeholder="Cari Data Umkm">
+                        </label>
+                    </div>
+                    <button type="button" id="BatalPilihBtn">
+                        <span class="material-symbols-sharp">close</span>
+                    </button>
+                </div>
+
+                <!-- TABLE -->
+                <div class="table-container-cari-umkm">
+                    <div class="tabel-card-cari-umkm">
+                        <table class="CariUmkmTbl">
+                            <thead>
+                            <tr>
+                                <th onclick="sortTableCariUmkm('namaUsaha')">Nama Usaha</th>
+                                <th onclick="sortTableCariUmkm('namaPemilik')">Nama Pemilik</th>
+                                <th onclick="sortTableCariUmkm('noTelp')">Nomor Telepon</th>
+                                <th onclick="sortTableCariUmkm('sosialMedia')">Instagram</th>
+                            </tr>
+                            </thead>
+                            <tbody id="CariUmkmTBody"></tbody>
+                        </table>
+                    </div>
+                    <div id="pagination-cari-umkm" class="pagination"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

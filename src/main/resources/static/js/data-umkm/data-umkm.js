@@ -57,8 +57,7 @@ async function loadTableDataUmkm(){
         );
 
     } catch(error){
-
-        console.error(error);
+        console.log(error);
         showToast(error, "error")
         dataUmkm = [];
     }
@@ -133,6 +132,7 @@ function createRowUmkm(item, isOpened){
             <td>${item.namaPemilik}</td>
             <td>${item.noTelpon}</td>
             <td>${item.dataKategori.kategori}</td>
+            <td class="cell-panjang">${item.alamat}</td>
             <td>${item.status ? "Aktif" : "Non-Aktif"}</td>
 
             <td>
@@ -151,7 +151,7 @@ function createRowUmkm(item, isOpened){
         
         <!-- DETAIL -->
         <tr class="detail-table ${isOpened ? 'show' : ''}">
-            <td colspan="6">
+            <td colspan="7">
                 <div class="detail-content">
                     <table class="detail-horizontal-table">
                         <thead>
@@ -174,7 +174,7 @@ function createRowUmkm(item, isOpened){
                                     ? new Date(item.tglRegistrasi)
                                     .toISOString().split("T")[0]
                                     : ""}</td>
-                                <td class="deskripsi-cell">${item.deskripsi}</td>
+                                <td class="cell-panjang">${item.deskripsi}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -644,9 +644,24 @@ function konfirmasiHapusUmkm(id){
     });
 }
 
+async function destroyDataUmkm() {
+
+    // Hapus event listener
+    document.removeEventListener(
+        "click",
+        closeDetailUmkmOutside
+    );
+
+    // Reset state
+    openedDetailUmkmId = null;
+    selectedUmkm = null;
+
+}
+
 window.initDataUmkm = initDataUmkm;
 window.showPopupUmkm = showPopupUmkm;
 window.changePageUmkm = changePageUmkm;
 window.sortTabelUmkm = sortTabelUmkm;
 window.konfirmasiHapusUmkm = konfirmasiHapusUmkm;
 window.toggleDetailUmkm = toggleDetailUmkm;
+window.destroyDataUmkm = destroyDataUmkm;

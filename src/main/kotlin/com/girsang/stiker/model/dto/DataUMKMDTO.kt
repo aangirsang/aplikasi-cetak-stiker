@@ -21,6 +21,7 @@ data class DataUMKMDTO(
 
     @field:NotBlank(message = "Alamat tidak boleh kosong")
     var alamat: String,
+
     var whatsapp: String? = null,
     var instagram: String? = null,
     var facebook: String? = null,

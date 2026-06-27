@@ -623,7 +623,7 @@ async function uploadGambarPengguna() {
 
     const response =
         await fetch(
-            "http://localhost:8080/api/upload/gambar",
+            BASE_URL_UPLOAD_GAMBAR,
             {
                 method: "POST",
                 body: formData
@@ -795,119 +795,7 @@ async function handlePreviewGambar(event) {
         console.error(error);
     }
 }
-function convertToWebp(
-    file,
-    maxSize = 2048,
-    quality = 0.8
-) {
 
-    return new Promise(
-        (resolve, reject) => {
-
-            const img =
-                new Image();
-
-            img.onload = () => {
-
-                let width =
-                    img.width;
-
-                let height =
-                    img.height;
-
-                if(
-                    width > maxSize ||
-                    height > maxSize
-                ){
-
-                    const ratio =
-                        Math.min(
-                            maxSize / width,
-                            maxSize / height
-                        );
-
-                    width =
-                        Math.round(
-                            width * ratio
-                        );
-
-                    height =
-                        Math.round(
-                            height * ratio
-                        );
-                }
-
-                const canvas =
-                    document.createElement(
-                        "canvas"
-                    );
-
-                canvas.width =
-                    width;
-
-                canvas.height =
-                    height;
-
-                const ctx =
-                    canvas.getContext(
-                        "2d"
-                    );
-
-                ctx.drawImage(
-                    img,
-                    0,
-                    0,
-                    width,
-                    height
-                );
-
-                canvas.toBlob(
-                    blob => {
-
-                        if(!blob){
-
-                            reject(
-                                new Error(
-                                    "Gagal convert WebP"
-                                )
-                            );
-
-                            return;
-                        }
-
-                        const webpFile =
-                            new File(
-                                [blob],
-                                file.name.replace(
-                                    /\.[^.]+$/,
-                                    ".webp"
-                                ),
-                                {
-                                    type:
-                                        "image/webp"
-                                }
-                            );
-
-                        resolve(
-                            webpFile
-                        );
-
-                    },
-                    "image/webp",
-                    quality
-                );
-            };
-
-            img.onerror =
-                reject;
-
-            img.src =
-                URL.createObjectURL(
-                    file
-                );
-        }
-    );
-}
 function isGambarBerubah(){
 
     const fileInput =

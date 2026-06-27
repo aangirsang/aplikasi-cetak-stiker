@@ -27,7 +27,7 @@ class WebConfig(
 
         println("Resource Path: $uploadPath")
 
-        registry.addResourceHandler("/uploads/**")
+        registry.addResourceHandler("/api/uploads/**")
             .addResourceLocations(uploadPath)
     }
 }

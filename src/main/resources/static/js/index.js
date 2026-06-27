@@ -4,6 +4,15 @@ const menuItems = document.querySelectorAll('.sidebar a');
 
 async function loadPage(page) {
 
+    // Jika sedang berada di halaman Data Stiker
+    if (typeof destroyDataStiker === "function") {
+        await destroyDataStiker();
+    }
+
+    // Jika sedang berada di halaman Data Stiker
+    if (typeof destroyDataUmkm === "function") {
+        await destroyDataUmkm();
+    }
 
     const content = document.getElementById('content');
     const title = document.getElementById('page-title');
@@ -13,6 +22,7 @@ async function loadPage(page) {
         'master-data/data-pengguna': 'Data Pengguna',
         'master-data/master-data': 'Master Data',
         'data-umkm/data-umkm': 'Data UMKM',
+        'data-umkm/data-stiker': 'Data Stiker',
         orderan: 'Data Orderan'
     };
 
@@ -40,6 +50,9 @@ async function loadPage(page) {
             },
             'data-umkm/data-umkm': () => {
                 initDataUmkm();
+            },
+            'data-umkm/data-stiker': () => {
+                initDataStiker();
             }
         }
 

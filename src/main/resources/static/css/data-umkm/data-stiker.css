@@ -1,0 +1,250 @@
+.content-popup-data-stiker{
+    padding: var(--card-padding);
+    border-radius: 12px;
+    background: var(--color-background);
+
+    width: 90rem;
+    height: 47rem;
+}
+
+.form-stiker-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.3fr;
+    gap: 1.6rem;
+
+    height: 37rem;
+}
+
+.content-form-data-stiker {
+    margin-top: 1rem;
+
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.form-stiker-kiri,
+.form-stiker-tengah,
+.form-stiker-kanan {
+    display: flex;
+    flex-direction: column;
+
+
+    gap: 1rem;
+    margin-top: 1rem;
+
+    background: var(--color-white) ;
+    padding: var(--card-padding);
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--box-shadow);
+
+    transition: all 300ms ease;
+
+    height: 37rem;
+}
+
+.data-stiker .popup-actions {
+    margin-top: 1.9rem;
+}
+
+/* ----------------- TABLE STIKER ----------------- */
+
+.stiker-row.selected td {
+    background: var(--color-light);
+    color: var(--color-primary);
+}
+
+.stiker-row:not(.selected):hover td {
+    color: var(--color-primary);
+    transform: translateX(6px);
+}
+
+.stiker-row.selected td {
+    border-bottom: none;
+}
+
+.detail-horizontal-table {
+    border-radius: 0 0 var(--border-radius-2) var(--border-radius-2);
+}
+.stiker-row.selected td:first-child {
+    border-left: none;
+    border-top-left-radius: var(--border-radius-2);
+}
+
+.stiker-row.selected td:last-child {
+    border-top-right-radius: var(--border-radius-2);
+}
+
+.stiker-row.selected td,
+.detail-table.show td {
+    position: relative;
+}
+
+.input-ukuran {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* gambar */
+.desain-list{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.desain-item{
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #ddd;
+    background: #fff;
+}
+
+.desain-item img{
+    width: 100%;
+    object-fit: contain;
+    display: block;
+}
+.preview-container{
+    position: relative;
+
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #f5f5f5;
+
+    overflow: hidden;
+}
+
+/* ----------------- IMAGE ----------------- */
+.preview-img{
+    width: 100%;
+    height: 16rem;
+
+    object-fit: contain;
+    display: block;
+
+    transition:
+            opacity 0.25s ease,
+            transform 0.25s ease;
+
+    padding: .2rem;
+}
+
+/* efek smooth muncul */
+.preview-container.loaded .preview-img{
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* saat loading */
+.preview-container.loading .preview-img{
+    opacity: 0;
+    transform: scale(0.96);
+}
+
+/* spinner */
+.loading-spinner{
+    position: absolute;
+
+    width: 42px;
+    height: 42px;
+
+    border: 4px solid rgba(0,0,0,0.1);
+    border-top: 4px solid #666;
+
+    border-radius: 50%;
+
+    animation: spin 0.8s linear infinite;
+
+    display: none;
+
+    z-index: 5;
+}
+
+/* tampil saat loading */
+.preview-container.loading .loading-spinner{
+    display: block;
+}
+
+/* shimmer effect */
+.preview-container.loading::before{
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+            linear-gradient(
+                    90deg,
+                    rgba(255,255,255,0) 0%,
+                    rgba(255,255,255,0.45) 50%,
+                    rgba(255,255,255,0) 100%
+            );
+
+    animation: shimmer 1.2s infinite;
+}
+
+@keyframes spin{
+    to{
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes shimmer{
+    from{
+        transform: translateX(-100%);
+    }
+
+    to{
+        transform: translateX(100%);
+    }
+}
+
+.menu-btn{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,0.95);
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    z-index: 10;
+    box-shadow: 0 2px 6px rgba(0,0,0,.2);
+}
+
+.dropdown-menu{
+    position: absolute;
+    top: 48px;
+    right: 10px;
+    min-width: 150px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,.15);
+    display: none;
+    z-index: 20;
+    overflow: hidden;
+}
+
+.dropdown-menu.show{
+    display: block;
+}
+
+.dropdown-menu div{
+    padding: 10px 14px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.dropdown-menu div:hover{
+    background: #f5f5f5;
+}

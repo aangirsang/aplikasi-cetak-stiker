@@ -22,6 +22,7 @@
     <link rel="stylesheet" href="css/data-master/data-pengguna.css">
     <link rel="stylesheet" href="css/data-master/data-master.css">
     <link rel="stylesheet" href="css/data-umkm/data-umkm.css">
+    <link rel="stylesheet" href="css/data-umkm/data-stiker.css">
 </head>
 <body>
     <div class="container">
@@ -51,12 +52,15 @@
                 </a>
                 <div class="submenu" id="submenu-master">
                     <a onclick="loadPage('master-data/data-pengguna')">
+                        <span class="material-symbols-sharp">manage_accounts</span>
                         <h4>Data Pengguna</h4>
                     </a>
                     <a onclick="loadPage('master-data/master-data')">
+                        <span class="material-symbols-sharp">ad_group</span>
                         <h4>Master Data</h4>
                     </a>
                     <a onclick="loadPage('pembelian')">
+                        <span class="material-symbols-sharp">home_storage_gear</span>
                         <h4>Data Pembelian</h4>
                     </a>
                 </div>
@@ -69,15 +73,17 @@
                 </a>
                 <div class="submenu" id="submenu-umkm">
                     <a onclick="loadPage('data-umkm/data-umkm')">
+                        <span class="material-symbols-sharp">groups</span>
                         <h4>Data UMKM</h4>
                     </a>
                     <a onclick="loadPage('data-umkm/data-stiker')">
+                        <span class="material-symbols-sharp">package</span>
                         <h4>Data Stiker</h4>
                     </a>
                 </div>
 
                 <a onclick="loadPage('orderan')">
-                    <span class="material-symbols-sharp">storefront</span>
+                    <span class="material-symbols-sharp">order_approve</span>
                     <h3>Data Orderan</h3>
                 </a>
                 <a class="last" onclick="logout()">
@@ -180,6 +186,7 @@
     <script type="module" src="js/master-data/data-pengguna.js"></script>
     <script type="module" src="js/master-data/master-data.js"></script>
     <script type="module" src="js/data-umkm/data-umkm.js"></script>
+    <script type="module" src="js/data-umkm/data-stiker.js"></script>
     <script type="module" src="js/login.js"></script>
 
 
