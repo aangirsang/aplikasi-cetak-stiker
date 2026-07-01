@@ -26,4 +26,15 @@ class UploadController(
 
         return ResponseEntity.ok(result)
     }
+
+    @PostMapping("/cdr")
+    fun uploadFile(
+        @RequestParam("file") file: MultipartFile,
+        @RequestParam("fileName") fileName: String
+    ): ResponseEntity<UploadResponse> {
+
+        return ResponseEntity.ok(
+            uploadService.uploadCdr(file, fileName)
+        )
+    }
 }

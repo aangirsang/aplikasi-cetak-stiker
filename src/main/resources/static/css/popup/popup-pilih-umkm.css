@@ -1,0 +1,19 @@
+.content-popup-pilih-umkm {
+    padding: var(--card-padding);
+    border-radius: 12px;
+    background: var(--color-background);
+
+    width: 150vh;
+    height: 77vh;
+
+    transition: all 300ms ease;
+}
+
+.tabel-card-popup-pilih-umkm {
+    height: 51vh;
+}
+
+.pilih-umkm-row:hover td {
+    color: var(--color-primary);
+    transform: translateX(6px);
+}

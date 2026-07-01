@@ -1,4 +1,5 @@
 const BASE_URL = "http://localhost:8080/api" // UNTUK CODING/PENGEMBANG
+
 //const BASE_URL = "/api" // UNTUK JARINGAN
 
 const BASE_URL_PENGGUNA = `${BASE_URL}/data-pengguna`;
@@ -37,6 +38,7 @@ function getPaginatedData(data, page, rows){
 }
 
 function loadPagination(id, totalData, currentPage, rowsPerPage, callback){
+
     const pagination = getEl(id);
 
     pagination.innerHTML = "";
@@ -48,6 +50,7 @@ function loadPagination(id, totalData, currentPage, rowsPerPage, callback){
 
     pagination.innerHTML += `
         <button
+            type="button"
             onclick="${callback.name}(${currentPage - 1})"
             ${currentPage === 1 ? "disabled" : ""}
         >
@@ -73,29 +76,28 @@ function loadPagination(id, totalData, currentPage, rowsPerPage, callback){
             );
     }
 
-    // tombol halaman pertama
     if(startPage > 1){
 
         pagination.innerHTML += `
-            <button onclick="${callback.name}(1)">
+            <button
+                type="button"
+                onclick="${callback.name}(1)">
                 1
             </button>
         `;
 
         if(startPage > 2){
             pagination.innerHTML += `
-                <span class="pagination-dots">
-                    ...
-                </span>
+                <span class="pagination-dots">...</span>
             `;
         }
     }
 
-    // tombol tengah
     for(let i = startPage; i <= endPage; i++){
 
         pagination.innerHTML += `
             <button
+                type="button"
                 class="${i === currentPage ? "active" : ""}"
                 onclick="${callback.name}(${i})"
             >
@@ -104,19 +106,18 @@ function loadPagination(id, totalData, currentPage, rowsPerPage, callback){
         `;
     }
 
-    // tombol halaman terakhir
     if(endPage < totalPages){
 
         if(endPage < totalPages - 1){
             pagination.innerHTML += `
-                <span class="pagination-dots">
-                    ...
-                </span>
+                <span class="pagination-dots">...</span>
             `;
         }
 
         pagination.innerHTML += `
-            <button onclick="${callback.name}(${totalPages})">
+            <button
+                type="button"
+                onclick="${callback.name}(${totalPages})">
                 ${totalPages}
             </button>
         `;
@@ -124,6 +125,7 @@ function loadPagination(id, totalData, currentPage, rowsPerPage, callback){
 
     pagination.innerHTML += `
         <button
+            type="button"
             onclick="${callback.name}(${currentPage + 1})"
             ${currentPage === totalPages ? "disabled" : ""}
         >
@@ -258,3 +260,4 @@ function convertToWebp(
         }
     );
 }
+

@@ -48,7 +48,7 @@
     <div class="popup" id="popup-data-stiker">
         <div class="content-popup-data-stiker">
             <form id="form-popup-data-stiker">
-                <h2>Data Stiker</h2>
+                <h2 id="popup-data-stiker-title">Data Stiker</h2>
                 <div class="form-stiker-grid">
                     <div class="form-stiker-kiri">
                         <h3>Data Usaha</h3>
@@ -143,7 +143,7 @@
                                             id="popup-data-stiker-panjang"
                                             placeholder=" "
                                             min="0"
-                                            step="0.1"
+                                            step="1"
                                             autocomplete="off">
 
                                     <label for="popup-data-stiker-panjang">
@@ -169,7 +169,7 @@
                                             id="popup-data-stiker-lebar"
                                             placeholder=" "
                                             min="0"
-                                            step="0.1"
+                                            step="1"
                                             autocomplete="off">
 
                                     <label for="popup-data-stiker-lebar">
@@ -222,9 +222,9 @@
                                 </button>
 
                                 <div class="dropdown-menu">
-                                    <div onclick="pilihGambar(1)">Pilih Gambar</div>
-                                    <div onclick="hapusGambar(1)">Hapus Gambar</div>
-                                    <div onclick="lihatGambar(1)">Lihat Gambar</div>
+                                    <div onclick="pilihGambarStiker(1)">Pilih Gambar</div>
+                                    <div onclick="hapusGambarStiker(1)">Hapus Gambar</div>
+                                    <div onclick="lihatGambarStiker(1)">Lihat Gambar</div>
                                 </div>
 
                                 <!-- PREVIEW -->
@@ -253,9 +253,9 @@
                                 </button>
 
                                 <div class="dropdown-menu">
-                                    <div onclick="pilihGambar(2)">Pilih Gambar</div>
-                                    <div onclick="hapusGambar(2)">Hapus Gambar</div>
-                                    <div onclick="lihatGambar(2)">Lihat Gambar</div>
+                                    <div onclick="pilihGambarStiker(2)">Pilih Gambar</div>
+                                    <div onclick="hapusGambarStiker(2)">Hapus Gambar</div>
+                                    <div onclick="lihatGambarStiker(2)">Lihat Gambar</div>
                                 </div>
 
                                 <!-- PREVIEW -->
@@ -281,53 +281,6 @@
                     <button type="button" id="btn-popup-data-stiker-batal">Batal</button>
                 </div>
                 <input type="file" id="upload-gambar-stiker" accept="image/*" hidden>
-            </form>
-        </div>
-    </div>
-
-    <!-- POPUP LIHAT GAMBAR -->
-    <div id="popup-lihat-gambar" class="popup">
-        <button type="button" onclick="tutupPopupStiker('popup-lihat-gambar')">
-            <span class="material-symbols-sharp">close</span>
-        </button>
-        <div class="popup-image-view">
-            <img id="img-fullscreen" src="" alt="Preview">
-        </div>
-    </div>
-    <!-- POPUP CARI UMKM -->
-    <div class="popup" id="popupStikerCariUmkm">
-        <div class="popup-content-stiker">
-            <form id="formStikerCariUmkm">
-                <h2>Data Umkm</h2>
-                <div class="search-bar">
-                    <div class="search-box">
-                        <span class="material-symbols-sharp">search</span>
-                        <label>
-                            <input type="text" id="cariUmkm" placeholder="Cari Data Umkm">
-                        </label>
-                    </div>
-                    <button type="button" id="BatalPilihBtn">
-                        <span class="material-symbols-sharp">close</span>
-                    </button>
-                </div>
-
-                <!-- TABLE -->
-                <div class="table-container-cari-umkm">
-                    <div class="tabel-card-cari-umkm">
-                        <table class="CariUmkmTbl">
-                            <thead>
-                            <tr>
-                                <th onclick="sortTableCariUmkm('namaUsaha')">Nama Usaha</th>
-                                <th onclick="sortTableCariUmkm('namaPemilik')">Nama Pemilik</th>
-                                <th onclick="sortTableCariUmkm('noTelp')">Nomor Telepon</th>
-                                <th onclick="sortTableCariUmkm('sosialMedia')">Instagram</th>
-                            </tr>
-                            </thead>
-                            <tbody id="CariUmkmTBody"></tbody>
-                        </table>
-                    </div>
-                    <div id="pagination-cari-umkm" class="pagination"></div>
-                </div>
             </form>
         </div>
     </div>

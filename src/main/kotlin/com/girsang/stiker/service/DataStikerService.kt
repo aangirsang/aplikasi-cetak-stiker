@@ -2,6 +2,7 @@ package com.girsang.stiker.service
 
 
 import com.girsang.stiker.model.dto.DataStikerDTO
+import com.girsang.stiker.model.dto.SaveDataStikerRequest
 import com.girsang.stiker.model.entity.DataStiker
 import com.girsang.stiker.repository.DataStikerRepository
 import com.girsang.stiker.repository.DataUmkmRepository
@@ -35,7 +36,7 @@ fun cariByumkmDanStatus(umkmId: Long): List<DataStikerDTO> {
         return daftar.map { DataStikerDTO.fromEntity(it) }
     }
 
-    fun simpan(@RequestBody dto: DataStikerDTO): ResponseEntity<Any> {
+    fun simpan(@RequestBody dto: SaveDataStikerRequest): ResponseEntity<Any> {
 
         // 🔹 Ambil entity DataUmkm dari database
         val umkmEntity = umkmRepo.findById(dto.umkmId)
@@ -55,7 +56,9 @@ fun cariByumkmDanStatus(umkmId: Long): List<DataStikerDTO> {
             panjang = dto.panjang,
             lebar = dto.lebar,
             catatan = dto.catatan,
-            status = dto.status
+            status = dto.status,
+            pathGambar1 = dto.pathGambar1,
+            pathGambar2 = dto.pathGambar2
         )
 
         val simpan = repo.save(stiker)
@@ -66,7 +69,7 @@ fun cariByumkmDanStatus(umkmId: Long): List<DataStikerDTO> {
         return ResponseEntity.ok(responseDto)
     }
 
-    fun ubah(id: Long, @RequestBody dto: DataStikerDTO): ResponseEntity<Any> {
+    fun ubah(id: Long, @RequestBody dto: SaveDataStikerRequest): ResponseEntity<Any> {
         val stiker = repo.findById(id).orElseThrow { NoSuchElementException("Stiker tidak ditemukan") }
 
         val umkmEntity = umkmRepo.findById(dto.umkmId)
@@ -82,6 +85,8 @@ fun cariByumkmDanStatus(umkmId: Long): List<DataStikerDTO> {
             stiker.lebar = dto.lebar
             stiker.catatan = dto.catatan
             stiker.status = dto.status
+            stiker.pathGambar1 = dto.pathGambar1
+            stiker.pathGambar2 = dto.pathGambar2
         }
 
 

@@ -8,7 +8,7 @@ async function initPopupLoading(){
 
     const response =
         await fetch(
-            "components/popup/popup-loading.html"
+            "pages/popup/popup-loading.html"
         );
 
     const html =

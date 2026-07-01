@@ -3,7 +3,7 @@ let popupHapusCallback = null;
 async function initPopupHapus() {
     if (getEl("popup-konfirmasi-hapus")) return;
 
-    const response = await fetch("components/popup/popup-konfirmasi-hapus.html");
+    const response = await fetch("pages/popup/popup-konfirmasi-hapus.html");
     const html = await response.text();
 
     document.body.insertAdjacentHTML("beforeend", html);

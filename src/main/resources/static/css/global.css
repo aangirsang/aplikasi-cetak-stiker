@@ -210,6 +210,16 @@ table {
 
 }
 
+.table-popup-pilih {
+    height: 60vh;
+    background: var(--color-white);
+    padding: var(--card-padding);
+    padding-bottom: 1rem;
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--box-shadow);
+    transition: all 300ms ease;
+}
+
 .table-page-container:hover {
     box-shadow: none;
 }
@@ -240,6 +250,10 @@ table tbody td{
 
     background: var(--color-white);
     cursor: pointer;
+}
+
+.selected-row{
+    background:#e3f2fd;
 }
 
 /* ==========================================
@@ -288,6 +302,12 @@ table tbody td{
 
 .cell-panjang {
     width: 25rem;
+    white-space: normal;
+    overflow-wrap: break-word;
+}
+
+.cell-alamat {
+    width: 20rem;
     white-space: normal;
     overflow-wrap: break-word;
 }
@@ -727,7 +747,7 @@ table tbody td{
 
 .textarea-group textarea{
     width: 100%;
-    min-height: 120px;
+    min-height: 20px;
 
     padding: 16px;
 

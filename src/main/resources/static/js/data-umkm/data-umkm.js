@@ -174,7 +174,7 @@ function createRowUmkm(item, isOpened){
                                     ? new Date(item.tglRegistrasi)
                                     .toISOString().split("T")[0]
                                     : ""}</td>
-                                <td class="cell-panjang">${item.deskripsi}</td>
+                                <td class="cell-alamat">${item.deskripsi}</td>
                             </tr>
                         </tbody>
                     </table>

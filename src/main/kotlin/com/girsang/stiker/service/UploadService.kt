@@ -18,7 +18,7 @@ class UploadService(
     ): List<UploadResponse> {
 
         val folder =
-            pathProvider.uploadDir().canonicalFile
+            pathProvider.uploadImageDir().canonicalFile
 
         if (!folder.exists()) {
             folder.mkdirs()
@@ -36,8 +36,31 @@ class UploadService(
 
             UploadResponse(
                 namaFile = fileName,
-                path = pathProvider.uploadUrl(fileName)
+                path = pathProvider.uploadImageUrl(fileName)
             )
         }
+    }
+
+    fun uploadCdr(
+        file: MultipartFile,
+        fileName: String
+    ): UploadResponse {
+
+        val folder =
+            pathProvider.uploadCdrDir().canonicalFile
+
+        if (!folder.exists()) {
+            folder.mkdirs()
+        }
+
+        val destination =
+            File(folder, fileName)
+
+        file.transferTo(destination)
+
+        return UploadResponse(
+            namaFile = fileName,
+            path = pathProvider.uploadCdrUrl(fileName)
+        )
     }
 }

@@ -1,0 +1,58 @@
+#popup-lihat-gambar {
+    position: fixed;
+    inset: 0;
+
+    display: none;
+    justify-content: center;
+    align-items: center;
+
+    background: rgba(0,0,0,0.7);
+    z-index: 9999;
+}
+
+#popup-lihat-gambar.show {
+    display: flex;
+}
+
+#popup-lihat-gambar > button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+
+    width: 3rem;
+    height: 3rem;
+
+    border: none;
+    border-radius: 50%;
+}
+
+.popup-image-view{
+    width: 90vw;
+    height: 90vh;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    overflow:hidden;
+    position:relative;
+}
+
+#img-fullscreen{
+    max-width:100%;
+    max-height:100%;
+
+    width:auto;
+    height:auto;
+
+    transform-origin:center center;
+    transform:translate(0,0) scale(1);
+
+    cursor:grab;
+    user-select:none;
+    -webkit-user-drag:none;
+}
+
+#img-fullscreen.dragging{
+    cursor: grabbing;
+}

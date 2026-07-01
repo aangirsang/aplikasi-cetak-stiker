@@ -11,11 +11,14 @@ class StorageInitializer(
     @PostConstruct
     fun init() {
 
-        val uploadDir = pathProvider.uploadDir()
+        val uploadDir = pathProvider.uploadsDir()
+        val uploadCdrDir = pathProvider.uploadCdrDir()
+
         val databaseDir = pathProvider.databaseDir()
         val databaseFile = pathProvider.databaseFile()
 
         uploadDir.mkdirs()
+        uploadCdrDir.mkdirs()
         databaseDir.mkdirs()
 
         if (!databaseFile.exists()) {

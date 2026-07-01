@@ -1,11 +1,12 @@
 package com.girsang.stiker.model.dto
 
 import com.girsang.stiker.model.entity.DataStiker
+import com.girsang.stiker.model.entity.DataUmkm
 
 
 data class DataStikerDTO(
     val id: Long = 0,
-    var dataUmkm: DataUMKMDTO? = null,
+    var dataUmkm: DataUmkm,
     var umkmId: Long,
     var kodeStiker: String = "",
     var namaStiker: String = "",
@@ -21,7 +22,7 @@ data class DataStikerDTO(
         fun fromEntity(entity: DataStiker): DataStikerDTO {
             return DataStikerDTO(
                 id = entity.id,
-                dataUmkm = DataUMKMDTO.fromEntity(entity.dataUmkm),
+                dataUmkm = entity.dataUmkm,
                 umkmId = entity.dataUmkm.id,
                 kodeStiker = entity.kodeStiker,
                 namaStiker = entity.namaStiker,
@@ -36,3 +37,14 @@ data class DataStikerDTO(
         }
     }
 }
+
+data class SaveDataStikerRequest(
+    var umkmId: Long,
+    var namaStiker: String,
+    var panjang: Int,
+    var lebar: Int,
+    var catatan: String?,
+    var status: Boolean,
+    var pathGambar1: String = "",
+    var pathGambar2: String = ""
+)

@@ -19,6 +19,8 @@
     <link rel="stylesheet" href="css/login.css">
     <link rel="stylesheet" href="css/popup/popup-konfirmasi-hapus.css">
     <link rel="stylesheet" href="css/popup/popup-loading.css">
+    <link rel="stylesheet" href="css/popup/popup-lihat-gambar.css">
+    <link rel="stylesheet" href="css/popup/popup-pilih-umkm.css">
     <link rel="stylesheet" href="css/data-master/data-pengguna.css">
     <link rel="stylesheet" href="css/data-master/data-master.css">
     <link rel="stylesheet" href="css/data-umkm/data-umkm.css">
@@ -111,6 +113,7 @@
         </main>
     </div>
 
+    <!-- LOGIN -->
     <div id="login-overlay" class="login-overlay">
 
         <div class="login-card">
@@ -138,7 +141,7 @@
                             type="text"
                             id="namaPengguna"
                             placeholder=" "
-                            autocomplete="off">
+                            autocomplete="namaPengguna">
 
                     <label for="namaPengguna">
                         Nama Pengguna
@@ -150,7 +153,8 @@
                         <input
                                 type="password"
                                 id="kataSandi"
-                                placeholder=" ">
+                                placeholder=" "
+                                autocomplete="current-password">
                         <label for="kataSandi">Kata Sandi</label>
                         <button
                                 type="button"
@@ -181,12 +185,14 @@
     <script src="js/global.js"></script>
     <script src="js/components/popup-hapus.js"></script>
     <script src="js/components/popup-loading.js"></script>
+    <script src="js/components/popup-lihat-gambar.js"></script>
     <script src="js/toast.js"></script>
     <script type="module" src="js/index.js"></script>
     <script type="module" src="js/master-data/data-pengguna.js"></script>
     <script type="module" src="js/master-data/master-data.js"></script>
     <script type="module" src="js/data-umkm/data-umkm.js"></script>
     <script type="module" src="js/data-umkm/data-stiker.js"></script>
+    <script type="module" src="js/components/popup-pilih-umkm.js"></script>
     <script type="module" src="js/login.js"></script>
 
 

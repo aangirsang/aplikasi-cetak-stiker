@@ -1,6 +1,7 @@
 package com.girsang.stiker.controller
 
 import com.girsang.stiker.model.dto.DataStikerDTO
+import com.girsang.stiker.model.dto.SaveDataStikerRequest
 import com.girsang.stiker.model.entity.DataStiker
 import com.girsang.stiker.service.DataStikerService
 import org.springframework.http.ResponseEntity
@@ -31,7 +32,7 @@ class DataStikerController(
         ResponseEntity.ok(service.cariByumkmDanStatus(umkmId))
 
     @PostMapping
-    fun simpan(@RequestBody dto: DataStikerDTO): ResponseEntity<Any> =
+    fun simpan(@RequestBody dto: SaveDataStikerRequest): ResponseEntity<Any> =
         try {
             ResponseEntity.ok(service.simpan(dto))
         } catch (e: IllegalArgumentException) {
@@ -41,7 +42,7 @@ class DataStikerController(
         }
 
     @PutMapping("/{id}")
-    fun ubah(@PathVariable id: Long, @RequestBody dto: DataStikerDTO): ResponseEntity<Any> =
+    fun ubah(@PathVariable id: Long, @RequestBody dto: SaveDataStikerRequest): ResponseEntity<Any> =
         try {
             ResponseEntity.ok(service.ubah(id, dto))
         } catch (e: IllegalArgumentException) {
