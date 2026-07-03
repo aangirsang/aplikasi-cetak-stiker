@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="css/popup/popup-pilih-umkm.css">
     <link rel="stylesheet" href="css/data-master/data-pengguna.css">
     <link rel="stylesheet" href="css/data-master/data-master.css">
+    <link rel="stylesheet" href="css/data-persediaan/data-barang.css">
     <link rel="stylesheet" href="css/data-umkm/data-umkm.css">
     <link rel="stylesheet" href="css/data-umkm/data-stiker.css">
 </head>
@@ -61,9 +62,25 @@
                         <span class="material-symbols-sharp">ad_group</span>
                         <h4>Master Data</h4>
                     </a>
-                    <a onclick="loadPage('pembelian')">
-                        <span class="material-symbols-sharp">home_storage_gear</span>
+                </div>
+
+                <a onclick="toggleSubmenu('submenu-persediaan', 'persediaan-arrow')" class="menu-item">
+                    <span class="material-symbols-sharp">pallet</span>
+                    <h3>Data Persediaan</h3>
+                    <span id="persediaan-arrow" class="material-symbols-sharp">expand_more</span>
+                </a>
+                <div class="submenu" id="submenu-persediaan">
+                    <a onclick="loadPage('master-data/data-pengguna')">
+                        <span class="material-symbols-sharp">add_shopping_cart</span>
                         <h4>Data Pembelian</h4>
+                    </a>
+                    <a onclick="loadPage('master-data/master-data')">
+                        <span class="material-symbols-sharp">production_quantity_limits</span>
+                        <h4>Data Penyesuaian</h4>
+                    </a>
+                    <a onclick="loadPage('data-persediaan/data-barang')">
+                        <span class="material-symbols-sharp">inventory_2</span>
+                        <h4>Data Barang</h4>
                     </a>
                 </div>
 
@@ -190,6 +207,7 @@
     <script type="module" src="js/index.js"></script>
     <script type="module" src="js/master-data/data-pengguna.js"></script>
     <script type="module" src="js/master-data/master-data.js"></script>
+    <script type="module" src="js/data-persediaan/data-barang.js"></script>
     <script type="module" src="js/data-umkm/data-umkm.js"></script>
     <script type="module" src="js/data-umkm/data-stiker.js"></script>
     <script type="module" src="js/components/popup-pilih-umkm.js"></script>

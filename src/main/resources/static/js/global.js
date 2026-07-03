@@ -7,6 +7,8 @@ const BASE_URL_UPLOAD_GAMBAR = `${BASE_URL}/upload/gambar`
 const BASE_URL_LEVEL = `${BASE_URL}/data-level`;
 const BASE_URL_KATEGORI = `${BASE_URL}/data-kategori`;
 
+const BASE_URL_BARANG = `${BASE_URL}/data-barang`;
+
 const BASE_URL_UMKM = `${BASE_URL}/data-umkm`;
 const BASE_URL_STIKER = `${BASE_URL}/data-stiker`;
 

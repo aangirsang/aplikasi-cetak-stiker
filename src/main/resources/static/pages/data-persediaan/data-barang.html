@@ -1,0 +1,55 @@
+<div class="data-barang">
+    <div class="search-bar">
+        <div class="search-box">
+            <span class="material-symbols-sharp">search</span>
+            <label>
+                <input type="text" id="txt-cari-data-barang" placeholder="Cari Data Barang">
+            </label>
+        </div>
+        <button class="add-btn" id="btn-tambah-data-barang">
+            <span class="material-symbols-sharp">add</span>
+            Tambah Data Barang
+        </button>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-page-container">
+        <div class="tabel-page-card">
+            <table class="tbl-data">
+                <thead>
+                <tr>
+                    <th onclick="sortTabelBarang('namaBarang')">Nama Barang</th>
+                    <th onclick="sortTabelBarang('stokBarang')">Stok Barang</th>
+                </tr>
+                </thead>
+                <tbody id="tbl-body-data-barang"></tbody>
+            </table>
+        </div>
+        <div id="pagination" class="pagination"></div>
+    </div>
+
+    <!-- POPUP -->
+    <div id="popup-data-barang" class="popup">
+        <div class="content-popup-master-data">
+            <h2 id="popup-data-barang-title">Tambah Data Barang</h2>
+            <div class="form-group">
+                <div class="input-group">
+                    <input
+                            type="text"
+                            id="popup-data-barang-input"
+                            placeholder=" "
+                            autocomplete="off"
+                    >
+
+                    <label for="popup-data-barang-input" id="popup-data-barang-label">
+                        Data Barang
+                    </label>
+                </div>
+            </div>
+            <div class="popup-actions">
+                <button type="button" id="btn-simpan-data-barang">Simpan</button>
+                <button type="button" id="btn-batal-data-barang">Batal</button>
+            </div>
+        </div>
+    </div>
+</div>

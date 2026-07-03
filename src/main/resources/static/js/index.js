@@ -48,6 +48,9 @@ async function loadPage(page) {
             'master-data/master-data': () => {
                 initMasterData();
             },
+            'data-persediaan/data-barang': () =>{
+                initDataBarang();
+            },
             'data-umkm/data-umkm': () => {
                 initDataUmkm();
             },
