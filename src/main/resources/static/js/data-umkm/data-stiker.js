@@ -197,12 +197,15 @@ function createTabelStiker(item, umkm, isOpened) {
     `
 }
 async function sortTableStiker(field) {
+    console.log(field)
     if(sortFieldDataStiker === field) {
         sortDirectionStiker = sortDirectionStiker === "asc" ? "desc" : "asc";
     } else {
         sortFieldDataStiker = field;
         sortDirectionStiker = "asc";
     }
+
+    await loadTabelDataStiker();
 }
 
 //  DETAIL DATA STIKER
@@ -303,6 +306,8 @@ function isiDataStiker(stiker) {
     getEl("popup-data-stiker-panjang").value = stiker.panjang;
     getEl("popup-data-stiker-lebar").value = stiker.lebar;
     getEl("popup-data-stiker-catatan").value = stiker.catatan;
+
+    setKodeStiker(stiker.kodeStiker);
 
     const statusRadio =
         document.querySelector(
@@ -411,6 +416,8 @@ async function loadKodeStiker(umkmId) {
         getEl("popup-data-stiker-kode").value =
             data.kodeStiker;
 
+        setKodeStiker(data.kodeStiker);
+
     } catch (error) {
         console.error(error);
         showToast(error.message, "error");
@@ -455,6 +462,14 @@ function bersihPopupDataStiker() {
         .forEach(input => {
             input.checked = false;
         });
+    setKodeStiker("")
+}
+function setKodeStiker(kode){
+    const inputKode = document.getElementById("popup-data-stiker-kode");
+    const counter = document.getElementById("popup-data-stiker-kode-counter");
+
+    inputKode.value = kode;
+    counter.textContent = `${kode.length}/20`;
 }
 
 // GAMBAR

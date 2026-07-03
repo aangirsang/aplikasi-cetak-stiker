@@ -108,11 +108,15 @@
                                         type="text"
                                         id="popup-data-stiker-kode"
                                         placeholder=" "
-                                        autocomplete="off" readonly>
+                                        autocomplete="off"
+                                        maxlength="20"
+                                        readonly>
 
                                 <label for="popup-data-stiker-kode">
                                     Kode Stiker
                                 </label>
+
+                                <span class="char-counter" id="popup-data-stiker-kode-counter">0/20</span>
                             </div>
                             <div class="input-group">
                                 <input
