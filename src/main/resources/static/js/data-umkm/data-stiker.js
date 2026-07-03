@@ -408,7 +408,8 @@ async function loadKodeStiker(umkmId) {
         );
 
         if (!response.ok) {
-            throw new Error("Gagal mengambil kode stiker");
+            showToast("Gagal mengambil kode stiker");
+            return;
         }
 
         const data = await response.json();
@@ -727,10 +728,11 @@ async function simpanDataStiker() {
             if (!response.ok) {
                 const errorData = await response.json();
 
-                throw new Error(
+                showToast(
                     errorData.message ||
                     "Gagal update stiker"
                 );
+                return;
             }
         } else {
             const response = await fetch(BASE_URL_STIKER, {
@@ -755,10 +757,11 @@ async function simpanDataStiker() {
             if (!response.ok) {
                 const errorData = await response.json();
 
-                throw new Error(
+                showToast(
                     errorData.message ||
                     "Gagal simpan stiker"
                 );
+                return;
             }
         }
 
@@ -786,10 +789,11 @@ async function hapusDataStiker(id) {
             const errorData =
                 await response.json();
 
-            throw new Error(
+            showToast(
                 errorData.message ||
                 "Gagal menghapus data stiker"
             );
+            return;
         }
         await loadTabelDataStiker();
         showToast("Data stiker berhasil dirubah", "success");
