@@ -1,5 +1,6 @@
 package com.girsang.stiker.controller
 
+import com.girsang.stiker.model.dto.response.RiwayatStokResponse
 import com.girsang.stiker.model.entity.DataBarang
 import com.girsang.stiker.service.DataBarangService
 import jakarta.validation.Valid
@@ -57,4 +58,13 @@ class DataBarangController (
             ResponseEntity.status(400).body(mapOf("error" to e.message))
         }
     }
+
+    // RIWAYAT STOK
+    @GetMapping("/riwayat-stok")
+    fun semuaRiwayat(): ResponseEntity<List<RiwayatStokResponse>> =
+        ResponseEntity.ok(dataBarangService.semuaRiwayat())
+
+    @GetMapping("/riwayat-stok/{id}")
+    fun daftarRiwayatBarang(@PathVariable id:Long): ResponseEntity<List<RiwayatStokResponse>> =
+        ResponseEntity.ok(dataBarangService.riwayatBarang(id))
 }

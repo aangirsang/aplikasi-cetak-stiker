@@ -1,5 +1,6 @@
 package com.girsang.stiker.model.entity
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
@@ -8,6 +9,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
+import jakarta.persistence.OneToMany
 
 @Entity
 class DataPengguna(
@@ -30,5 +32,10 @@ class DataPengguna(
 
     var status: Boolean = true,
 
-    var pathGambar: String = ""
+    var pathGambar: String = "",
+
+    @OneToMany(mappedBy = "dataPengguna", fetch = FetchType.LAZY, targetEntity = DataPembelian::class)
+    @JsonIgnore // supaya JSON tidak error lazy loading
+    var daftarPembelian: List<DataPembelian> = mutableListOf()
+
 )

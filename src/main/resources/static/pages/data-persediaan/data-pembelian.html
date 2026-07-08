@@ -1,0 +1,71 @@
+<div class="data-pembelian">
+    <div class="search-bar">
+        <div class="search-box">
+            <span class="material-symbols-sharp">search</span>
+            <label>
+                <input type="text" id="txt-cari-data-pembelian" placeholder="Cari Data Pembelian">
+            </label>
+        </div>
+        <button class="add-btn" id="btn-tambah-data-pembelian">
+            <span class="material-symbols-sharp">add</span>
+            Tambah Data Pembelian
+        </button>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-page-container">
+        <div class="tabel-page-card">
+            <table class="tbl-data">
+                <thead>
+                <tr>
+                    <th onclick="sortTabelPembelian('tanggal')">Tanggal</th>
+                    <th onclick="sortTabelPembelian('namaPengguna')">Nama Pengguna</th>
+                    <th onclick="sortTabelPembelian('subtotal')">Sub Total</th>
+                </tr>
+                </thead>
+                <tbody id="tbl-body-data-pembelian"></tbody>
+            </table>
+        </div>
+        <div id="pagination" class="pagination"></div>
+    </div>
+
+    <!--POPUP PEMBELIAN-->
+    <div id="popup-data-pembelian" class="popup">
+        <div class="content-popup-data-pembelian">
+            <form id="form-popup-data-pembelian">
+                <div class="form-data-atas">
+                    <div class="form-data-pembelian-atas-kiri">
+                        <h2 id="popup-data-pembelian-title">Data Orderan</h2>
+                    </div>
+                    <div class="form-data-pembelian-atas-kanan">
+                        <label id="data-pemebelian-tanggal">Tanggal Orderan</label>
+                        <label id="data-pemebelian-subtota">Subtotal</label>
+                    </div>
+                </div>
+                <div class="tambah-barang">
+                    <button type="button" id="btn-popup-data-pembelian-barang">Tambah Barang</button>
+                </div>
+                <div class="tabel-page-popup">
+                    <div class="tabel-page-card-pembelian">
+                        <table class="tbl-data">
+                            <thead>
+                            <tr>
+                                <th onclick="sortTablePembelianRinci('namaBarang')">Nama Barang</th>
+                                <th onclick="sortTablePembelianRinci('harga')">Harga</th>
+                                <th onclick="sortTablePembelianRinci('jumlah')">Jumlah</th>
+                                <th onclick="sortTablePembelianRinci('total')">Total</th>
+                            </tr>
+                            </thead>
+                            <tbody id="tbl-body-data-pembelian-rinci"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="popup-actions">
+                    <button type="button" id="btn-popup-data-pembelian-simpan">Simpan</button>
+                    <button type="button" id="btn-popup-data-pembelian-batal">Batal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

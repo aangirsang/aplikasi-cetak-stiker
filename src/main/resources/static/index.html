@@ -21,9 +21,11 @@
     <link rel="stylesheet" href="css/popup/popup-loading.css">
     <link rel="stylesheet" href="css/popup/popup-lihat-gambar.css">
     <link rel="stylesheet" href="css/popup/popup-pilih-umkm.css">
+    <link rel="stylesheet" href="css/popup/popup-pilih-barang.css">
     <link rel="stylesheet" href="css/data-master/data-pengguna.css">
     <link rel="stylesheet" href="css/data-master/data-master.css">
     <link rel="stylesheet" href="css/data-persediaan/data-barang.css">
+    <link rel="stylesheet" href="css/data-persediaan/data-pembelian.css">
     <link rel="stylesheet" href="css/data-umkm/data-umkm.css">
     <link rel="stylesheet" href="css/data-umkm/data-stiker.css">
 </head>
@@ -70,7 +72,7 @@
                     <span id="persediaan-arrow" class="material-symbols-sharp">expand_more</span>
                 </a>
                 <div class="submenu" id="submenu-persediaan">
-                    <a onclick="loadPage('master-data/data-pengguna')">
+                    <a onclick="loadPage('data-persediaan/data-pembelian')">
                         <span class="material-symbols-sharp">add_shopping_cart</span>
                         <h4>Data Pembelian</h4>
                     </a>
@@ -81,6 +83,10 @@
                     <a onclick="loadPage('data-persediaan/data-barang')">
                         <span class="material-symbols-sharp">inventory_2</span>
                         <h4>Data Barang</h4>
+                    </a>
+                    <a onclick="loadPage('data-persediaan/data-riwayat-stok')">
+                        <span class="material-symbols-sharp">update</span>
+                        <h4>Riwayat Stok</h4>
                     </a>
                 </div>
 
@@ -204,13 +210,15 @@
     <script src="js/components/popup-loading.js"></script>
     <script src="js/components/popup-lihat-gambar.js"></script>
     <script src="js/toast.js"></script>
-    <script type="module" src="js/index.js"></script>
     <script type="module" src="js/master-data/data-pengguna.js"></script>
     <script type="module" src="js/master-data/master-data.js"></script>
     <script type="module" src="js/data-persediaan/data-barang.js"></script>
+    <script type="module" src="js/data-persediaan/data-pembelian.js"></script>
     <script type="module" src="js/data-umkm/data-umkm.js"></script>
     <script type="module" src="js/data-umkm/data-stiker.js"></script>
     <script type="module" src="js/components/popup-pilih-umkm.js"></script>
+    <script type="module" src="js/components/popup-pilih-barang.js"></script>
+    <script type="module" src="js/index.js"></script>
     <script type="module" src="js/login.js"></script>
 
 

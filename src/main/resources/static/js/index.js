@@ -1,4 +1,5 @@
 void loadPage('dashboard');
+let penggunaAktif = null;
 
 const menuItems = document.querySelectorAll('.sidebar a');
 
@@ -12,6 +13,11 @@ async function loadPage(page) {
     // Jika sedang berada di halaman Data Stiker
     if (typeof destroyDataUmkm === "function") {
         await destroyDataUmkm();
+    }
+
+    // Jika sedang berada di halaman Data Stiker
+    if (typeof await destroyDataPembelian() === "function") {
+        await destroyDataPembelian();
     }
 
     const content = document.getElementById('content');
@@ -47,6 +53,9 @@ async function loadPage(page) {
             },
             'master-data/master-data': () => {
                 initMasterData();
+            },
+            'data-persediaan/data-pembelian': () =>{
+                initDataPembelian();
             },
             'data-persediaan/data-barang': () =>{
                 initDataBarang();
@@ -105,6 +114,7 @@ function toggleSubmenu(submenuId, arrowId){
 
 // PROFILE
 function updateProfile(user){
+    penggunaAktif = user;
 
     document.getElementById("profile-container").innerHTML = `
         <div class="profile">
@@ -172,6 +182,8 @@ function resetLoginForm() {
 
     getEl("login-error").textContent = "";
     getEl("namaPengguna").focus();
+
+    penggunaAktif = null
 }
 
 window.loadPage = loadPage;
@@ -179,3 +191,4 @@ window.toggleSubmenu = toggleSubmenu;
 window.updateProfile = updateProfile;
 window.logout = logout;
 window.resetLoginForm = resetLoginForm;
+window.penggunaAktif = penggunaAktif;

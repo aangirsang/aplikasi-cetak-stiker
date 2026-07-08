@@ -1,17 +1,19 @@
 package com.girsang.stiker.model.entity
 
-import jakarta.persistence.Column
+import com.girsang.stiker.config.JenisRiwayatStok
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
-import jakarta.validation.constraints.NotBlank
 
 @Entity
-class DataPenyesuaianStok(
+class DataRiwayatStok(
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0,
@@ -20,11 +22,19 @@ class DataPenyesuaianStok(
     @JoinColumn(name = "barang_id")
     var dataBarang: DataBarang,
 
-    var stokSistem: Long,
-    var stokFisik: Long,
-    var selisih: Long,
+    var tanggal: Long,
 
-    @field:NotBlank(message = "Alasan tidak boleh kosong")
-    @Column(nullable = false)
-    var alasan: String
+    @Enumerated(EnumType.STRING)
+    var jenis: JenisRiwayatStok,
+
+    var referensiId: Long,
+    var perubahan: Long,
+    var saldoAwal: Long = 0,
+    var saldoAkhir: Long,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pengguna_id")
+    var dataPengguna: DataPengguna,
+
+    var keterangan: String? = null
 )

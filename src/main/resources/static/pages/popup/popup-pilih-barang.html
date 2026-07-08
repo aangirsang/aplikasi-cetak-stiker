@@ -1,0 +1,35 @@
+<div class="popup" id="popup-pilih-barang">
+    <div class="content-popup-pilih-barang">
+        <form id="form-popup-pilih-barang">
+            <h2>Data Barang</h2>
+            <div class="search-bar">
+                <div class="search-box">
+                    <span class="material-symbols-sharp">search</span>
+                    <label>
+                        <input type="text" id="cari-popup-pilih-barang" placeholder="Cari Data Umkm">
+                    </label>
+                </div>
+                <button type="button" id="batal-popup-pilih-barang">
+                    <span class="material-symbols-sharp">close</span>
+                </button>
+            </div>
+
+            <!-- TABLE -->
+            <div class="table-popup-pilih">
+                <div class="tabel-card-popup-pilih-barang">
+                    <table class="table-data--popup-pilih-barang">
+                        <thead>
+                        <tr>
+                            <th onclick="sortTablePopupPilihBarang('namaBarang')">Nama Barang</th>
+                            <th onclick="sortTablePopupPilihBarang('stokBarang')">Stok</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tbody-popup-pilih-barang"></tbody>
+                    </table>
+                </div>
+                <div id="pagination-popup-pilih-barang" class="pagination"></div>
+            </div>
+        </form>
+
+    </div>
+</div>

@@ -8,6 +8,7 @@ const BASE_URL_LEVEL = `${BASE_URL}/data-level`;
 const BASE_URL_KATEGORI = `${BASE_URL}/data-kategori`;
 
 const BASE_URL_BARANG = `${BASE_URL}/data-barang`;
+const BASE_URL_PEMBELIAN = `${BASE_URL}/data-pembelian`;
 
 const BASE_URL_UMKM = `${BASE_URL}/data-umkm`;
 const BASE_URL_STIKER = `${BASE_URL}/data-stiker`;
@@ -261,5 +262,37 @@ function convertToWebp(
                 );
         }
     );
+}
+
+function formatTanggal(timestamp) {
+    const date = new Date(timestamp);
+
+    const tanggal = date.toLocaleDateString("id-ID", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+    });
+
+    const jam = date.toLocaleTimeString("id-ID", {
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+
+    return `${tanggal} • ${jam}`;
+}
+
+async function gagalHapus(response) {
+    console.log("GagalHapus terpanggil");
+    if (response.ok) return false;
+
+    const errorData = await response.json();
+
+    showToast(
+        `Gagal Hapus!!, ${errorData.error}` || "Gagal menghapus data",
+        "error"
+    );
+
+    return true;
 }
 

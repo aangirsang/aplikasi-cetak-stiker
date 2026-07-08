@@ -22,7 +22,6 @@ class DataPembelian (
     var dataPengguna: DataPengguna,
 
     var tanggal: Long,
-    var jenisPembelian: String = "",
     var subtotal: BigDecimal = BigDecimal.ZERO,
 
     @OneToMany(mappedBy = "dataPembelian", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)

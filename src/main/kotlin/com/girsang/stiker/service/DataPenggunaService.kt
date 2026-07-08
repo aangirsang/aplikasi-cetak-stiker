@@ -14,6 +14,7 @@ import java.util.Optional
 class DataPenggunaService(
     private val repo: DataPenggunaRepository,
     private val dataLevelRepo: DataLevelRepository,
+    private val deletionService: EntityDeletionService,
     private val passwordEncoder: PasswordEncoder
 ) {
 
@@ -93,11 +94,8 @@ class DataPenggunaService(
         return repo.save(dataLama)
     }
     fun hapus(id: Long){
-        if(repo.existsById(id)){
-            repo.deleteById(id)
-        }else {
-            throw NoSuchElementException("Data Pengguna dengan id $id tidak ditemukan")
-        }
+        if( (!repo.existsById(id)))  throw NoSuchElementException("Data tidak ditemukan")
+        deletionService.safeDelete(DataPengguna::class.java, id)
     }
     // 🔐 Fungsi Login
     fun login(

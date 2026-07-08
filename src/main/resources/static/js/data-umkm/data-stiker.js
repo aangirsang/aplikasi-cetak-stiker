@@ -785,16 +785,8 @@ async function hapusDataStiker(id) {
             method: "DELETE"
         });
 
-        if (!response.ok) {
-            const errorData =
-                await response.json();
+        if (await gagalHapus(response)) return;
 
-            showToast(
-                errorData.message ||
-                "Gagal menghapus data stiker"
-            );
-            return;
-        }
         await loadTabelDataStiker();
         showToast("Data stiker berhasil dirubah", "success");
     } catch (e){

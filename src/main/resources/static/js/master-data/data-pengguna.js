@@ -654,23 +654,11 @@ async function hapusDataPengguna(id){
                 }
             );
 
-        if(!response.ok){
-
-            const errorData =
-                await response.json();
-
-            throw new Error(
-                errorData.message ||
-                "Gagal menghapus pengguna"
-            );
-        }
+        if (await gagalHapus(response)) return;
 
         await loadTablePengguna();
-
         showToast("Data Berhasil Dihapus!!", "success")
-
     } catch (e){
-
         showToast(e.message, "error");
     } finally {
         hideLoading();

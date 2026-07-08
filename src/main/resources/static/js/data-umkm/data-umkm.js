@@ -606,22 +606,10 @@ async function hapusDataUmkm(id) {
         const response = await fetch(`${BASE_URL_UMKM}/${id}`, {
             method: 'DELETE'
         });
-        const text = await response.text();
+        if(await gagalHapus(response)) return;
 
-        console.log("Status:", response.status);
-        console.log("Response:", text);
-
-        if (response.ok) {
-
-            await loadTableDataUmkm();
-
-            showToast("Data UMKM berhasil dihapus", "success");
-        } else {
-            showToast(
-                text || "Terjadi kesalahan",
-                "warning"
-            );
-        }
+        await loadTableDataUmkm();
+        showToast("Data UMKM berhasil dihapus", "success");
     } catch (e) {
         showToast(e.message, "warning");
     } finally {

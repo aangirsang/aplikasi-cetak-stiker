@@ -21,6 +21,12 @@ async function initDataBarang() {
     getEl("btn-batal-data-barang").addEventListener("click", closePopupBarang);
     getEl("btn-simpan-data-barang").addEventListener("click", () => simpanDataBarang());
 
+    getEl("txt-cari-data-barang").addEventListener("input", async function(){
+        cariDataBarang = this.value.trim().toLowerCase();
+        currentPageBarang = 1;
+        await loadTabelDataBarang();
+    });
+
 }
 function bersihDataBarang(){
 
@@ -247,15 +253,8 @@ async function hapusDataBarang(id) {
         const response = await fetch(`${BASE_URL_BARANG}/${id}`, {
             method: "DELETE"
         });
-        if (!response.ok) {
-            const errorData = await response.json();
+        if (await gagalHapus(response)) return;
 
-            showToast(
-                errorData.message ||
-                "Gagal simpan barang!!"
-            );
-            return;
-        }
         await loadTabelDataBarang();
         showToast("Data Barang berhasil dihapus!!", "success");
     } catch (e){

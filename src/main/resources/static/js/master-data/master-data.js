@@ -351,17 +351,7 @@ async function konfirmasiHapus() {
                     }
                 );
 
-            if (!response.ok) {
-
-                const errorData =
-                    await response.json();
-
-                throw new Error(
-                    errorData.message ||
-                    errorData.error ||
-                    "Gagal hapus level"
-                );
-            }
+            if (await gagalHapus(response)) return;
 
         } else if (
             deleteState.mode === "kategori"
@@ -373,17 +363,7 @@ async function konfirmasiHapus() {
                     {method: "DELETE"}
                 );
 
-            if (!response.ok) {
-
-                const errorData =
-                    await response.json();
-
-                throw new Error(
-                    errorData.message ||
-                    errorData.error ||
-                    "Gagal hapus kategori"
-                );
-            }
+            if (await gagalHapus(response)) return;
         }
 
         showToast(

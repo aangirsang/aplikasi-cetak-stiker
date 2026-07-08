@@ -3,6 +3,7 @@ const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
 if (currentUser) {
     updateProfile(currentUser);
+    penggunaAktif = currentUser;
 
     loginOverlay.classList.add("hidden");
 } else {
@@ -40,6 +41,10 @@ async function doLogin(e){
 
             return;
         }
+
+        penggunaAktif = result.data;
+
+        console.log(penggunaAktif);
 
         localStorage.setItem("currentUser",
             JSON.stringify(result.data)
