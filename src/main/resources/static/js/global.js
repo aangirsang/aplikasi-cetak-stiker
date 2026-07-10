@@ -296,4 +296,17 @@ async function gagalHapus(response) {
 
     return true;
 }
+async function gagalSimpan(response) {
+    console.log("GagalHapus terpanggil");
+    if (response.ok) return false;
+
+    const errorData = await response.json();
+
+    showToast(
+        `Gagal Simpan!!, ${errorData.error}` || "Gagal simpan data",
+        "error"
+    );
+
+    return true;
+}
 

@@ -37,7 +37,7 @@ async function loadPage(page) {
         const response = await fetch(`pages/${page}.html`);
 
         if (!response.ok) {
-            throw new Error(`HTTP Error ${response.status}`);
+            showToast(`HTTP Error ${response.status}`);
         }
 
         content.innerHTML = await response.text();

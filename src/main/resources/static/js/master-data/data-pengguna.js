@@ -555,14 +555,7 @@ async function simpanDataPengguna() {
                 })
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-
-                throw new Error(
-                    errorData.message ||
-                    "Gagal update pengguna"
-                );
-            }
+            if(await gagalSimpan(response)) return
         } else {
             const response = await fetch(BASE_URL_PENGGUNA, {
                 method: 'POST',
@@ -584,7 +577,7 @@ async function simpanDataPengguna() {
             if (!response.ok) {
                 const errorData = await response.json();
 
-                throw new Error(
+                showToast(
                     errorData.message ||
                     "Gagal update pengguna"
                 );
