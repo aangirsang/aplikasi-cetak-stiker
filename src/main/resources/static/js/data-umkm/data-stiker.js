@@ -2,7 +2,7 @@ let currentPageStiker = 1;
 let cariDataStiker = "";
 const rowsPerPageStiker = 15;
 
-let sortFieldDataStiker = "namaStiker";
+let sortFieldDataStiker = "kodeStiker";
 let sortDirectionStiker = "asc";
 
 let dataStiker = [];

@@ -8,7 +8,7 @@ let cariDataPembelian = "";
 const rowsPerPagePembelian = 15;
 
 let sortFieldDataPembelian = "tanggal";
-let sortDirectionPembelian = "asc";
+let sortDirectionPembelian = "desc";
 
 let openedDetailPembelianId = null;
 
@@ -22,7 +22,7 @@ async function initDataPembelian(){
     await initPilihBarang();
     await initPopupLoading();
     await initPopupHapus();
-    await loadTabelDataPembelian();
+    await loadTabelDataPembelian(true);
     bersihPopupDataPembelian();
 
     getEl("btn-tambah-data-pembelian").addEventListener("click", () => showPopupPembelian());
@@ -107,10 +107,12 @@ async function tampilPopupPilihBarang() {
 }
 
 // TABEL
-async function loadTabelDataPembelian() {
+async function loadTabelDataPembelian(reload = false) {
     showLoading("Memuat Data Pembelian..");
     try {
-        dataPembelian = await fetchDataPembelian();
+        if(reload){
+            dataPembelian = await fetchDataPembelian();
+        }
 
         const filtered = await getFilterDataPembelian();
         const sorted = await getsortedDataPembelian(filtered);
@@ -438,7 +440,7 @@ async function simpanDataPembelian(){
             }
         }
         closePopupPembelian();
-        await loadTabelDataPembelian();
+        await loadTabelDataPembelian(true);
     } catch (e) {
         showToast(e.message, "error");
     } finally {
@@ -463,7 +465,7 @@ async function hapusDataPembelian(id) {
 
         if (await gagalHapus(response)) return;
 
-        await loadTabelDataPembelian();
+        await loadTabelDataPembelian(true);
         showToast("Data pembelian berhasil dihapus", "success");
     } catch (e){
         showToast(e.message, "error");

@@ -4,7 +4,7 @@ let rowsPerPagePengguna = 10;
 
 let searchKeywordPengguna = "";
 
-let sortFieldPengguna = "namaLengkap";
+let sortFieldPengguna = "namaPengguna";
 let sortDirectionPengguna = "asc";
 
 let dataLevel = [];

@@ -2,7 +2,7 @@ let currentPageBarang = 1;
 let cariDataBarang = "";
 const rowsPerPageBarang = 15;
 
-let sortFieldDataBarang = "namaUsaha";
+let sortFieldDataBarang = "namaBarang";
 let sortDirectionBarang = "asc";
 
 let dataBarang = [];

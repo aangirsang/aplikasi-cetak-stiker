@@ -3,8 +3,29 @@
     <div class="search-box">
       <span class="material-symbols-sharp">search</span>
       <label>
-        <input type="text" id="txt-cari-data-barang" placeholder="Cari Data Barang">
+        <input type="text" id="txt-cari-data-riwayat-stok" placeholder="Cari Data Barang">
       </label>
     </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-page-container">
+    <div class="tabel-page-card">
+      <table class="tbl-data">
+        <thead>
+        <tr>
+          <th onclick="sortTableRiwayatStok('tanggal')">Tanggal</th>
+          <th onclick="sortTableRiwayatStok('namaPengguna')">Nama User</th>
+          <th onclick="sortTableRiwayatStok('namaBarang')">Nama Barang</th>
+          <th onclick="sortTableRiwayatStok('jenis')">Jenis Perubahan</th>
+          <th onclick="sortTableRiwayatStok('saldoAwal')">Stok Awal</th>
+          <th onclick="sortTableRiwayatStok('perubahan')">Perubahan Stok</th>
+          <th onclick="sortTableRiwayatStok('saldoAkhir')">Stok Akhir</th>
+        </tr>
+        </thead>
+        <tbody id="tbl-body-data-riwayat-stok"></tbody>
+      </table>
+    </div>
+    <div id="pagination" class="pagination"></div>
   </div>
 </div>

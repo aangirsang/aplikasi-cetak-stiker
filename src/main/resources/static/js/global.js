@@ -9,6 +9,7 @@ const BASE_URL_KATEGORI = `${BASE_URL}/data-kategori`;
 
 const BASE_URL_BARANG = `${BASE_URL}/data-barang`;
 const BASE_URL_PEMBELIAN = `${BASE_URL}/data-pembelian`;
+const BASE_URL_RIWAYAT = `${BASE_URL_BARANG}/riwayat-stok`;
 
 const BASE_URL_UMKM = `${BASE_URL}/data-umkm`;
 const BASE_URL_STIKER = `${BASE_URL}/data-stiker`;

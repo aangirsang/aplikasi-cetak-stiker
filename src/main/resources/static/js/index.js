@@ -60,6 +60,9 @@ async function loadPage(page) {
             'data-persediaan/data-barang': () =>{
                 initDataBarang();
             },
+            'data-persediaan/data-riwayat-stok': () =>{
+                initDataRiwayatStok();
+            },
             'data-umkm/data-umkm': () => {
                 initDataUmkm();
             },

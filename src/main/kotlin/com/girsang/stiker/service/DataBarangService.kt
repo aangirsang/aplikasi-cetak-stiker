@@ -60,7 +60,7 @@ class DataBarangService(
     // RIWAYAT STOK
     @Transactional
     fun semuaRiwayat(): List<RiwayatStokResponse> =
-        repoRiwayat.findAll().map { mapper.toResponse(it) }
+        repoRiwayat.findAllByOrderByTanggalDesc().map { mapper.toResponse(it) }
 
     fun riwayatBarang(barangId: Long): List<RiwayatStokResponse> {
         return repoRiwayat

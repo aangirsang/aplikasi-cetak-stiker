@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface DataRiwayatStokRepository: JpaRepository<DataRiwayatStok, Long> {
     fun findByDataBarangId(barangId: Long): List<DataRiwayatStok>
+    fun findAllByOrderByTanggalDesc(): List<DataRiwayatStok>
 }
