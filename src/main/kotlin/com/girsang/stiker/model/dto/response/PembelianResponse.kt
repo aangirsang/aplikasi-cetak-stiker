@@ -4,8 +4,8 @@ import java.math.BigDecimal
 
 data class PembelianResponse(
 
-    val id: Long,
-    val dataPenggunaId: Long,
+    val id: String,
+    val dataPenggunaId: String,
     val namaPengguna: String,
     val tanggal: Long,
     val subtotal: BigDecimal = BigDecimal.ZERO,

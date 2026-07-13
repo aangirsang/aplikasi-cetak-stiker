@@ -222,7 +222,7 @@ function createRowPopupPilihUmkm(umkm){
     return `
         <tr
             class="pilih-umkm-row ${selected ? "selected-row" : ""}"
-            ondblclick="pilihPopupUmkm(${umkm.id})">
+            ondblclick="pilihPopupUmkm('${umkm.id}')">
             <td>${umkm.namaUsaha}</td>
             <td>${umkm.namaPemilik}</td>
             <td>${umkm.dataKategori.kategori}</td>

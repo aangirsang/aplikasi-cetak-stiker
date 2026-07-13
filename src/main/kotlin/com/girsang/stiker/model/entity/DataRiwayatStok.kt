@@ -10,13 +10,13 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
+import jakarta.persistence.PrePersist
 
 @Entity
 class DataRiwayatStok(
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long = 0,
+    var id: String = "",
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "barang_id")
@@ -27,7 +27,7 @@ class DataRiwayatStok(
     @Enumerated(EnumType.STRING)
     var jenis: JenisRiwayatStok,
 
-    var referensiId: Long,
+    var referensiId: String,
     var perubahan: Long,
     var saldoAwal: Long = 0,
     var saldoAkhir: Long,
@@ -37,4 +37,11 @@ class DataRiwayatStok(
     var dataPengguna: DataPengguna,
 
     var keterangan: String? = null
-)
+){
+    @PrePersist
+    fun generateId() {
+        if (id.isBlank()) {
+            id = "RSTK-${System.currentTimeMillis()}-${(100..999).random()}"
+        }
+    }
+}

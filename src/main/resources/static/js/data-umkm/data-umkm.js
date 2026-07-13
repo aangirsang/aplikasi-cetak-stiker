@@ -17,7 +17,7 @@ let openedDetailUmkmId = null;
 async function initDataUmkm(){
     bersihPopupDataUmkm();
 
-    await loadTableDataUmkm();
+    await loadTableDataUmkm(true);
     await initCustomSelectKategori();
     await initPopupHapus();
     await initPopupLoading();
@@ -39,9 +39,11 @@ async function initDataUmkm(){
 }
 
 // TABEL DATA UMKM
-async function loadTableDataUmkm(){
+async function loadTableDataUmkm(reload = false){
     try {
-        dataUmkm = await fetchDataUmkm();
+        if(reload){
+            dataUmkm = await fetchDataUmkm();
+        }
 
         const filtered = getFilterDataUmkm();
         const sorted = getSortedDataUmkm(filtered);
@@ -127,7 +129,7 @@ function createRowUmkm(item, isOpened){
     return `
         <tr 
         class="umkm-row ${isOpened ? 'selected' : ''}"
-        onclick="event.stopPropagation(); toggleDetailUmkm(${item.id})">
+        onclick="event.stopPropagation(); toggleDetailUmkm('${item.id}')">
             <td>${item.namaUsaha}</td>
             <td>${item.namaPemilik}</td>
             <td>${item.noTelpon}</td>
@@ -138,11 +140,11 @@ function createRowUmkm(item, isOpened){
             <td>
                 <div class="actions">
                     <button
-                        onclick="showPopupUmkm(${item.id})">
+                        onclick="showPopupUmkm('${item.id}')">
                         <span class="material-symbols-sharp">edit</span>
                     </button>
 
-                    <button onclick="konfirmasiHapusUmkm(${item.id})">
+                    <button onclick="konfirmasiHapusUmkm('${item.id}')">
                         <span class="material-symbols-sharp">delete</span>
                     </button>
                 </div>
@@ -502,7 +504,7 @@ async function simpanDataUmkm(){
                 body: JSON.stringify({
                     namaUsaha: namaUsaha,
                     namaPemilik: namaPemilik,
-                    dataKategori: {id: selectedKategori.id},
+                    dataKategoriId: selectedKategori.id,
                     deskripsi: deskripsi,
                     noKtp: ktp,
                     jenisKelamin: kelamin,
@@ -519,28 +521,7 @@ async function simpanDataUmkm(){
                 })
             });
 
-            const text = await response.text();
-
-            console.log("Status:", response.status);
-            console.log("Response:", text);
-
-            if (response.ok) {
-                closePopupUmkm();
-
-                bersihPopupDataUmkm();
-
-                await loadTableDataUmkm();
-
-                showToast(
-                    "Data UMKM berhasil disimpan",
-                    "success"
-                );
-            } else {
-                showToast(
-                    text || "Terjadi kesalahan",
-                    "warning"
-                );
-            }
+            if(await gagalSimpan(response)) return;
         } else {
             const response = await fetch(BASE_URL_UMKM, {
                 method: 'POST',
@@ -550,7 +531,7 @@ async function simpanDataUmkm(){
                 body: JSON.stringify({
                     namaUsaha: namaUsaha,
                     namaPemilik: namaPemilik,
-                    dataKategori: {id: selectedKategori.id},
+                    dataKategoriId: selectedKategori.id,
                     deskripsi: deskripsi,
                     noKtp: ktp,
                     jenisKelamin: kelamin,
@@ -567,29 +548,14 @@ async function simpanDataUmkm(){
                 })
             });
 
-            const text = await response.text();
-
-            console.log("Status:", response.status);
-            console.log("Response:", text);
-
-            if (response.ok) {
-                closePopupUmkm();
-
-                bersihPopupDataUmkm();
-
-                await loadTableDataUmkm();
-
-                showToast(
-                    "Data UMKM berhasil disimpan",
-                    "success"
-                );
-            } else {
-                showToast(
-                    text || "Terjadi kesalahan",
-                    "warning"
-                );
-            }
+            if(await gagalSimpan(response)) return;
         }
+        closePopupUmkm();
+        bersihPopupDataUmkm();
+        await loadTableDataUmkm(true);
+        showToast(
+            "Data UMKM berhasil disimpan",
+            "success")
 
     }  catch (e) {
         showToast(e.message, "warning");
@@ -608,7 +574,7 @@ async function hapusDataUmkm(id) {
         });
         if(await gagalHapus(response)) return;
 
-        await loadTableDataUmkm();
+        await loadTableDataUmkm(true);
         showToast("Data UMKM berhasil dihapus", "success");
     } catch (e) {
         showToast(e.message, "warning");

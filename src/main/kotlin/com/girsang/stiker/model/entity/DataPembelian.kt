@@ -9,13 +9,13 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
+import jakarta.persistence.PrePersist
 import java.math.BigDecimal
 
 @Entity
 class DataPembelian (
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long = 0,
+    var id: String = "",
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(nullable = false)
@@ -26,4 +26,11 @@ class DataPembelian (
 
     @OneToMany(mappedBy = "dataPembelian", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
     var rincian: MutableList<DataPembelianRinci> = mutableListOf()
-)
+){
+    @PrePersist
+    fun generateId() {
+        if (id.isBlank()) {
+            id = "BUY-${System.currentTimeMillis()}-${(100..999).random()}"
+        }
+    }
+}

@@ -12,7 +12,11 @@ class DataKategoriService (
 ) {
 
     fun semuaLevel(): List<DataKategori> = repo.findAll()
-    fun cariId(id: Long): Optional<DataKategori> = repo.findById(id)
+    fun cariId(id: String): DataKategori =
+        repo.findById(id)
+            .orElseThrow {
+                IllegalArgumentException("Kategori tidak ditemukan")
+            }
     fun simpan(dataKategori: DataKategori): DataKategori {
         if(repo.existsByKategoriIgnoreCase(dataKategori.kategori)) {
             throw IllegalArgumentException("Data Kategori ${dataKategori.kategori} Sudah Ada.")
@@ -21,7 +25,7 @@ class DataKategoriService (
         return repo.save(dataKategori);
     }
 
-    fun update(id: Long, dataKategori: DataKategori): DataKategori {
+    fun update(id: String, dataKategori: DataKategori): DataKategori {
         val dataLama = repo.findById(id).orElseThrow {
             throw NoSuchElementException ("Data Level dengan id $id tidak ditemukan")
         }
@@ -33,7 +37,7 @@ class DataKategoriService (
         return repo.save(dataLama)
     }
 
-    fun hapus(id: Long) {
+    fun hapus(id: String) {
         if (!repo.existsById(id)) throw NoSuchElementException("Data tidak ditemukan")
         deletionService.safeDelete(DataKategori::class.java, id)
     }

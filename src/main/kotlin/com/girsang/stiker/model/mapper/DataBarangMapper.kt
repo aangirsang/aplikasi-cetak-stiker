@@ -1,4 +1,4 @@
-package com.girsang.stiker.mapper
+package com.girsang.stiker.model.mapper
 
 import com.girsang.stiker.model.dto.response.RiwayatStokResponse
 import com.girsang.stiker.model.entity.DataRiwayatStok

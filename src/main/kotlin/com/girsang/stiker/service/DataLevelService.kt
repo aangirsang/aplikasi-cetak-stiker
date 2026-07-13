@@ -12,7 +12,11 @@ class DataLevelService (
 ) {
 
     fun semuaLevel(): List<DataLevel> = repo.findAll()
-    fun cariId(id: Long): Optional<DataLevel> = repo.findById(id)
+    fun cariId(id: String): DataLevel =
+        repo.findById(id)
+            .orElseThrow {
+                IllegalArgumentException("Level tidak ditemukan")
+            }
     fun simpan(dataLevel: DataLevel): DataLevel {
         if(repo.existsByLevelIgnoreCase(dataLevel.level)) {
             throw IllegalArgumentException("Data Level ${dataLevel.level} Sudah Ada.")
@@ -21,7 +25,7 @@ class DataLevelService (
         return repo.save(dataLevel)
     }
 
-    fun update(id: Long, dataLevel: DataLevel): DataLevel {
+    fun update(id: String, dataLevel: DataLevel): DataLevel {
         val dataLama = repo.findById(id).orElseThrow {
             throw NoSuchElementException ("Data Level dengan id $id tidak ditemukan")
         }
@@ -34,7 +38,7 @@ class DataLevelService (
         return repo.save(dataLama)
     }
 
-    fun hapus(id: Long) {
+    fun hapus(id: String) {
         if (!repo.existsById(id)) throw NoSuchElementException("Data tidak ditemukan")
         deletionService.safeDelete(DataLevel::class.java, id)
     }

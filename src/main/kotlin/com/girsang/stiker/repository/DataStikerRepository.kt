@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 
 @Repository
-interface DataStikerRepository: JpaRepository <DataStiker, Long> {
+interface DataStikerRepository: JpaRepository <DataStiker, String> {
 
     // 🔍 Cari stiker terakhir berdasarkan tahun (2 digit)
     @Query("""
@@ -17,7 +17,7 @@ interface DataStikerRepository: JpaRepository <DataStiker, Long> {
     """)
     fun findLastKodeByYear(tahun: String): List<DataStiker>
 
-    fun findByDataUmkmId(umkmId: Long): List<DataStiker>
+    fun findByDataUmkmId(umkmId: String): List<DataStiker>
 
     @Query("""
         SELECT s
@@ -42,5 +42,5 @@ interface DataStikerRepository: JpaRepository <DataStiker, Long> {
     ): List<DataStiker>
 
     @Query("SELECT s FROM DataStiker s WHERE s.dataUmkm.id = :umkmId AND s.status = true ORDER BY s.namaStiker ASC")
-    fun findByUmkmIdAndStatusTrue(@Param("umkmId") umkmId: Long): List<DataStiker>
+    fun findByUmkmIdAndStatusTrue(@Param("umkmId") umkmId: String): List<DataStiker>
 }

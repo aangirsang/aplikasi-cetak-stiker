@@ -1,31 +1,34 @@
 package com.girsang.stiker.service
 
-import com.girsang.stiker.model.dto.DataUMKMDTO
+import com.girsang.stiker.model.mapper.DataUmkmMapper
+import com.girsang.stiker.model.dto.request.DataUmkmRequest
+import com.girsang.stiker.model.dto.response.DataUmkmResponse
 import com.girsang.stiker.model.entity.DataUmkm
+import com.girsang.stiker.repository.DataKategoriRepository
 import com.girsang.stiker.repository.DataUmkmRepository
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
-import org.springframework.web.bind.annotation.RequestBody
 
 @Service
 class DataUmkmService(
     private val repo: DataUmkmRepository,
+    private val repoKategori: DataKategoriRepository,
+    private val mapper: DataUmkmMapper,
     private val deletionService: EntityDeletionService
 ) {
-    fun semua(): List<DataUMKMDTO> =
-        repo.findAll().map { DataUMKMDTO.fromEntity(it) }
+    fun semua(): List<DataUmkmResponse> =
+        repo.findAll().map { mapper.toResponse(it) }
 
-    fun semuaAktif(): List<DataUMKMDTO> =
+    fun semuaAktif(): List<DataUmkmResponse> =
         repo.findAllByStatusTrue()
-            .map { DataUMKMDTO.fromEntity(it) }
+            .map { mapper.toResponse(it) }
 
-    fun semuaPunyaStiker(): List<DataUMKMDTO> =
+    fun semuaPunyaStiker(): List<DataUmkmResponse> =
         repo.findUmkmWithStiker()
-            .map { DataUMKMDTO.fromEntity(it) }
+            .map { mapper.toResponse(it) }
 
-    fun cariById(id: Long): DataUMKMDTO {
+    fun cariById(id: String): DataUmkmResponse {
         val data = repo.findById(id).orElseThrow { NoSuchElementException("UMKM tidak ditemukan") }
-        return DataUMKMDTO.fromEntity(data)
+        return mapper.toResponse(data)
     }
 
     fun cariUMKM(namaPemilikUmkm: String?, namaUmkm: String?, alamat: String?): List<DataUmkm>{
@@ -36,60 +39,63 @@ class DataUmkmService(
         return repo.cariUMKM(namaPemilikUmkm, namaUmkm, alamat)
     }
 
-    fun simpan(@RequestBody dto: DataUMKMDTO): ResponseEntity<DataUmkm> {
-        if (repo.existsByEmail(dto.email)) throw IllegalArgumentException("Email sudah digunakan")
-        if (repo.existsByNoKtp(dto.noKtp)) throw IllegalArgumentException("Nomor KTP sudah digunakan")
+    fun simpan(request: DataUmkmRequest): DataUmkmResponse {
+        if (repo.existsByEmail(request.email)) throw IllegalArgumentException("Email sudah digunakan")
+        if (repo.existsByNoKtp(request.noKtp)) throw IllegalArgumentException("Nomor KTP sudah digunakan")
+
+        val kategori = repoKategori.findById(request.dataKategoriId).orElseThrow()
 
         val umkm = DataUmkm(
-            namaUsaha = dto.namaUsaha,
-            namaPemilik = dto.namaPemilik,
-            dataKategori = dto.dataKategori,
-            deskripsi = dto.deskripsi,
-            noKtp = dto.noKtp,
-            jenisKelamin = dto.jenisKelamin,
-            tglLahir = dto.tglLahir,
-            noTelpon = dto.noTelpon,
-            email = dto.email,
-            alamat = dto.alamat,
-            whatsapp = dto.whatsapp,
-            instagram = dto.instagram,
-            facebook = dto.facebook,
-            tiktok = dto.tiktok,
-            status = dto.status,
+            namaUsaha = request.namaUsaha,
+            namaPemilik = request.namaPemilik,
+            dataKategori = kategori,
+            deskripsi = request.deskripsi,
+            noKtp = request.noKtp,
+            jenisKelamin = request.jenisKelamin,
+            tglLahir = request.tglLahir,
+            noTelpon = request.noTelpon,
+            email = request.email,
+            alamat = request.alamat,
+            whatsapp = request.whatsapp,
+            instagram = request.instagram,
+            facebook = request.facebook,
+            tiktok = request.tiktok,
+            status = request.status,
             tglRegistrasi = System.currentTimeMillis()
         )
         val saved = repo.save(umkm)
-        return ResponseEntity.ok(saved)
+        return mapper.toResponse(saved)
     }
 
-    fun ubah(id: Long, @RequestBody dto: DataUMKMDTO): ResponseEntity<DataUmkm> {
+    fun ubah(id: String, request: DataUmkmRequest): DataUmkmResponse {
         val lama = repo.findById(id).orElseThrow { NoSuchElementException("Data tidak ditemukan") }
+        val kategori = repoKategori.findById(request.dataKategoriId).orElseThrow()
 
         lama.apply {
-            lama.namaUsaha = dto.namaUsaha
-            lama.namaPemilik = dto.namaPemilik
-            lama.dataKategori = dto.dataKategori
-            lama.deskripsi = dto.deskripsi
-            lama.noKtp = dto.noKtp
-            lama.jenisKelamin = dto.jenisKelamin
-            lama.tglLahir = dto.tglLahir
-            lama.noTelpon = dto.noTelpon
-            lama.email = dto.email
-            lama.alamat = dto.alamat
-            lama.whatsapp = dto.whatsapp
-            lama.instagram = dto.instagram
-            lama.facebook = dto.facebook
-            lama.tiktok = dto.tiktok
-            lama.status = dto.status
-            lama.tglRegistrasi = dto.tglRegistrasi
+            lama.namaUsaha = request.namaUsaha
+            lama.namaPemilik = request.namaPemilik
+            lama.dataKategori = kategori
+            lama.deskripsi = request.deskripsi
+            lama.noKtp = request.noKtp
+            lama.jenisKelamin = request.jenisKelamin
+            lama.tglLahir = request.tglLahir
+            lama.noTelpon = request.noTelpon
+            lama.email = request.email
+            lama.alamat = request.alamat
+            lama.whatsapp = request.whatsapp
+            lama.instagram = request.instagram
+            lama.facebook = request.facebook
+            lama.tiktok = request.tiktok
+            lama.status = request.status
+            lama.tglRegistrasi = request.tglRegistrasi
         }
 
 
         val update = repo.save(lama)
-        return ResponseEntity.ok(update)
+        return mapper.toResponse(update)
     }
 
-    fun hapus(id: Long) {
+    fun hapus(id: String) {
         if (!repo.existsById(id)) throw NoSuchElementException("Data tidak ditemukan")
         deletionService.safeDelete(DataUmkm::class.java, id)
     }

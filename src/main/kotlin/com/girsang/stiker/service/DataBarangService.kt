@@ -1,6 +1,6 @@
 package com.girsang.stiker.service
 
-import com.girsang.stiker.mapper.DataBarangMapper
+import com.girsang.stiker.model.mapper.DataBarangMapper
 import com.girsang.stiker.model.dto.response.RiwayatStokResponse
 import com.girsang.stiker.model.entity.DataBarang
 import com.girsang.stiker.repository.DataBarangRepository
@@ -20,7 +20,8 @@ class DataBarangService(
 ) {
 
     fun semuaBarang(): List<DataBarang> = dataBarangRepository.findAll()
-    fun cariIdBarang(id: Long): DataBarang {
+
+    fun cariIdBarang(id: String): DataBarang {
         val dataBarang = dataBarangRepository.findById(id).orElseThrow {
             NoSuchElementException ("Data Barang dengan ID $id tidak ditemukan!!")
         }
@@ -37,7 +38,7 @@ class DataBarangService(
         val simpanDataBarang = dataBarangRepository.save(dataBarang)
         return ResponseEntity.ok(simpanDataBarang)
     }
-    fun updateDataBarang(id: Long, @RequestBody dataBarang: DataBarang): ResponseEntity<DataBarang> {
+    fun updateDataBarang(id: String, @RequestBody dataBarang: DataBarang): ResponseEntity<DataBarang> {
         val dataLama = dataBarangRepository.findById(id).orElseThrow() {
             throw IllegalArgumentException("Data Barang dengan ID ${dataBarang.id} tidak ditemukan!!")
         }
@@ -52,7 +53,7 @@ class DataBarangService(
         val updatedDataBarang = dataBarangRepository.save(dataLama)
         return ResponseEntity.ok(updatedDataBarang)
     }
-    fun hapusDataBarang(id: Long) {
+    fun hapusDataBarang(id: String) {
         if (!dataBarangRepository.existsById(id)) throw NoSuchElementException("Data Barang dengan ID ${id} tidak ditemukan!!")
         deletionService.safeDelete(DataBarang::class.java, id)
     }
@@ -62,7 +63,7 @@ class DataBarangService(
     fun semuaRiwayat(): List<RiwayatStokResponse> =
         repoRiwayat.findAllByOrderByTanggalDesc().map { mapper.toResponse(it) }
 
-    fun riwayatBarang(barangId: Long): List<RiwayatStokResponse> {
+    fun riwayatBarang(barangId: String): List<RiwayatStokResponse> {
         return repoRiwayat
             .findByDataBarangId(barangId)
             .map { mapper.toResponse(it) }

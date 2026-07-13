@@ -1,4 +1,4 @@
-package com.girsang.stiker.model.dto
+package com.girsang.stiker.model.dto.request
 
 data class LoginRequest(
     val namaPengguna: String,

@@ -10,13 +10,13 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
+import jakarta.persistence.PrePersist
 
 @Entity
 class DataPengguna(
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long = 0,
+    var id: String = "",
 
     var namaLengkap: String = "",
 
@@ -38,4 +38,11 @@ class DataPengguna(
     @JsonIgnore // supaya JSON tidak error lazy loading
     var daftarPembelian: List<DataPembelian> = mutableListOf()
 
-)
+){
+    @PrePersist
+    fun generateId() {
+        if (id.isBlank()) {
+            id = "USR-${System.currentTimeMillis()}-${(100..999).random()}"
+        }
+    }
+}

@@ -18,10 +18,10 @@ class StokService(
 ) {
 
     fun tambahStok(
-        barangId: Long,
+        barangId: String,
         jumlah: Long,
         jenis: JenisRiwayatStok,
-        referensiId: Long,
+        referensiId: String,
         pengguna: DataPengguna,
         keterangan: String? = null
     ) {
@@ -50,10 +50,10 @@ class StokService(
     }
 
     fun kurangiStok(
-        barangId: Long,
+        barangId: String,
         jumlah: Long,
         jenis: JenisRiwayatStok,
-        referensiId: Long,
+        referensiId: String,
         pengguna: DataPengguna,
         keterangan: String? = null
     ) {

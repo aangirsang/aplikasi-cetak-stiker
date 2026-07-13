@@ -1,6 +1,7 @@
 package com.girsang.stiker.controller
 
-import com.girsang.stiker.model.dto.DataUMKMDTO
+import com.girsang.stiker.model.dto.request.DataUmkmRequest
+import com.girsang.stiker.model.dto.response.DataUmkmResponse
 import com.girsang.stiker.model.entity.DataUmkm
 import com.girsang.stiker.service.DataUmkmService
 import jakarta.validation.Valid
@@ -14,19 +15,19 @@ class DataUmkmController(
 ) {
 
     @GetMapping
-    fun semua(): ResponseEntity<List<DataUMKMDTO>> =
+    fun semua(): ResponseEntity<List<DataUmkmResponse>> =
         ResponseEntity.ok(service.semua())
 
     @GetMapping("/aktif")
-    fun semuaAktif(): ResponseEntity<List<DataUMKMDTO>> =
+    fun semuaAktif(): ResponseEntity<List<DataUmkmResponse>> =
         ResponseEntity.ok(service.semuaAktif())
 
     @GetMapping("/punya-stiker")
-    fun semuaPunyaStiker(): ResponseEntity<List<DataUMKMDTO>> =
+    fun semuaPunyaStiker(): ResponseEntity<List<DataUmkmResponse>> =
         ResponseEntity.ok(service.semuaPunyaStiker())
 
     @GetMapping("/{id}")
-    fun cariById(@PathVariable id: Long): ResponseEntity<DataUMKMDTO> =
+    fun cariById(@PathVariable id: String): ResponseEntity<DataUmkmResponse> =
         ResponseEntity.ok(service.cariById(id))
 
     @GetMapping("/cari")
@@ -39,7 +40,7 @@ class DataUmkmController(
     }
 
     @PostMapping
-    fun simpan(@Valid @RequestBody dto: DataUMKMDTO): ResponseEntity<Any> =
+    fun simpan(@Valid @RequestBody dto: DataUmkmRequest): ResponseEntity<Any> =
         try {
             val simpan = service.simpan(dto)
             ResponseEntity.status(201).body(simpan)
@@ -50,7 +51,7 @@ class DataUmkmController(
         }
 
     @PutMapping("/{id}")
-    fun ubah(@PathVariable id: Long, @Valid @RequestBody dto: DataUMKMDTO): ResponseEntity<Any> =
+    fun ubah(@PathVariable id: String, @Valid @RequestBody dto: DataUmkmRequest): ResponseEntity<Any> =
         try {
             val simpan = service.ubah(id, dto)
             ResponseEntity.status(201).body(simpan)
@@ -61,7 +62,7 @@ class DataUmkmController(
         }
 
     @DeleteMapping("/{id}")
-    fun hapus(@PathVariable id: Long): ResponseEntity<Any> {
+    fun hapus(@PathVariable id: String): ResponseEntity<Any> {
         return try {
             service.hapus(id)
             ResponseEntity.ok(mapOf("message" to "Data berhasil dihapus"))

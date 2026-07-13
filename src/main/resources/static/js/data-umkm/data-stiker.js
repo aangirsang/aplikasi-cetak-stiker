@@ -28,7 +28,7 @@ async function initDataStiker() {
     setDefaultGambarStiker(2);
     await initPopupLoading();
     await initPopupLihatGambar();
-    await loadTabelDataStiker();
+    await loadTabelDataStiker(true);
     await initPopupPilihUmkm();
     await initPopupHapus();
 
@@ -56,10 +56,12 @@ async function initDataStiker() {
 }
 
 // TABEL DATA STIKER
-async function loadTabelDataStiker() {
+async function loadTabelDataStiker(reload = false) {
     showLoading("Memuat Data Stiker..");
     try {
-        dataStiker = await fetchDataStiker();
+        if (reload) {
+            dataStiker = await fetchDataStiker();
+        }
 
         const filtered = await getFilterDataStiker();
         const sorted = await getsortedDataStiker(filtered);
@@ -146,7 +148,7 @@ function createTabelStiker(item, umkm, isOpened) {
     return `
         <tr 
             class="stiker-row ${isOpened ? 'selected' : ''}"
-            onclick="event.stopPropagation(); toggleDetailStiker(${item.id})"
+            onclick="event.stopPropagation(); toggleDetailStiker('${item.id}')"
         >
             <td>${item.kodeStiker}</td>
             <td>${item.dataUmkm.namaUsaha}</td>
@@ -156,11 +158,11 @@ function createTabelStiker(item, umkm, isOpened) {
             <td>
                 <div class="actions">
                     <button
-                        onclick="event.stopPropagation(); showPopupStiker(${item.id})">
+                        onclick="event.stopPropagation(); showPopupStiker('${item.id}')">
                         <span class="material-symbols-sharp">edit</span>
                     </button>
 
-                    <button onclick="event.stopPropagation(); konfirmasiHapusDataStiker(${item.id})">
+                    <button onclick="event.stopPropagation(); konfirmasiHapusDataStiker('${item.id}')">
                         <span class="material-symbols-sharp">delete</span>
                     </button>
                 </div>
@@ -725,15 +727,7 @@ async function simpanDataStiker() {
                 })
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-
-                showToast(
-                    errorData.message ||
-                    "Gagal update stiker"
-                );
-                return;
-            }
+            if(await gagalSimpan(response)) return;
         } else {
             const response = await fetch(BASE_URL_STIKER, {
                 method: "POST",
@@ -754,20 +748,12 @@ async function simpanDataStiker() {
             });
 
 
-            if (!response.ok) {
-                const errorData = await response.json();
-
-                showToast(
-                    errorData.message ||
-                    "Gagal simpan stiker"
-                );
-                return;
-            }
+            if(await gagalSimpan(response)) return;
         }
 
         tutupPopupStiker();
         bersihPopupDataStiker();
-        await loadTabelDataStiker();
+        await loadTabelDataStiker(true);
         showToast(
             "Data setiker berhasil disimpan",
             "success"
@@ -787,7 +773,7 @@ async function hapusDataStiker(id) {
 
         if (await gagalHapus(response)) return;
 
-        await loadTabelDataStiker();
+        await loadTabelDataStiker(true);
         showToast("Data stiker berhasil dirubah", "success");
     } catch (e){
         showToast(e.message, "error");

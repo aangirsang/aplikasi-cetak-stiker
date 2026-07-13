@@ -40,8 +40,6 @@ async function bersihMasterData() {
     getEl("popup-master-data-input").value = "";
 }
 
-
-
 // LIST VIEW
 async function loadDataLevel() {
     const response = await fetch(BASE_URL_LEVEL)
@@ -57,11 +55,11 @@ async function loadDataLevel() {
                 <h3>${level.level}</h3>
                 <div class="action-btn">
                     <button class="update-btn"
-                        onclick="editLevel(${level.id}, '${level.level}')">
+                        onclick="editLevel('${level.id}', '${level.level}')">
                         <span class="material-symbols-sharp">edit</span>
                     </button>
                     <button class="delete-btn"
-                        onclick="hapusLevel(${level.id}, '${level.level}')">
+                        onclick="hapusLevel('${level.id}', '${level.level}')">
                         <span class="material-symbols-sharp">delete</span>
                     </button>
                 </div>
@@ -85,11 +83,11 @@ async function loadDataKategori() {
                 <h3>${kategori.kategori}</h3>
                 <div class="action-btn">
                     <button class="update-btn"
-                        onclick="editKategori(${kategori.id}, '${kategori.kategori}')">
+                        onclick="editKategori('${kategori.id}', '${kategori.kategori}')">
                         <span class="material-symbols-sharp">edit</span>
                     </button>
                     <button class="delete-btn"
-                        onclick="hapusKategori(${kategori.id}, '${kategori.kategori}')">
+                        onclick="hapusKategori('${kategori.id}', '${kategori.kategori}')">
                         <span class="material-symbols-sharp">delete</span>
                     </button>
                 </div>
@@ -206,14 +204,7 @@ async function simpanMasterData() {
                     })
                 });
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-
-                    throw new Error(
-                        errorData.message ||
-                        "Gagal simpan level"
-                    );
-                }
+                if(await gagalSimpan(response)) return;
             } else {
                 const id = popupState.id;
                 const response = await fetch(`${BASE_URL_LEVEL}/${id}`, {
@@ -226,14 +217,7 @@ async function simpanMasterData() {
                     })
                 });
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-
-                    throw new Error(
-                        errorData.message ||
-                        "Gagal update level"
-                    );
-                }
+                if(await gagalSimpan(response)) return;
             }
 
         } else if (popupState.mode === "kategori") {
@@ -249,14 +233,7 @@ async function simpanMasterData() {
                     })
                 });
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-
-                    throw new Error(
-                        errorData.message ||
-                        "Gagal simpan kategori"
-                    );
-                }
+                if(await gagalSimpan(response)) return;
             } else {
                 const id = popupState.id;
                 const response = await fetch(`${BASE_URL_KATEGORI}/${id}`, {
@@ -269,14 +246,7 @@ async function simpanMasterData() {
                     })
                 });
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-
-                    throw new Error(
-                        errorData.message ||
-                        "Gagal update kategori"
-                    );
-                }
+                if(await gagalSimpan(response)) return;
             }
 
         }

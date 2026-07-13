@@ -1,4 +1,4 @@
-package com.girsang.stiker.model.dto
+package com.girsang.stiker.model.dto.response
 
 data class UploadResponse(
     val namaFile: String,

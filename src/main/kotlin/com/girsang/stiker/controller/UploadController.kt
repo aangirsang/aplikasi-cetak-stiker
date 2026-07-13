@@ -1,6 +1,6 @@
 package com.girsang.stiker.controller
 
-import com.girsang.stiker.model.dto.UploadResponse
+import com.girsang.stiker.model.dto.response.UploadResponse
 import com.girsang.stiker.service.UploadService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping

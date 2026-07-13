@@ -24,7 +24,7 @@ class DataBarangController (
         ResponseEntity.ok(dataBarangService.semuaBarang())
 
     @GetMapping("/{id}")
-    fun cariIdBarang (@PathVariable id: Long): ResponseEntity<DataBarang> =
+    fun cariIdBarang (@PathVariable id: String): ResponseEntity<DataBarang> =
         ResponseEntity.ok(dataBarangService.cariIdBarang(id))
 
     @PostMapping
@@ -39,7 +39,7 @@ class DataBarangController (
         }
 
     @PutMapping("/{id}")
-    fun ubahDataBarang(@PathVariable id: Long, @Valid @RequestBody dataBarang: DataBarang): ResponseEntity<Any> =
+    fun ubahDataBarang(@PathVariable id: String, @Valid @RequestBody dataBarang: DataBarang): ResponseEntity<Any> =
     try {
         val updateDataBarang = dataBarangService.updateDataBarang(id, dataBarang)
         ResponseEntity.status(201).body(updateDataBarang)
@@ -50,7 +50,7 @@ class DataBarangController (
     }
 
     @DeleteMapping("/{id}")
-    fun hapusDataBarang(@PathVariable id: Long): ResponseEntity<Any> {
+    fun hapusDataBarang(@PathVariable id: String): ResponseEntity<Any> {
         return try {
             dataBarangService.hapusDataBarang(id)
             ResponseEntity.ok(mapOf("Data Barang" to "Data berhasil dihapus.."))
@@ -65,6 +65,6 @@ class DataBarangController (
         ResponseEntity.ok(dataBarangService.semuaRiwayat())
 
     @GetMapping("/riwayat-stok/{id}")
-    fun daftarRiwayatBarang(@PathVariable id:Long): ResponseEntity<List<RiwayatStokResponse>> =
+    fun daftarRiwayatBarang(@PathVariable id:String): ResponseEntity<List<RiwayatStokResponse>> =
         ResponseEntity.ok(dataBarangService.riwayatBarang(id))
 }

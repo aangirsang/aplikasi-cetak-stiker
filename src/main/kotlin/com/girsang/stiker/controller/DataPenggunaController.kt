@@ -1,9 +1,8 @@
 package com.girsang.stiker.controller
 
 
-import com.girsang.stiker.model.dto.DataPenggunaCreateRequest
-import com.girsang.stiker.model.dto.DataPenggunaUpdateRequest
-import com.girsang.stiker.model.entity.DataPengguna
+import com.girsang.stiker.model.dto.request.DataPenggunaRequest
+import com.girsang.stiker.model.dto.response.DataPenggunaResponse
 import com.girsang.stiker.service.DataPenggunaService
 import jakarta.servlet.http.HttpSession
 import jakarta.validation.Valid
@@ -15,16 +14,13 @@ import org.springframework.web.bind.annotation.*
 class DataPenggunaController(private val service: DataPenggunaService) {
 
     @GetMapping
-    fun semuaPengguna(): ResponseEntity<List<DataPengguna>>{
+    fun semuaPengguna(): ResponseEntity<List<DataPenggunaResponse>>{
     return ResponseEntity.ok(service.semuaPengguna())
     }
 
     @GetMapping("/{id}")
-    fun cariID(@PathVariable id: Long): ResponseEntity<DataPengguna> {
-        return service.cariID(id)
-            .map { ResponseEntity.ok(it) }
-            .orElse(ResponseEntity.notFound().build())
-    }
+    fun cariID(@PathVariable id: String): ResponseEntity<DataPenggunaResponse> =
+        ResponseEntity.ok(service.cariID(id))
 
     @PostMapping("/login")
     fun login(
@@ -59,7 +55,7 @@ class DataPenggunaController(private val service: DataPenggunaService) {
     fun simpan(
         @Valid
         @RequestBody
-        request: DataPenggunaCreateRequest
+        request: DataPenggunaRequest
     ): ResponseEntity<Any> {
 
         return try {
@@ -74,8 +70,8 @@ class DataPenggunaController(private val service: DataPenggunaService) {
 
     @PutMapping("/{id}")
     fun update(
-        @PathVariable id: Long,
-        @Valid @RequestBody request: DataPenggunaUpdateRequest
+        @PathVariable id: String,
+        @Valid @RequestBody request: DataPenggunaRequest
     ): ResponseEntity<Any> {
 
         return try {
@@ -93,7 +89,7 @@ class DataPenggunaController(private val service: DataPenggunaService) {
     }
 
     @DeleteMapping("/{id}")
-    fun hapus(@PathVariable id: Long): ResponseEntity<Any> {
+    fun hapus(@PathVariable id: String): ResponseEntity<Any> {
         return try {
             service.hapus(id)
             ResponseEntity.ok(mapOf("message" to "Data pengguna Berhasil Dihapus"))

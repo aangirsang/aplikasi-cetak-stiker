@@ -16,7 +16,7 @@ class DataRiwayatStokService(
         barang: DataBarang,
         pengguna: DataPengguna,
         jenis: JenisRiwayatStok,
-        referensiId: Long,
+        referensiId: String,
         perubahan: Long,
         saldo: Long,
         keterangan: String? = null

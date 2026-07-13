@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
 
 @Repository
-interface DataUmkmRepository: JpaRepository<DataUmkm, Long> {
+interface DataUmkmRepository: JpaRepository<DataUmkm, String> {
     fun existsByEmail(email: String): Boolean
     fun existsByNoKtp(noKTP: String): Boolean
 

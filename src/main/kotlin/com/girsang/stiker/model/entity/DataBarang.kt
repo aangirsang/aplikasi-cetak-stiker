@@ -7,13 +7,14 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.OneToMany
+import jakarta.persistence.PrePersist
 import jakarta.validation.constraints.NotBlank
+import java.util.UUID
 
 @Entity
 class DataBarang (
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long = 0,
+    var id: String = "",
 
     @field:NotBlank(message = "Nama barang tidak boleh kosong")
     var namaBarang: String,
@@ -28,4 +29,11 @@ class DataBarang (
     @JsonIgnore
     open var daftarRiwayatStok: MutableList<DataRiwayatStok> = mutableListOf()
 
-)
+){
+    @PrePersist
+    fun generateId() {
+        if (id.isBlank()) {
+            id = "BRG-${System.currentTimeMillis()}-${(100..999).random()}"
+        }
+    }
+}

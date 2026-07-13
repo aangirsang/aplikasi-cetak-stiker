@@ -1,34 +1,40 @@
 package com.girsang.stiker.service
 
-import com.girsang.stiker.model.dto.DataPenggunaCreateRequest
-import com.girsang.stiker.model.dto.DataPenggunaUpdateRequest
+import com.girsang.stiker.model.mapper.MasterDataMapper
+import com.girsang.stiker.model.dto.request.DataPenggunaRequest
+import com.girsang.stiker.model.dto.response.DataPenggunaResponse
 import com.girsang.stiker.model.entity.DataPengguna
 import com.girsang.stiker.repository.DataLevelRepository
 import com.girsang.stiker.repository.DataPenggunaRepository
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import java.util.Optional
 
 
 @Service
 class DataPenggunaService(
-    private val repo: DataPenggunaRepository,
+    private val repoPengguna: DataPenggunaRepository,
+    private val mapper: MasterDataMapper,
     private val dataLevelRepo: DataLevelRepository,
     private val deletionService: EntityDeletionService,
     private val passwordEncoder: PasswordEncoder
 ) {
 
-    fun semuaPengguna(): List<DataPengguna> = repo.findAll()
-    fun cariID(id: Long): Optional<DataPengguna> = repo.findById(id)
+    fun semuaPengguna(): List<DataPenggunaResponse> =
+        repoPengguna.findAll().map { mapper.toResponse(it) }
 
-    fun simpan(request: DataPenggunaCreateRequest): DataPengguna {
-        if (repo.existsByNamaPengguna(request.namaPengguna)) {
+    fun cariID(id: String): DataPenggunaResponse {
+        val pengguna = repoPengguna.findById(id).orElseThrow {IllegalArgumentException("Pengguna tidak ditemukan")}
+        return mapper.toResponse(pengguna)
+    }
+
+    fun simpan(request: DataPenggunaRequest): DataPenggunaResponse {
+        if (repoPengguna.existsByNamaPengguna(request.namaPengguna)) {
             throw IllegalArgumentException("Nama pengguna sudah digunakan")
         }
 
         val level =
             dataLevelRepo.findById(
-                request.dataLevel.id
+                request.dataLevelId
             ).orElseThrow()
 
         val pengguna =
@@ -41,11 +47,13 @@ class DataPenggunaService(
                 dataLevel = level
             )
 
-        return repo.save(pengguna)
-    }
-    fun update(id: Long, request: DataPenggunaUpdateRequest): DataPengguna {
+        val simpan = repoPengguna.save(pengguna)
 
-        val dataLama = repo.findById(id).orElseThrow {
+        return mapper.toResponse(simpan)
+    }
+    fun update(id: String, request: DataPenggunaRequest): DataPenggunaResponse {
+
+        val dataLama = repoPengguna.findById(id).orElseThrow {
             NoSuchElementException(
                 "Data pengguna dengan id $id tidak ditemukan"
             )
@@ -53,7 +61,7 @@ class DataPenggunaService(
 
         // cek username duplicate
         val usernameDipakai =
-            repo.existsByNamaPenggunaAndIdNot(
+            repoPengguna.existsByNamaPenggunaAndIdNot(
                 request.namaPengguna,
                 id
             )
@@ -78,7 +86,7 @@ class DataPenggunaService(
 
         val level =
             dataLevelRepo.findById(
-                request.dataLevel.id
+                request.dataLevelId
             ).orElseThrow()
 
         dataLama.dataLevel = level
@@ -91,10 +99,11 @@ class DataPenggunaService(
                 )
         }
 
-        return repo.save(dataLama)
+        val simpan = repoPengguna.save(dataLama)
+        return mapper.toResponse(simpan)
     }
-    fun hapus(id: Long){
-        if( (!repo.existsById(id)))  throw NoSuchElementException("Data tidak ditemukan")
+    fun hapus(id: String){
+        if( (!repoPengguna.existsById(id)))  throw NoSuchElementException("Data tidak ditemukan")
         deletionService.safeDelete(DataPengguna::class.java, id)
     }
     // 🔐 Fungsi Login
@@ -104,7 +113,7 @@ class DataPenggunaService(
     ): DataPengguna? {
 
         val pengguna =
-            repo.findByNamaPengguna(
+            repoPengguna.findByNamaPengguna(
                 namaPengguna
             ) ?: return null
 

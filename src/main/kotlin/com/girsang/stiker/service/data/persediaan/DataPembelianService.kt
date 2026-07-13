@@ -1,7 +1,7 @@
 package com.girsang.stiker.service.data.persediaan
 
 import com.girsang.stiker.config.JenisRiwayatStok
-import com.girsang.stiker.mapper.PembelianMapper
+import com.girsang.stiker.model.mapper.PembelianMapper
 import com.girsang.stiker.model.dto.request.PembelianRequest
 import com.girsang.stiker.model.dto.request.PembelianRinciRequest
 import com.girsang.stiker.model.dto.response.PembelianResponse
@@ -12,8 +12,6 @@ import com.girsang.stiker.repository.DataBarangRepository
 import com.girsang.stiker.repository.DataPenggunaRepository
 import com.girsang.stiker.repository.data.persediaan.DataPembelianRepository
 import com.girsang.stiker.repository.data.persediaan.DataPembelianRinciRepository
-import com.girsang.stiker.service.DataRiwayatStokService
-import com.girsang.stiker.service.EntityDeletionService
 import com.girsang.stiker.service.StokService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -39,14 +37,13 @@ class DataPembelianService(
         repoPembelianRinci.findAll().map { mapper.toResponse(it) }
 
     @Transactional(readOnly = true)
-    fun cariId(id: Long): PembelianResponse {
+    fun cariId(id: String): PembelianResponse {
         val entity = repoPembelian.findById(id)
             .orElseThrow { throw IllegalArgumentException("Data Pembelian dengan ID $id tidak ditemukan!!") }
 
         return mapper.toResponse(entity)
     }
 
-    @Transactional
     fun simpan(request: PembelianRequest): PembelianResponse {
 
         val pengguna = repoPengguna.findById(request.dataPenggunaId)
@@ -80,8 +77,7 @@ class DataPembelianService(
         return mapper.toResponse(hasil)
     }
 
-    @Transactional
-    fun ubah(id: Long, request: PembelianRequest): PembelianResponse {
+    fun ubah(id: String, request: PembelianRequest): PembelianResponse {
 
         val pembelian = repoPembelian.findById(id)
             .orElseThrow {
@@ -133,8 +129,7 @@ class DataPembelianService(
         return mapper.toResponse(hasil)
     }
 
-    @Transactional
-    fun hapus(id: Long) {
+    fun hapus(id: String) {
 
         val pembelian = repoPembelian.findById(id)
             .orElseThrow {
@@ -169,7 +164,7 @@ class DataPembelianService(
         val total = request.harga.multiply(BigDecimal.valueOf(request.jumlah))
 
         return DataPembelianRinci(
-            id = 0,
+            id = "",
             dataPembelian = pembelian,
             dataBarang = barang,
             harga = request.harga,

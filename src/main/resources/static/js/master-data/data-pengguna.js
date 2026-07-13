@@ -18,7 +18,7 @@ let selectedWebpFile = null;
 
 
 async function initDataPengguna() {
-    await loadTablePengguna();
+    await loadTablePengguna(true);
     setDefaultGambarPengguna();
     await initPopupHapus();
     await initPopupLoading();
@@ -86,11 +86,12 @@ async function initDataPengguna() {
 }
 
 // TABEL DATA PENGGUNA
-async function loadTablePengguna(){
+async function loadTablePengguna(reload = false){
 
     try{
-
-        dataPengguna = await fetchDataPengguna();
+        if(reload){
+            dataPengguna = await fetchDataPengguna();
+        }
 
         const filtered = getFilteredDataPengguna();
         const sorted = getSortedDataPengguna(filtered);
@@ -192,7 +193,7 @@ function createRowPengguna(item){
             <td>
                 <div class="actions">
                     <button
-                        onclick="showPopupPengguna(${item.id})">
+                        onclick="showPopupPengguna('${item.id}')">
                         <span class="material-symbols-sharp">edit</span>
                     </button>
 
@@ -524,11 +525,6 @@ async function simpanDataPengguna() {
         pathGambar = await uploadGambarPengguna();
     }
 
-    console.log(`Gambar Berubah = ${isGambarBerubah()}`)
-
-    console.log(`${BASE_URL_PENGGUNA}/${selectedPengguna}`)
-    console.log(selectedLevel);
-
     showLoading(
         isEdit
             ? "Mengubah Data Pengguna..."
@@ -549,9 +545,7 @@ async function simpanDataPengguna() {
                     kataSandi: kataSandi,
                     status: status,
                     pathGambar: pathGambar,
-                    dataLevel: {
-                        id: selectedLevel.id
-                    }
+                    dataLevelId: selectedLevel.id
                 })
             });
 
@@ -568,26 +562,17 @@ async function simpanDataPengguna() {
                     kataSandi: kataSandi,
                     status: status,
                     pathGambar: pathGambar,
-                    dataLevel: {
-                        id: selectedLevel.id
-                    }
+                    dataLevelId: selectedLevel.id
                 })
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-
-                showToast(
-                    errorData.message ||
-                    "Gagal update pengguna"
-                );
-            }
+            if(await gagalSimpan(response)) return
         }
 
         closePopupPengguna();
 
         bersihPopupDataPengguna();
-        await loadTablePengguna();
+        await loadTablePengguna(true);
 
         showToast(
             "Data pengguna berhasil disimpan",
@@ -649,7 +634,7 @@ async function hapusDataPengguna(id){
 
         if (await gagalHapus(response)) return;
 
-        await loadTablePengguna();
+        await loadTablePengguna(true);
         showToast("Data Berhasil Dihapus!!", "success")
     } catch (e){
         showToast(e.message, "error");

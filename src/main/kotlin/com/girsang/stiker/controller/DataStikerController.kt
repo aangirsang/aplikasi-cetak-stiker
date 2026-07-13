@@ -1,7 +1,7 @@
 package com.girsang.stiker.controller
 
-import com.girsang.stiker.model.dto.DataStikerDTO
-import com.girsang.stiker.model.dto.SaveDataStikerRequest
+import com.girsang.stiker.model.dto.request.DataStikerRequest
+import com.girsang.stiker.model.dto.response.DataStikerResponse
 import com.girsang.stiker.model.entity.DataStiker
 import com.girsang.stiker.service.DataStikerService
 import org.springframework.http.ResponseEntity
@@ -16,53 +16,35 @@ class DataStikerController(
 ) {
 
     @GetMapping
-    fun semua(): ResponseEntity<List<DataStikerDTO>> =
+    fun semua(): ResponseEntity<List<DataStikerResponse>> =
         ResponseEntity.ok(service.semua())
 
     @GetMapping("/{id}")
-    fun cariById(@PathVariable id: Long): ResponseEntity<DataStikerDTO> =
+    fun cariById(@PathVariable id: String): ResponseEntity<DataStikerResponse> =
         ResponseEntity.ok(service.cariById(id))
 
     @GetMapping("/umkm/{umkmId}")
-    fun cariByUMKM(@PathVariable umkmId: Long): ResponseEntity<List<DataStikerDTO>> =
+    fun cariByUMKM(@PathVariable umkmId: String): ResponseEntity<List<DataStikerResponse>> =
         ResponseEntity.ok(service.cariByUMKM(umkmId))
 
     @GetMapping("/umkm-status-true/{umkmId}")
-    fun cariByUmkmDanStatus(@PathVariable umkmId: Long): ResponseEntity<List<DataStikerDTO>> =
+    fun cariByUmkmDanStatus(@PathVariable umkmId: String): ResponseEntity<List<DataStikerResponse>> =
         ResponseEntity.ok(service.cariByumkmDanStatus(umkmId))
 
     @PostMapping
-    fun simpan(@RequestBody dto: SaveDataStikerRequest): ResponseEntity<Any> =
-        try {
-            ResponseEntity.ok(service.simpan(dto))
-        } catch (e: IllegalArgumentException) {
-            ResponseEntity.badRequest().body(mapOf("message" to e.message))
-        } catch (e: NoSuchElementException) {
-            ResponseEntity.status(404).body(mapOf("message" to e.message))
-        }
+    fun simpan(@RequestBody request: DataStikerRequest): ResponseEntity<DataStikerResponse> =
+        ResponseEntity.ok(service.simpan(request))
 
     @PutMapping("/{id}")
-    fun ubah(@PathVariable id: Long, @RequestBody dto: SaveDataStikerRequest): ResponseEntity<Any> =
-        try {
-            ResponseEntity.ok(service.ubah(id, dto))
-        } catch (e: IllegalArgumentException) {
-            ResponseEntity.badRequest().body(mapOf("message" to e.message))
-        } catch (e: NoSuchElementException) {
-            ResponseEntity.status(404).body(mapOf("message" to e.message))
-        }
+    fun ubah(@PathVariable id: String, @RequestBody request: DataStikerRequest): ResponseEntity<DataStikerResponse> =
+        ResponseEntity.ok(service.ubah(id, request))
 
     @DeleteMapping("/{id}")
-    fun hapus(@PathVariable id: Long): ResponseEntity<Any> {
-        return try {
-            service.hapus(id)
-            ResponseEntity.ok(mapOf("message" to "Data berhasil dihapus"))
-        } catch (e: RuntimeException) {
-            ResponseEntity.status(400).body(mapOf("error" to e.message))
-        }
-    }
+    fun hapus(@PathVariable id: String) =
+        ResponseEntity.ok(service.hapus(id))
 
     @GetMapping("/kode/{umkmId}")
-    fun getKodeStiker(@PathVariable umkmId: Long): ResponseEntity<Map<String, String>> {
+    fun getKodeStiker(@PathVariable umkmId: String): ResponseEntity<Map<String, String>> {
         val kode = service.getKodeStikerBerikutnya(umkmId)
         return ResponseEntity.ok(mapOf("kodeStiker" to kode))
     }

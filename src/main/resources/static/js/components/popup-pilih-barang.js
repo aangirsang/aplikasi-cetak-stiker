@@ -148,19 +148,12 @@ function renderTabelPopupPilihBarang(data){
     });
 }
 function createRowPopupPilihBarang(barang){
-
-    /*const selected =
-        selectedPopupPilihBarang &&
-        selectedPopupPilihBarang.id === barang.id;
-
-     */
-
     const selected = null;
 
     return `
         <tr
             class="pilih-barang-row ${selected ? "selected-row" : ""}"
-            ondblclick="pilihPopupBarang(${barang.id})">
+            ondblclick="pilihPopupBarang('${barang.id}')">
             <td>${barang.namaBarang}</td>
             <td>${barang.stokBarang}</td>
         </tr>

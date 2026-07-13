@@ -9,18 +9,18 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/data-level")
-class DataLevelController(private val service: DataLevelService) {
+class DataLevelController(
+    private val service: DataLevelService
+) {
 
     @GetMapping
     fun semuaLevel(): ResponseEntity<List<DataLevel>> =
         ResponseEntity.ok(service.semuaLevel())
 
     @GetMapping("/{id}")
-    fun cariId(@PathVariable id: Long): ResponseEntity<DataLevel> {
-        return service.cariId(id)
-            .map { ResponseEntity.ok(it) }
-            .orElse(ResponseEntity.notFound().build())
-    }
+    fun cariId(@PathVariable id: String): ResponseEntity<DataLevel> =
+        ResponseEntity.ok(service.cariId(id))
+
 
     @PostMapping
     fun simpan(@Valid @RequestBody dataLevel: DataLevel): ResponseEntity<Any> {
@@ -34,7 +34,7 @@ class DataLevelController(private val service: DataLevelService) {
     }
 
     @PutMapping("/{id}")
-    fun delete(@PathVariable id: Long, @RequestBody dataLevel: DataLevel): ResponseEntity<Any> {
+    fun delete(@PathVariable id: String, @RequestBody dataLevel: DataLevel): ResponseEntity<Any> {
         return try {
             val update = service.update(id, dataLevel)
             ResponseEntity.ok(update)
@@ -47,7 +47,7 @@ class DataLevelController(private val service: DataLevelService) {
     }
 
     @DeleteMapping("/{id}")
-    fun hapus(@PathVariable id: Long): ResponseEntity<Any> {
+    fun hapus(@PathVariable id: String): ResponseEntity<Any> {
         return try {
             service.hapus(id)
             ResponseEntity.ok(mapOf("message" to "Data berhasil dihapus"))

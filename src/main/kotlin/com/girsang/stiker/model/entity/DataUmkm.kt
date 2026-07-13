@@ -4,14 +4,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import jakarta.persistence.*
 import jakarta.validation.constraints.*
+import kotlin.text.isBlank
 
 @Entity
 @JsonIgnoreProperties("hibernateLazyInitializer", "handler")
 class DataUmkm(
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long = 0,
+    var id: String = "",
 
     @field:NotBlank(message = "Nama Usaha tidak boleh kosong")
     @Column(nullable = false)
@@ -73,4 +73,11 @@ class DataUmkm(
     @OneToMany(mappedBy = "dataUmkm", fetch = FetchType.LAZY, targetEntity = DataStiker::class)
     @JsonIgnore // supaya JSON tidak error lazy loading
     open var daftarStiker: List<DataStiker> = mutableListOf()
-)
+){
+    @PrePersist
+    fun generateId() {
+        if (id.isBlank()) {
+            id = "UMKM-${System.currentTimeMillis()}-${(100..999).random()}"
+        }
+    }
+}

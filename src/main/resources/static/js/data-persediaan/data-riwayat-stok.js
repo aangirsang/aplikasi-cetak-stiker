@@ -59,8 +59,9 @@ async function fetchDataRiwayatStok() {
 }
 function getFilterDataRiwayatStok() {
     return dataRiwayatStok.filter(riwayatStok => {
+        const tanggal = formatTanggal(riwayatStok.tanggal).toLowerCase();
         const semuaData = `
-            ${riwayatStok.tanggal}
+            ${tanggal}
             ${riwayatStok.namaPengguna}
             ${riwayatStok.namaBarang}
             ${riwayatStok.jenis}

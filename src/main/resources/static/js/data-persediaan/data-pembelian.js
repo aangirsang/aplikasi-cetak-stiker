@@ -196,7 +196,7 @@ function createTabelPembelian(item, isOpened) {
     return `
         <tr 
             class="pembelian-row ${isOpened ? 'selected' : ''}"
-            onclick="event.stopPropagation(); toggleDetailPembelian(${item.id})"
+            onclick="event.stopPropagation(); toggleDetailPembelian('${item.id}')"
         >
             <td>${formatTanggal(item.tanggal)}</td>
             <td>${item.namaPengguna}</td>
@@ -204,11 +204,11 @@ function createTabelPembelian(item, isOpened) {
             <td>
                 <div class="actions">
                     <button
-                        onclick="event.stopPropagation(); showPopupPembelian(${item.id})">
+                        onclick="event.stopPropagation(); showPopupPembelian('${item.id}')">
                         <span class="material-symbols-sharp">edit</span>
                     </button>
 
-                    <button onclick="event.stopPropagation(); konfirmasiHapusDataPembelian(${item.id})">
+                    <button onclick="event.stopPropagation(); konfirmasiHapusDataPembelian('${item.id}')">
                         <span class="material-symbols-sharp">delete</span>
                     </button>
                 </div>
@@ -412,15 +412,7 @@ async function simpanDataPembelian(){
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(body)
             });
-            if (!response.ok) {
-                const errorData = await response.json();
-
-                showToast(
-                    errorData.message ||
-                    "Gagal ubah data pembelian!!"
-                );
-                return;
-            }
+            if(await gagalSimpan(response)) return;
         } else {
             const response = await fetch(`${BASE_URL_PEMBELIAN}`, {
                 method: "POST",
@@ -429,15 +421,7 @@ async function simpanDataPembelian(){
                 },
                 body: JSON.stringify(body)
             });
-            if (!response.ok) {
-                const errorData = await response.json();
-
-                showToast(
-                    errorData.message ||
-                    "Gagal simpan data pembelian!!"
-                );
-                return;
-            }
+            if(await gagalSimpan(response)) return;
         }
         closePopupPembelian();
         await loadTabelDataPembelian(true);

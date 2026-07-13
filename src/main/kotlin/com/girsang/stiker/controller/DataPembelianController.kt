@@ -25,7 +25,7 @@ class DataPembelianController (
 
     @GetMapping("/{id}")
     fun cariId(
-        @PathVariable id: Long
+        @PathVariable id: String
     ): ResponseEntity<PembelianResponse> =
         ResponseEntity.ok(pembelianService.cariId(id))
 
@@ -38,7 +38,7 @@ class DataPembelianController (
 
     @PutMapping("/{id}")
     fun ubah(
-        @PathVariable id: Long,
+        @PathVariable id: String,
         @RequestBody request: PembelianRequest
     ): ResponseEntity<PembelianResponse> =
         ResponseEntity.ok(
@@ -47,7 +47,7 @@ class DataPembelianController (
 
     @DeleteMapping("/{id}")
     fun hapus(
-        @PathVariable id: Long
+        @PathVariable id: String
     ): ResponseEntity<Void> {
         pembelianService.hapus(id)
         return ResponseEntity.noContent().build()

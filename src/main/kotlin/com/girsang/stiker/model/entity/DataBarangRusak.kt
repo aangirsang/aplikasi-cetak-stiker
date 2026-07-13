@@ -8,12 +8,13 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
+import jakarta.persistence.PrePersist
 import jakarta.validation.constraints.NotBlank
 
 @Entity
 class DataBarangRusak (
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long,
+    @Id
+    var id: String = "",
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
@@ -27,4 +28,11 @@ class DataBarangRusak (
 
     @Column(nullable = true)
     var pathGambar: String = "",
-)
+){
+    @PrePersist
+    fun generateId() {
+        if (id.isBlank()) {
+            id = "BRGR-${System.currentTimeMillis()}-${(100..999).random()}"
+        }
+    }
+}

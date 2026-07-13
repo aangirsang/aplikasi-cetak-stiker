@@ -1,48 +1,50 @@
 package com.girsang.stiker.service
 
 
-import com.girsang.stiker.model.dto.DataStikerDTO
-import com.girsang.stiker.model.dto.SaveDataStikerRequest
+import com.girsang.stiker.model.mapper.DataUmkmMapper
+import com.girsang.stiker.model.dto.request.DataStikerRequest
+import com.girsang.stiker.model.dto.response.DataStikerResponse
 import com.girsang.stiker.model.entity.DataStiker
 import com.girsang.stiker.repository.DataStikerRepository
 import com.girsang.stiker.repository.DataUmkmRepository
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
-import org.springframework.web.bind.annotation.RequestBody
 import java.time.LocalDate
 
 @Service
 class DataStikerService(
-    private val repo: DataStikerRepository,
-    private val umkmRepo: DataUmkmRepository,
+    private val repoStiker: DataStikerRepository,
+    private val repoUmkm: DataUmkmRepository,
+    private val mapper: DataUmkmMapper,
     private val deletionService: EntityDeletionService
 ) {
 
-    fun semua(): List<DataStikerDTO> =
-        repo.findAll().map { DataStikerDTO.fromEntity(it) }
+    fun semua(): List<DataStikerResponse> =
+        repoStiker.findAll().map { mapper.toResponse(it) }
 
-    fun cariById(id: Long): DataStikerDTO {
-        val stiker = repo.findById(id).orElseThrow { NoSuchElementException("Stiker tidak ditemukan") }
-        return DataStikerDTO.fromEntity(stiker)
+    fun cariById(id: String): DataStikerResponse {
+        val stiker = repoStiker.findById(id).orElseThrow { NoSuchElementException("Stiker tidak ditemukan") }
+        return mapper.toResponse(stiker)
     }
 
-    fun cariByUMKM(umkmId: Long): List<DataStikerDTO> {
-        val daftar = repo.findByDataUmkmId(umkmId)
-        return daftar.map { DataStikerDTO.fromEntity(it) }
+    fun cariByUMKM(umkmId: String): List<DataStikerResponse> {
+        val daftar = repoStiker.findByDataUmkmId(umkmId)
+        return daftar.map { mapper.toResponse(it) }
     }
 
-fun cariByumkmDanStatus(umkmId: Long): List<DataStikerDTO> {
-        val daftar = repo.findByUmkmIdAndStatusTrue(umkmId)
-        return daftar.map { DataStikerDTO.fromEntity(it) }
+fun cariByumkmDanStatus(umkmId: String): List<DataStikerResponse> {
+        val daftar = repoStiker.findByUmkmIdAndStatusTrue(umkmId)
+        return daftar.map { mapper.toResponse(it) }
     }
 
-    fun simpan(@RequestBody dto: SaveDataStikerRequest): ResponseEntity<Any> {
+    fun simpan(request: DataStikerRequest): DataStikerResponse {
 
         // 🔹 Ambil entity DataUmkm dari database
-        val umkmEntity = umkmRepo.findById(dto.umkmId)
-            .orElse(null)
-            ?: return ResponseEntity.badRequest()
-                .body(mapOf("error" to "Data UMKM dengan ID ${dto.umkmId} tidak ditemukan"))
+        val umkmEntity = repoUmkm.findById(request.umkmId)
+            .orElseThrow{
+                IllegalArgumentException(
+                    "Data UMKM dengan ID ${request.umkmId} tidak ditemukan"
+                )
+            }
 
         // 🔹 Generate kode otomatis
         val tahunShort = LocalDate.now().year % 100
@@ -52,51 +54,51 @@ fun cariByumkmDanStatus(umkmId: Long): List<DataStikerDTO> {
         val stiker = DataStiker(
             dataUmkm = umkmEntity,
             kodeStiker = kode,
-            namaStiker = dto.namaStiker,
-            panjang = dto.panjang,
-            lebar = dto.lebar,
-            catatan = dto.catatan,
-            status = dto.status,
-            pathGambar1 = dto.pathGambar1,
-            pathGambar2 = dto.pathGambar2
+            namaStiker = request.namaStiker,
+            panjang = request.panjang,
+            lebar = request.lebar,
+            catatan = request.catatan,
+            status = request.status,
+            pathGambar1 = request.pathGambar1,
+            pathGambar2 = request.pathGambar2
         )
 
-        val simpan = repo.save(stiker)
+        val simpan = repoStiker.save(stiker)
 
         // 🔹 Kembalikan DTO sebagai response
-        val responseDto = DataStikerDTO.fromEntity(simpan)
 
-        return ResponseEntity.ok(responseDto)
+        return mapper.toResponse(simpan)
     }
 
-    fun ubah(id: Long, @RequestBody dto: SaveDataStikerRequest): ResponseEntity<Any> {
-        val stiker = repo.findById(id).orElseThrow { NoSuchElementException("Stiker tidak ditemukan") }
+    fun ubah(id: String, request: DataStikerRequest): DataStikerResponse {
+        val stiker = repoStiker.findById(id).orElseThrow { NoSuchElementException("Stiker tidak ditemukan") }
 
-        val umkmEntity = umkmRepo.findById(dto.umkmId)
-            .orElse(null)
-            ?: return ResponseEntity.badRequest()
-                .body(mapOf("error" to "Data UMKM dengan ID ${dto.umkmId} tidak ditemukan"))
-
+        val umkmEntity = repoUmkm.findById(request.umkmId)
+            .orElseThrow{
+                IllegalArgumentException(
+                    "Data UMKM dengan ID ${request.umkmId} tidak ditemukan"
+                )
+            }
 
         stiker.apply {
             stiker.dataUmkm = umkmEntity
-            stiker.namaStiker = dto.namaStiker
-            stiker.panjang = dto.panjang
-            stiker.lebar = dto.lebar
-            stiker.catatan = dto.catatan
-            stiker.status = dto.status
-            stiker.pathGambar1 = dto.pathGambar1
-            stiker.pathGambar2 = dto.pathGambar2
+            stiker.namaStiker = request.namaStiker
+            stiker.panjang = request.panjang
+            stiker.lebar = request.lebar
+            stiker.catatan = request.catatan
+            stiker.status = request.status
+            stiker.pathGambar1 = request.pathGambar1
+            stiker.pathGambar2 = request.pathGambar2
         }
 
 
 
-        val updated = repo.save(stiker)
-        return ResponseEntity.ok(updated)
+        val updated = repoStiker.save(stiker)
+        return mapper.toResponse(updated)
     }
 
-    fun hapus(id: Long) {
-        if (!repo.existsById(id)) throw NoSuchElementException("Data tidak ditemukan")
+    fun hapus(id: String) {
+        if (!repoStiker.existsById(id)) throw NoSuchElementException("Data tidak ditemukan")
         deletionService.safeDelete(DataStiker::class.java, id)
     }
 
@@ -105,7 +107,7 @@ fun cariByumkmDanStatus(umkmId: Long): List<DataStikerDTO> {
         val tahunStr = tahun.toString().takeLast(2)
 
         // Ambil kode terbaru berdasarkan UMKM & Tahun
-        val lastKode = repo.findLastKodeByUmkmAndYear(nama, tahunStr).firstOrNull()
+        val lastKode = repoStiker.findLastKodeByUmkmAndYear(nama, tahunStr).firstOrNull()
             ?.kodeStiker ?: ""
 
         val nomorBaru = if (lastKode.isBlank()) {
@@ -121,8 +123,8 @@ fun cariByumkmDanStatus(umkmId: Long): List<DataStikerDTO> {
     }
 
 
-    fun getKodeStikerBerikutnya(umkmId: Long): String {
-        val umkm = umkmRepo.findById(umkmId)
+    fun getKodeStikerBerikutnya(umkmId: String): String {
+        val umkm = repoUmkm.findById(umkmId)
             .orElseThrow { NoSuchElementException("UMKM tidak ditemukan") }
         val tahunShort = LocalDate.now().year % 100
         return generateKodeStiker(umkm.namaUsaha, tahunShort)
@@ -132,6 +134,6 @@ fun cariByumkmDanStatus(umkmId: Long): List<DataStikerDTO> {
         val keyStiker = namaStiker?.trim()?.takeIf { it.isNotEmpty() }
         val keyUmkm = namaUsaha?.trim()?.takeIf { it.isNotEmpty() }
 
-        return repo.cariStiker(keyStiker, keyUmkm)
+        return repoStiker.cariStiker(keyStiker, keyUmkm)
     }
 }

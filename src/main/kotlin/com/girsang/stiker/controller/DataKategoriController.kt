@@ -16,11 +16,8 @@ class DataKategoriController(private val service: DataKategoriService) {
         ResponseEntity.ok(service.semuaLevel())
 
     @GetMapping("/{id}")
-    fun cariId(@PathVariable id: Long): ResponseEntity<DataKategori> {
-        return service.cariId(id)
-            .map { ResponseEntity.ok(it) }
-            .orElse(ResponseEntity.notFound().build())
-    }
+    fun cariId(@PathVariable id: String): ResponseEntity<DataKategori> =
+        ResponseEntity.ok(service.cariId(id))
 
     @PostMapping
     fun simpan(@Valid @RequestBody dataKategori: DataKategori): ResponseEntity<Any> {
@@ -34,7 +31,7 @@ class DataKategoriController(private val service: DataKategoriService) {
     }
 
     @PutMapping("/{id}")
-    fun update(@PathVariable id: Long, @RequestBody dataKategori: DataKategori): ResponseEntity<Any> {
+    fun update(@PathVariable id: String, @RequestBody dataKategori: DataKategori): ResponseEntity<Any> {
         return try {
             val update = service.update(id, dataKategori)
             ResponseEntity.ok(update)
@@ -47,7 +44,7 @@ class DataKategoriController(private val service: DataKategoriService) {
     }
 
     @DeleteMapping("/{id}")
-    fun hapus(@PathVariable id: Long): ResponseEntity<Any> {
+    fun hapus(@PathVariable id: String): ResponseEntity<Any> {
         return try {
             service.hapus(id)
             ResponseEntity.ok(mapOf("message" to "Data berhasil dihapus"))

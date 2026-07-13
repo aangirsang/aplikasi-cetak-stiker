@@ -12,7 +12,7 @@ let isEditModeBarang = false;
 
 
 async function initDataBarang() {
-    await loadTabelDataBarang();
+    await loadTabelDataBarang(true);
     await initPopupLoading();
     await initPopupHapus();
     bersihDataBarang();
@@ -35,9 +35,11 @@ function bersihDataBarang(){
 }
 
 // LOAD TABEL
-async function loadTabelDataBarang() {
+async function loadTabelDataBarang(reload = false) {
     try {
-        dataBarang = await fetchDataBarang();
+        if(reload) {
+            dataBarang = await fetchDataBarang();
+        }
 
         const filtered = getFilterDataBarang();
         const sorted = getSortedDataBarang(filtered);
@@ -105,7 +107,7 @@ function createRowDataBarang(data){
             <td>
                 <div class="actions">
                     <button
-                        onclick="showPopupBarang(${data.id})">
+                        onclick="showPopupBarang('${data.id}')">
                         <span class="material-symbols-sharp">edit</span>
                     </button>
 
@@ -197,15 +199,7 @@ async function simpanDataBarang() {
                     namaBarang: namaBarang,
                 })
             });
-            if (!response.ok) {
-                const errorData = await response.json();
-
-                showToast(
-                    errorData.message ||
-                    "Gagal update barang!!"
-                );
-                return;
-            }
+            if(await gagalSimpan(response)) return;
         } else {
             const response = await fetch(`${BASE_URL_BARANG}`, {
                 method: "POST",
@@ -216,20 +210,12 @@ async function simpanDataBarang() {
                     namaBarang: namaBarang
                 })
             });
-            if (!response.ok) {
-                const errorData = await response.json();
-
-                showToast(
-                    errorData.message ||
-                    "Gagal simpan barang!!"
-                );
-                return;
-            }
+            if(await gagalSimpan(response)) return;
         }
 
         closePopupBarang();
         bersihDataBarang();
-        await loadTabelDataBarang();
+        await loadTabelDataBarang(true);
 
         showToast("Data Barang berhasil disimpan..", "success");
     } catch (e) {
@@ -255,7 +241,7 @@ async function hapusDataBarang(id) {
         });
         if (await gagalHapus(response)) return;
 
-        await loadTabelDataBarang();
+        await loadTabelDataBarang(true);
         showToast("Data Barang berhasil dihapus!!", "success");
     } catch (e){
         showToast(e.message, "error");

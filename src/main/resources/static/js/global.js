@@ -284,7 +284,6 @@ function formatTanggal(timestamp) {
 }
 
 async function gagalHapus(response) {
-    console.log("GagalHapus terpanggil");
     if (response.ok) return false;
 
     const errorData = await response.json();
@@ -297,16 +296,18 @@ async function gagalHapus(response) {
     return true;
 }
 async function gagalSimpan(response) {
-    console.log("GagalHapus terpanggil");
     if (response.ok) return false;
 
-    const errorData = await response.json();
+    let message = "Gagal simpan data";
 
-    showToast(
-        `Gagal Simpan!!, ${errorData.error}` || "Gagal simpan data",
-        "error"
-    );
+    try {
+        const errorData = await response.json();
+        message = errorData.message || errorData.error || message;
+    } catch {
+        message = await response.text();
+    }
 
+    showToast(message, "error");
     return true;
 }
 

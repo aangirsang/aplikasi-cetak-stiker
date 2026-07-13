@@ -7,13 +7,14 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.OneToMany
+import jakarta.persistence.PrePersist
 import jakarta.validation.constraints.NotBlank
+import kotlin.text.isBlank
 
 @Entity
 class DataLevel (
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long = 0,
+    var id: String = "",
 
     @field:NotBlank(message = "Data Level tidak boleh kosong")
     var level: String = "",
@@ -21,4 +22,11 @@ class DataLevel (
     @OneToMany(mappedBy = "dataLevel", fetch = FetchType.LAZY, targetEntity = DataPengguna::class)
     @JsonIgnore // supaya JSON tidak error lazy loading
     var daftarPengguna: List<DataPengguna> = mutableListOf()
-)
+){
+    @PrePersist
+    fun generateId() {
+        if (id.isBlank()) {
+            id = "LVL-${System.currentTimeMillis()}-${(100..999).random()}"
+        }
+    }
+}

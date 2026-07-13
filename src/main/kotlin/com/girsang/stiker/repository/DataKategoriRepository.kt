@@ -3,7 +3,7 @@ package com.girsang.stiker.repository
 import com.girsang.stiker.model.entity.DataKategori
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface DataKategoriRepository: JpaRepository<DataKategori, Long> {
+interface DataKategoriRepository: JpaRepository<DataKategori, String> {
     fun existsByKategoriIgnoreCase(kategori: String): Boolean
-    fun existsByKategoriIgnoreCaseAndIdNot(kategori: String, id: Long): Boolean
+    fun existsByKategoriIgnoreCaseAndIdNot(kategori: String, id: String): Boolean
 }

@@ -1,4 +1,4 @@
-package com.girsang.stiker.mapper
+package com.girsang.stiker.model.mapper
 
 import com.girsang.stiker.model.dto.response.PembelianResponse
 import com.girsang.stiker.model.dto.response.PembelianRinciResponse

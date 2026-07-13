@@ -9,8 +9,7 @@ import jakarta.validation.constraints.*
 class DataStiker(
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long = 0,
+    var id: String = "",
 
     // 🔁 Relasi ke DataUMKM
     @ManyToOne(fetch = FetchType.EAGER)
@@ -48,4 +47,11 @@ class DataStiker(
 //    @OneToMany(mappedBy = "dataStiker", fetch = FetchType.LAZY, targetEntity = DataOrderanRinci::class)
 //    @JsonIgnore // supaya JSON tidak error lazy loading
 //    var daftarDataOrderanRinci: List<DataOrderanRinci> = mutableListOf()
-)
+){
+    @PrePersist
+    fun generateId() {
+        if (id.isBlank()) {
+            id = "STK-${System.currentTimeMillis()}-${(100..999).random()}"
+        }
+    }
+}
