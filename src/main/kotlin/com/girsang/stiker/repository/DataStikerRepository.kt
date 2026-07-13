@@ -9,13 +9,6 @@ import org.springframework.stereotype.Repository
 @Repository
 interface DataStikerRepository: JpaRepository <DataStiker, String> {
 
-    // 🔍 Cari stiker terakhir berdasarkan tahun (2 digit)
-    @Query("""
-        SELECT s FROM DataStiker s
-        WHERE s.kodeStiker LIKE %:tahun%
-        ORDER BY s.id DESC
-    """)
-    fun findLastKodeByYear(tahun: String): List<DataStiker>
 
     fun findByDataUmkmId(umkmId: String): List<DataStiker>
 

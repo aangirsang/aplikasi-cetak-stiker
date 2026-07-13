@@ -3,7 +3,6 @@ package com.girsang.stiker.service
 import com.girsang.stiker.model.entity.DataLevel
 import com.girsang.stiker.repository.DataLevelRepository
 import org.springframework.stereotype.Service
-import java.util.Optional
 
 @Service
 class DataLevelService (

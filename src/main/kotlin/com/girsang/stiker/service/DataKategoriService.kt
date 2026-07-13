@@ -3,7 +3,6 @@ package com.girsang.stiker.service
 import com.girsang.stiker.model.entity.DataKategori
 import com.girsang.stiker.repository.DataKategoriRepository
 import org.springframework.stereotype.Service
-import java.util.Optional
 
 @Service
 class DataKategoriService (
