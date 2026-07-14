@@ -1,11 +1,9 @@
 package com.girsang.stiker.service
 
 import com.girsang.stiker.config.JenisRiwayatStok
-import com.girsang.stiker.model.dto.response.RiwayatStokResponse
 import com.girsang.stiker.model.entity.DataBarang
 import com.girsang.stiker.model.entity.DataPengguna
 import com.girsang.stiker.model.entity.DataRiwayatStok
-import com.girsang.stiker.model.mapper.DataBarangMapper
 import com.girsang.stiker.repository.DataRiwayatStokRepository
 import org.springframework.stereotype.Service
 
