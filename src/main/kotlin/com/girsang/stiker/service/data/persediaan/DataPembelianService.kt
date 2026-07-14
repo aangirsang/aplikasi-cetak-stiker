@@ -10,8 +10,8 @@ import com.girsang.stiker.model.entity.DataPembelian
 import com.girsang.stiker.model.entity.DataPembelianRinci
 import com.girsang.stiker.repository.DataBarangRepository
 import com.girsang.stiker.repository.DataPenggunaRepository
-import com.girsang.stiker.repository.data.persediaan.DataPembelianRepository
-import com.girsang.stiker.repository.data.persediaan.DataPembelianRinciRepository
+import com.girsang.stiker.repository.DataPembelianRepository
+import com.girsang.stiker.repository.DataPembelianRinciRepository
 import com.girsang.stiker.service.StokService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -95,7 +95,7 @@ class DataPembelianService(
                 barangId = it.dataBarang.id,
                 jumlah = it.jumlah,
                 jenis = JenisRiwayatStok.PEMBELIAN,
-                referensiId = it.id,
+                referensiId = pembelian.id,
                 pengguna = pengguna,
                 keterangan = "Rollback edit pembelian"
             )
@@ -120,7 +120,7 @@ class DataPembelianService(
                 barangId = it.dataBarang.id,
                 jumlah = it.jumlah,
                 jenis = JenisRiwayatStok.PEMBELIAN,
-                referensiId = hasil.id,
+                referensiId = pembelian.id,
                 pengguna = pengguna,
                 keterangan = "Edit pembelian"
             )
@@ -142,7 +142,7 @@ class DataPembelianService(
                 barangId = it.dataBarang.id,
                 jumlah = it.jumlah,
                 jenis = JenisRiwayatStok.PEMBELIAN,
-                referensiId = it.id,
+                referensiId = pembelian.id,
                 pengguna = pembelian.dataPengguna,
                 keterangan = "Hapus pembelian"
             )

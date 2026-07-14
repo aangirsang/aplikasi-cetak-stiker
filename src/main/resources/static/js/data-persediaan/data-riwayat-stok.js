@@ -49,7 +49,7 @@ async function loadTabelDataRiwayatStok(reload = false) {
     }
 }
 async function fetchDataRiwayatStok() {
-    const response = await fetch(BASE_URL_RIWAYAT);
+    const response = await fetch(`${BASE_URL_RIWAYAT}/terakhir`);
 
     if(!response.ok){
         throw new Error("Gagal Memuat Data!!");

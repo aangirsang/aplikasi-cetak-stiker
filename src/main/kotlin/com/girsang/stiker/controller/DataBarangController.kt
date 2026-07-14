@@ -64,7 +64,13 @@ class DataBarangController (
     fun semuaRiwayat(): ResponseEntity<List<RiwayatStokResponse>> =
         ResponseEntity.ok(dataBarangService.semuaRiwayat())
 
+    @GetMapping("/riwayat-stok/terakhir")
+    fun semuaRiwayatTerakhir(): ResponseEntity<List<RiwayatStokResponse>> =
+        ResponseEntity.ok(dataBarangService.semuaRiwayatTerakhir())
+
     @GetMapping("/riwayat-stok/{id}")
     fun daftarRiwayatBarang(@PathVariable id:String): ResponseEntity<List<RiwayatStokResponse>> =
         ResponseEntity.ok(dataBarangService.riwayatBarang(id))
+
+
 }

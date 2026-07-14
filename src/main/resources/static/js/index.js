@@ -1,35 +1,40 @@
-void loadPage('dashboard');
+// INISIALISASI
+void loadPage("dashboard");
+
 let penggunaAktif = null;
 
-const menuItems = document.querySelectorAll('.sidebar a');
+const content = document.getElementById("content");
+const title = document.getElementById("page-title");
 
+const menuItems = document.querySelectorAll(".sidebar a:not(.menu-item)");
+
+// MENU AKTIF
+menuItems.forEach(item => {
+    item.addEventListener("click", () => {
+
+        document.querySelectorAll(".sidebar a")
+            .forEach(menu => menu.classList.remove("active"));
+
+        item.classList.add("active");
+
+    });
+});
+
+// NAVIGASI HALAMAN
 async function loadPage(page) {
 
-    // Jika sedang berada di halaman Data Stiker
-    if (typeof destroyDataStiker === "function") {
-        await destroyDataStiker();
-    }
-
-    // Jika sedang berada di halaman Data Stiker
-    if (typeof destroyDataUmkm === "function") {
-        await destroyDataUmkm();
-    }
-
-    // Jika sedang berada di halaman Data Stiker
-    if (typeof await destroyDataPembelian() === "function") {
-        await destroyDataPembelian();
-    }
-
-    const content = document.getElementById('content');
-    const title = document.getElementById('page-title');
+    await destroyCurrentPage();
 
     const pageTitles = {
-        dashboard: 'Dashboard',
-        'master-data/data-pengguna': 'Data Pengguna',
-        'master-data/master-data': 'Master Data',
-        'data-umkm/data-umkm': 'Data UMKM',
-        'data-umkm/data-stiker': 'Data Stiker',
-        orderan: 'Data Orderan'
+        dashboard: "Dashboard",
+        "master-data/data-pengguna": "Data Pengguna",
+        "master-data/master-data": "Master Data",
+        "data-persediaan/data-pembelian": "Data Pembelian",
+        "data-persediaan/data-barang": "Data Barang",
+        "data-persediaan/data-riwayat-stok": "Riwayat Stok",
+        "data-umkm/data-umkm": "Data UMKM",
+        "data-umkm/data-stiker": "Data Stiker",
+        orderan: "Data Orderan"
     };
 
     try {
@@ -37,39 +42,23 @@ async function loadPage(page) {
         const response = await fetch(`pages/${page}.html`);
 
         if (!response.ok) {
-            showToast(`HTTP Error ${response.status}`);
+            showToast(`HTTP ${response.status}`, "error");
         }
 
         content.innerHTML = await response.text();
 
-        const pageTitle = pageTitles[page] || 'Aplikasi';
-
-        title.innerHTML = pageTitle;
-        document.title = pageTitle;
+        title.textContent = pageTitles[page] ?? "Aplikasi";
+        document.title = title.textContent;
 
         const pageHandlers = {
-            'master-data/data-pengguna': () => {
-                initDataPengguna();
-            },
-            'master-data/master-data': () => {
-                initMasterData();
-            },
-            'data-persediaan/data-pembelian': () =>{
-                initDataPembelian();
-            },
-            'data-persediaan/data-barang': () =>{
-                initDataBarang();
-            },
-            'data-persediaan/data-riwayat-stok': () =>{
-                initDataRiwayatStok();
-            },
-            'data-umkm/data-umkm': () => {
-                initDataUmkm();
-            },
-            'data-umkm/data-stiker': () => {
-                initDataStiker();
-            }
-        }
+            "master-data/data-pengguna": initDataPengguna,
+            "master-data/master-data": initMasterData,
+            "data-persediaan/data-pembelian": initDataPembelian,
+            "data-persediaan/data-barang": initDataBarang,
+            "data-persediaan/data-riwayat-stok": initDataRiwayatStok,
+            "data-umkm/data-umkm": initDataUmkm,
+            "data-umkm/data-stiker": initDataStiker
+        };
 
         pageHandlers[page]?.();
 
@@ -78,66 +67,69 @@ async function loadPage(page) {
         content.innerHTML = `
             <div class="card">
                 <h2>Error</h2>
-                <p>Halaman ${pageTitles[page]} Gagal Dimuat</p>
+                <p>Halaman gagal dimuat.</p>
                 <p>${e.message}</p>
             </div>
         `;
-
-        document.title = "Error";
 
         console.error(e);
     }
 }
 
-/* MENU AKTIF */
-menuItems.forEach(item => {
-    item.addEventListener('click', function () {
+// DESTROY HALAMAN
+async function destroyCurrentPage() {
 
-        menuItems.forEach(menu => {
-            menu.classList.remove('active');
-        });
+    if (typeof destroyDataStiker === "function")
+        await destroyDataStiker();
 
-        this.classList.add('active');
-    });
-});
+    if (typeof destroyDataUmkm === "function")
+        await destroyDataUmkm();
+
+    if (typeof destroyDataPembelian === "function")
+        await destroyDataPembelian();
+}
 
 // SUBMENU
-function toggleSubmenu(submenuId, arrowId){
+function toggleSubmenu(submenuId, arrowId) {
 
-    const submenu =
-        document.getElementById(submenuId);
+    document.getElementById(submenuId)
+        .classList.toggle("active");
 
-    const arrow =
-        document.getElementById(arrowId);
+    document.getElementById(arrowId)
+        .classList.toggle("rotate");
 
-    submenu.classList.toggle('active');
+}
+function resetSidebar() {
 
-    arrow.classList.toggle('rotate');
+    document.querySelectorAll(".submenu")
+        .forEach(menu => menu.classList.remove("active"));
+
+    document.querySelectorAll(".arrow")
+        .forEach(icon => icon.classList.remove("rotate"));
+
+    document.querySelectorAll(".sidebar a")
+        .forEach(menu => menu.classList.remove("active"));
+
 }
 
 // PROFILE
-function updateProfile(user){
+function updateProfile(user) {
+
     penggunaAktif = user;
 
     document.getElementById("profile-container").innerHTML = `
         <div class="profile">
 
             <div class="info">
-                <p>
-                    Hey,
-                    <b>${user.namaLengkap}</b>
-                </p>
-
-                <small class="text-muted">
-                    ${user.level}
-                </small>
+                <p>Hey, <b>${user.namaLengkap}</b></p>
+                <small class="text-muted">${user.level}</small>
             </div>
 
             <div class="profile-photo">
                 <img
                     src="${user.pathGambar
-                    ? `${BASE_URL}${user.pathGambar}`
-                    : noImagePerson}"
+        ? `${BASE_URL}${user.pathGambar}`
+        : noImagePerson}"
                     alt="profile">
             </div>
 
@@ -145,53 +137,45 @@ function updateProfile(user){
     `;
 }
 
-function logout(){
+// LOGOUT
+async function logout() {
 
     resetLoginForm();
 
-    localStorage.removeItem(
-        "currentUser"
-    );
+    await loadPage("dashboard");
+    resetSidebar();
+
+    localStorage.removeItem("currentUser");
 
     document
-        .getElementById(
-            "login-overlay"
-        )
-        .classList.remove(
-        "hidden"
-    );
+        .getElementById("login-overlay")
+        .classList.remove("hidden");
 
     document
-        .getElementById(
-            "profile-container"
-        )
+        .getElementById("profile-container")
         .innerHTML = "";
+
 }
 
+// LOGIN
 function resetLoginForm() {
-
-    /*
-    [
-        "namaPengguna",
-        "kataSandi"
-    ].forEach(id => {
-        document.getElementById(id).value = "";
-    });
-
-     */
 
     getEl("namaPengguna").value = "admin";
     getEl("kataSandi").value = "admin123";
 
     getEl("login-error").textContent = "";
+
     getEl("namaPengguna").focus();
 
-    penggunaAktif = null
+    penggunaAktif = null;
+
 }
 
+// EXPORT
 window.loadPage = loadPage;
 window.toggleSubmenu = toggleSubmenu;
 window.updateProfile = updateProfile;
 window.logout = logout;
 window.resetLoginForm = resetLoginForm;
+window.resetSidebar = resetSidebar;
 window.penggunaAktif = penggunaAktif;

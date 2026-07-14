@@ -205,3 +205,12 @@ aside {
     border-radius: 50%;
     overflow: hidden;
 }
+
+/*---------------- STATUS SERVER ----------------*/
+.status.online {
+    color: #16a34a;
+}
+
+.status.offline {
+    color: #dc2626;
+}
