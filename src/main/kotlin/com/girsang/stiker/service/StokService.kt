@@ -17,6 +17,7 @@ class StokService(
 
 ) {
 
+    @Transactional
     fun tambahStok(
         barangId: String,
         jumlah: Long,
@@ -27,9 +28,7 @@ class StokService(
     ) {
 
         val barang = repoBarang.findById(barangId)
-            .orElseThrow {IllegalArgumentException("Barang tidak ditemukan")}
-
-        val saldoAwal = barang.stokBarang
+            .orElseThrow { IllegalArgumentException("Barang tidak ditemukan") }
 
         barang.stokBarang += jumlah
 
@@ -40,48 +39,104 @@ class StokService(
                 jenis = jenis,
                 referensiId = referensiId,
                 perubahan = jumlah,
-                saldoAwal = saldoAwal,
-                saldoAkhir = barang.stokBarang,
+                saldoAwal = 0,
+                saldoAkhir = 0,
                 dataPengguna = pengguna,
                 keterangan = keterangan
             )
         )
 
+        hitungUlangSaldo(barang.id)
     }
 
-    fun kurangiStok(
-        barangId: String,
-        jumlah: Long,
-        jenis: JenisRiwayatStok,
+    @Transactional
+    fun ubahStok(
         referensiId: String,
+        barangId: String,
+        jumlahBaru: Long,
         pengguna: DataPengguna,
         keterangan: String? = null
     ) {
 
-        val barang = repoBarang.findById(barangId)
-            .orElseThrow {IllegalArgumentException("Barang tidak ditemukan")}
+        println("Refrensi ID : $referensiId")
+        println("Barang ID : $barangId")
+        println("Ubah Riwayat")
 
-        if(barang.stokBarang < jumlah){
-            throw IllegalArgumentException("Stok tidak cukup")
+        val riwayat = repoRiwayat.findByReferensiIdAndDataBarangId(
+            referensiId,
+            barangId
+        ) ?: throw IllegalArgumentException("Riwayat tidak ditemukan")
+
+        println("Refrensi ID : $referensiId")
+        println("Barang ID : $barangId")
+        println("Ubah Riwayat")
+
+        val barang = riwayat.dataBarang
+
+        // Batalkan pengaruh lama
+        barang.stokBarang -= riwayat.perubahan
+
+        // Terapkan pengaruh baru
+        barang.stokBarang += jumlahBaru
+
+        riwayat.perubahan = jumlahBaru
+        riwayat.tanggal = System.currentTimeMillis()
+        riwayat.dataPengguna = pengguna
+        riwayat.keterangan = keterangan
+
+        repoRiwayat.save(riwayat)
+
+        hitungUlangSaldo(barang.id)
+    }
+
+    @Transactional
+    fun hapusStok(
+        referensiId: String,
+        barangId: String
+    ) {
+
+        println("Refrensi ID : $referensiId")
+        println("Barang ID : $barangId")
+        println("Hapus Riwayat")
+
+        val riwayat = repoRiwayat.findByReferensiIdAndDataBarangId(
+            referensiId,
+            barangId
+        ) ?: throw IllegalArgumentException("Riwayat tidak ditemukan")
+
+        println("Refrensi ID : $referensiId")
+        println("Barang ID : $barangId")
+        println("Hapus Riwayat")
+
+
+        val barang = riwayat.dataBarang
+
+        barang.stokBarang -= riwayat.perubahan
+
+        repoRiwayat.delete(riwayat)
+
+        hitungUlangSaldo(barang.id)
+    }
+
+    @Transactional
+    fun hitungUlangSaldo(barangId: String) {
+
+        val daftar = repoRiwayat
+            .findByDataBarangIdOrderByTanggalAsc(barangId)
+
+        var saldo = 0L
+
+        daftar.forEach {
+
+            it.saldoAwal = saldo
+
+            saldo += it.perubahan
+
+            it.saldoAkhir = saldo
+
         }
-        val saldoAwal = barang.stokBarang
 
-        barang.stokBarang -= jumlah
-
-        repoRiwayat.save(
-            DataRiwayatStok(
-                dataBarang = barang,
-                tanggal = System.currentTimeMillis(),
-                jenis = jenis,
-                referensiId = referensiId,
-                perubahan = -jumlah,
-                saldoAwal = saldoAwal,
-                saldoAkhir = barang.stokBarang,
-                dataPengguna = pengguna,
-                keterangan = keterangan
-            )
-        )
-
+        repoRiwayat.saveAll(daftar)
     }
 
 }

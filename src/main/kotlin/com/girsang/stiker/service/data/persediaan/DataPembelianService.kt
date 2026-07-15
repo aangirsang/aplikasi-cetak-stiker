@@ -68,7 +68,7 @@ class DataPembelianService(
                 barangId = it.dataBarang.id,
                 jumlah = it.jumlah,
                 jenis = JenisRiwayatStok.PEMBELIAN,
-                referensiId = hasil.id,
+                referensiId = it.id,
                 pengguna = pengguna,
                 keterangan = "Pembelian Barang"
             )
@@ -91,13 +91,9 @@ class DataPembelianService(
 
         // Kembalikan stok lama
         pembelian.rincian.forEach {
-            stokService.kurangiStok(
-                barangId = it.dataBarang.id,
-                jumlah = it.jumlah,
-                jenis = JenisRiwayatStok.PEMBELIAN,
-                referensiId = pembelian.id,
-                pengguna = pengguna,
-                keterangan = "Rollback edit pembelian"
+            stokService.hapusStok(
+                referensiId = it.id,
+                barangId = it.dataBarang.id
             )
         }
 
@@ -120,9 +116,9 @@ class DataPembelianService(
                 barangId = it.dataBarang.id,
                 jumlah = it.jumlah,
                 jenis = JenisRiwayatStok.PEMBELIAN,
-                referensiId = pembelian.id,
+                referensiId = it.id,
                 pengguna = pengguna,
-                keterangan = "Edit pembelian"
+                keterangan = "Pembelian Barang"
             )
         }
 
@@ -138,13 +134,9 @@ class DataPembelianService(
 
         // Kurangi stok terlebih dahulu
         pembelian.rincian.forEach {
-            stokService.kurangiStok(
-                barangId = it.dataBarang.id,
-                jumlah = it.jumlah,
-                jenis = JenisRiwayatStok.PEMBELIAN,
-                referensiId = pembelian.id,
-                pengguna = pembelian.dataPengguna,
-                keterangan = "Hapus pembelian"
+            stokService.hapusStok(
+                referensiId = it.id,
+                barangId = it.dataBarang.id
             )
         }
 

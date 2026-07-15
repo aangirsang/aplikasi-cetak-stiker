@@ -50,6 +50,13 @@ async function initDataStiker() {
     getEl("popup-data-stiker-file-input-2")
         .addEventListener("change", (event) => handlePreviewGambar(event, 2));
 
+    getEl("search-stiker").addEventListener("input", async function(){
+        cariDataStiker = this.value.trim().toLowerCase();
+        currentPageStiker = 1;
+        openedDetailStikerId = null;
+        await loadTabelDataStiker();
+    });
+
     document.removeEventListener("click", closeDetailStikerOutside);
     document.addEventListener("click", closeDetailStikerOutside);
 
@@ -60,6 +67,7 @@ async function loadTabelDataStiker(reload = false) {
     showLoading("Memuat Data Stiker..");
     try {
         if (reload) {
+            cariDataStiker = "";
             dataStiker = await fetchDataStiker();
         }
 

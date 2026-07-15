@@ -42,6 +42,7 @@ class PenyesuaianStokService(
         val penyesuaian = DataPenyesuaianStok(
             dataBarang = barang,
             dataPengguna = pengguna,
+            tanggal = System.currentTimeMillis(),
             stokSistem = request.stokSistem,
             stokFisik = request.stokFisik,
             selisih = request.selisih,
@@ -74,15 +75,6 @@ class PenyesuaianStokService(
         val pengguna = repoPengguna.findById(request.dataPenggunaId)
             .orElseThrow { throw IllegalArgumentException("Data ID ${request.dataPenggunaId} tidak ditemukan!!") }
 
-        stokService.kurangiStok(
-            barangId = dataLama.dataBarang.id,
-            jumlah = dataLama.selisih,
-            jenis = JenisRiwayatStok.PENYESUAIAN,
-            referensiId = dataLama.id,
-            pengguna = pengguna,
-            keterangan = "Rollback edit Penyesuaian Stok"
-        )
-
         dataLama.apply {
             dataLama.dataBarang = barang
             dataLama.stokSistem = request.stokSistem
@@ -94,13 +86,12 @@ class PenyesuaianStokService(
 
         val simpanData = repoPenyesuaian.save(dataLama)
 
-        stokService.tambahStok(
-            barangId = simpanData.dataBarang.id,
-            jumlah = simpanData.selisih,
-            jenis = JenisRiwayatStok.PENYESUAIAN,
-            referensiId = simpanData.id,
+        stokService.ubahStok(
+            referensiId = dataLama.id,
+            barangId = dataLama.dataBarang.id,
+            jumlahBaru = dataLama.selisih,
             pengguna = pengguna,
-            keterangan = "Edit Penyesuaian Stok"
+            keterangan = "Edit Pembelian"
         )
 
         return mapper.toResponse(simpanData)
@@ -111,13 +102,9 @@ class PenyesuaianStokService(
         val dataLama = repoPenyesuaian.findById(id)
             .orElseThrow { throw IllegalArgumentException("Data ID $id tidak ditemukan!!") }
 
-        stokService.kurangiStok(
-            barangId = dataLama.dataBarang.id,
-            jumlah = dataLama.selisih,
-            jenis = JenisRiwayatStok.PENYESUAIAN,
+        stokService.hapusStok(
             referensiId = dataLama.id,
-            pengguna = dataLama.dataPengguna,
-            keterangan = "Rollback edit Penyesuaian Stok"
+            barangId = dataLama.dataBarang.id
         )
 
         repoPenyesuaian.deleteById(id)

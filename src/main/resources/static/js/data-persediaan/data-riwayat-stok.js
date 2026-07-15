@@ -22,9 +22,14 @@ async function initDataRiwayatStok() {
 
 // TABEL
 async function loadTabelDataRiwayatStok(reload = false) {
+
     showLoading("Memuat Data..");
     try {
         if(reload) {
+
+            getEl("txt-cari-data-riwayat-stok").value = "";
+            cariRiwayatStok = ""
+
             dataRiwayatStok = await fetchDataRiwayatStok();
         }
 
@@ -49,7 +54,7 @@ async function loadTabelDataRiwayatStok(reload = false) {
     }
 }
 async function fetchDataRiwayatStok() {
-    const response = await fetch(`${BASE_URL_RIWAYAT}/terakhir`);
+    const response = await fetch(BASE_URL_RIWAYAT);
 
     if(!response.ok){
         throw new Error("Gagal Memuat Data!!");

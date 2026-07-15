@@ -56,6 +56,7 @@ async function loadPage(page) {
             "data-persediaan/data-pembelian": initDataPembelian,
             "data-persediaan/data-barang": initDataBarang,
             "data-persediaan/data-riwayat-stok": initDataRiwayatStok,
+            "data-persediaan/data-penyesuaian": initDataPenyesuaian,
             "data-umkm/data-umkm": initDataUmkm,
             "data-umkm/data-stiker": initDataStiker
         };

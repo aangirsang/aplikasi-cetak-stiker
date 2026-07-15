@@ -5,8 +5,12 @@ import com.girsang.stiker.model.entity.DataPengguna
 
 data class PenyesuaianStokResponse(
     val id: String,
+    var dataBarangId: String,
+    var namaBarang: String,
     var dataBarang: DataBarang,
-    var dataPengguna: DataPengguna,
+    var dataPenggunaId: String,
+    var namaPengguna: String,
+    var tanggal: Long,
     var stokSistem: Long,
     var stokFisik: Long,
     var selisih: Long,

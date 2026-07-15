@@ -2,7 +2,7 @@ let dataPengguna = [];
 let currentPagePengguna = 1;
 let rowsPerPagePengguna = 10;
 
-let searchKeywordPengguna = "";
+let cariPengguna = "";
 
 let sortFieldPengguna = "namaPengguna";
 let sortDirectionPengguna = "asc";
@@ -24,7 +24,7 @@ async function initDataPengguna() {
     await initPopupLoading();
 
     getEl("cari-data-pengguna").addEventListener("input", async function(){
-        searchKeywordPengguna = this.value.trim().toLowerCase();
+        cariPengguna = this.value.trim().toLowerCase();
         currentPagePengguna = 1;
         //openedDetailStiker = null;
         await loadTablePengguna();
@@ -90,6 +90,7 @@ async function loadTablePengguna(reload = false){
 
     try{
         if(reload){
+            cariPengguna = "";
             dataPengguna = await fetchDataPengguna();
         }
 
@@ -131,7 +132,7 @@ function getFilteredDataPengguna(){
         `.toLowerCase();
 
         return semuaData.includes(
-            searchKeywordPengguna
+            cariPengguna
         );
     });
 }

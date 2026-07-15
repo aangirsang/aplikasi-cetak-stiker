@@ -14,7 +14,7 @@ class DataPenyesuaianStok(
     @Id
     var id: String = "",
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "barang_id")
     var dataBarang: DataBarang,
 
@@ -22,6 +22,7 @@ class DataPenyesuaianStok(
     @JoinColumn(nullable = false)
     var dataPengguna: DataPengguna,
 
+    var tanggal: Long,
     var stokSistem: Long,
     var stokFisik: Long,
     var selisih: Long,
@@ -29,7 +30,7 @@ class DataPenyesuaianStok(
 
     @field:NotBlank(message = "Alasan tidak boleh kosong")
     @Column(nullable = false)
-    var alasan: String
+    var alasan: String = "-"
 ){
     @PrePersist
     fun generateId() {

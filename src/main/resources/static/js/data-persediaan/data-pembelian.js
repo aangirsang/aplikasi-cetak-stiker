@@ -112,6 +112,7 @@ async function loadTabelDataPembelian(reload = false) {
     try {
         if(reload){
             dataPembelian = await fetchDataPembelian();
+            cariDataPembelian = "";
         }
 
         const filtered = await getFilterDataPembelian();

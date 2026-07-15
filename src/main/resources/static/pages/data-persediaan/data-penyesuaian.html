@@ -1,0 +1,132 @@
+<div class="data-penyesuaian">
+    <div class="search-bar">
+        <div class="search-box">
+            <span class="material-symbols-sharp">search</span>
+            <label>
+                <input type="text" id="txt-cari-data-penyesuaian" placeholder="Cari Data Penyesuaian Stok">
+            </label>
+        </div>
+        <button class="add-btn" id="btn-tambah-data-penyesuaian">
+            <span class="material-symbols-sharp">add</span>
+            Tambah Data Penyesuaian
+        </button>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-page-container">
+        <div class="tabel-page-card">
+            <table class="tbl-data">
+                <thead>
+                <tr>
+                    <th onclick="sortTabelPenyesuaian('tanggal')">Tanggal</th>
+                    <th onclick="sortTabelPenyesuaian('namaPengguna')">User</th>
+                    <th onclick="sortTabelPenyesuaian('namaBarang')">Nama Barang</th>
+                    <th onclick="sortTabelPenyesuaian('stokSistem')">Stok Sistem</th>
+                    <th onclick="sortTabelPenyesuaian('stokFisik')">Stok Fisik</th>
+                    <th onclick="sortTabelPenyesuaian('selisih')">Selisih</th>
+                    <th onclick="sortTabelPenyesuaian('alasan')">Keterangan</th>
+                </tr>
+                </thead>
+                <tbody id="tbl-body-data-penyesuaian"></tbody>
+            </table>
+        </div>
+        <div id="pagination" class="pagination"></div>
+    </div>
+
+    <!--POPUP PENYESUAIAN-->
+    <div id="popup-data-penyesuaian" class="popup">
+        <div class="content-popup-data-penyesuaian">
+            <form id="form-data-penyesuaian">
+                <div class="content-data-penyesuaian-atas">
+                    <div class="content-data-penyesuaian-atas-kiri">
+                        <h2 id="popup-data-penyesuaian-title">Data Penyesuaian Stok</h2>
+                    </div>
+                    <div class="content-data-penyesuaian-atas-kanan">
+                        <label id="data-penyesuaian-tanggal">Tanggal Orderan</label>
+                    </div>
+                </div>
+                <div class="tambah-barang">
+                    <button type="button" id="btn-popup-data-penyesuaian-barang">Cari Barang</button>
+                </div>
+                <div class="content-data-penyesuaian-bawah">
+                    <div class="content-data-penyesuaian-bawah-kiri">
+                        <div class="input-group">
+                            <input
+                                    type="text"
+                                    id="popup-data-penyesuaian-nama-barang"
+                                    placeholder=" "
+                                    autocomplete="off" readonly>
+
+                            <label for="popup-data-penyesuaian-nama-barang">
+                                Nama Barang
+                            </label>
+                        </div>
+                        <div class="input-group">
+                            <input
+                                    type="text"
+                                    id="popup-data-penyesuaian-stok-sistem"
+                                    placeholder=" "
+                                    autocomplete="off" readonly>
+
+                            <label for="popup-data-penyesuaian-stok-sistem">
+                                Jumlah Stok Sistem
+                            </label>
+                        </div>
+                        <div class="input-group">
+                            <input
+                                    type="number"
+                                    id="popup-data-penyesuaian-stok-fisik"
+                                    placeholder=" "
+                                    min="0"
+                                    step="1"
+                                    autocomplete="off">
+
+                            <label for="popup-data-penyesuaian-stok-fisik">
+                                Jumlah Stok Fisik
+                            </label>
+                        </div>
+                        <div class="input-group">
+                            <input
+                                    type="text"
+                                    id="popup-data-penyesuaian-selisih"
+                                    placeholder=" "
+                                    autocomplete="off" readonly>
+
+                            <label for="popup-data-penyesuaian-selisih">
+                                Jumlah Selisih Stok
+                            </label>
+                        </div>
+                        <div class="textarea-group">
+                            <textarea
+                                    id="popup-data-penyesuaian-catatan"
+                                    placeholder=" "
+                                    rows="4"></textarea>
+
+                            <label for="popup-data-penyesuaian-catatan">
+                                Keterangan
+                            </label>
+                        </div>
+                    </div>
+                    <div class="content-data-penyesuaian-bawah-kanan">
+                        <!-- Preview -->
+                        <div class="image-box">
+                            <img id="popup-data-penyesuaian-preview-image" alt="Foto Penyesuaian">
+                        </div>
+
+                        <!-- Tombol Cari -->
+                        <button type="button" id="btn-popup-data-penyesuaian-cari-gambar">Cari Gambar</button>
+
+                        <!-- Input File -->
+                        <div class="input-file">
+                            <input type="file" id="popup-data-penyesuaian-file-input" accept="image/*" hidden>
+                        </div>
+                    </div>
+                </div>
+                <div class="popup-actions">
+                    <button type="button" id="btn-popup-data-penyesuaian-simpan">Simpan</button>
+                    <button type="button" id="btn-popup-data-penyesuaian-batal">Batal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

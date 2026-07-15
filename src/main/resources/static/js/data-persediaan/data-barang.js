@@ -39,6 +39,7 @@ async function loadTabelDataBarang(reload = false) {
     try {
         if(reload) {
             dataBarang = await fetchDataBarang();
+            cariDataBarang = "";
         }
 
         const filtered = getFilterDataBarang();

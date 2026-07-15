@@ -28,8 +28,12 @@ class DataBarangMapper {
     fun toResponse(entity: DataPenyesuaianStok): PenyesuaianStokResponse {
         return PenyesuaianStokResponse(
             id = entity.id,
+            dataBarangId = entity.dataBarang.id,
+            namaBarang = entity.dataBarang.namaBarang,
             dataBarang = entity.dataBarang,
-            dataPengguna = entity.dataPengguna,
+            dataPenggunaId = entity.dataPengguna.id,
+            namaPengguna = entity.dataPengguna.namaPengguna,
+            tanggal = entity.tanggal,
             stokSistem = entity.stokSistem,
             stokFisik = entity.stokFisik,
             selisih = entity.selisih,
