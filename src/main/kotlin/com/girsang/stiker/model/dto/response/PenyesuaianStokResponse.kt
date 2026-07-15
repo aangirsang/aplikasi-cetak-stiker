@@ -1,7 +1,6 @@
 package com.girsang.stiker.model.dto.response
 
 import com.girsang.stiker.model.entity.DataBarang
-import com.girsang.stiker.model.entity.DataPengguna
 
 data class PenyesuaianStokResponse(
     val id: String,
