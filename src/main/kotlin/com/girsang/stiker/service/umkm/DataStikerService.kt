@@ -4,7 +4,6 @@ package com.girsang.stiker.service.umkm
 import com.girsang.stiker.model.mapper.DataUmkmMapper
 import com.girsang.stiker.model.dto.request.DataStikerRequest
 import com.girsang.stiker.model.dto.response.DataStikerResponse
-import com.girsang.stiker.model.entity.DataBarang
 import com.girsang.stiker.model.entity.DataStiker
 import com.girsang.stiker.repository.DataBarangRepository
 import com.girsang.stiker.repository.DataStikerRepository

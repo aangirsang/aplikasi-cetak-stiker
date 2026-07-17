@@ -3,7 +3,6 @@ package com.girsang.stiker.controller
 import com.girsang.stiker.model.dto.request.DataOrderanRequest
 import com.girsang.stiker.model.dto.response.DataOrderanResponse
 import com.girsang.stiker.model.dto.response.DataOrderanRinciResponse
-import com.girsang.stiker.model.dto.response.PembelianResponse
 import com.girsang.stiker.service.orderan.DataOrderanService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
