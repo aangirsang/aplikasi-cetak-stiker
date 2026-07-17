@@ -3,7 +3,7 @@ package com.girsang.stiker.controller
 import com.girsang.stiker.model.dto.request.DataUmkmRequest
 import com.girsang.stiker.model.dto.response.DataUmkmResponse
 import com.girsang.stiker.model.entity.DataUmkm
-import com.girsang.stiker.service.DataUmkmService
+import com.girsang.stiker.service.umkm.DataUmkmService
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*

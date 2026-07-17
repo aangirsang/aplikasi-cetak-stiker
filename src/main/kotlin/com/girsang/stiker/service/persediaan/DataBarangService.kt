@@ -1,10 +1,11 @@
-package com.girsang.stiker.service
+package com.girsang.stiker.service.persediaan
 
 import com.girsang.stiker.model.mapper.DataBarangMapper
 import com.girsang.stiker.model.dto.response.RiwayatStokResponse
 import com.girsang.stiker.model.entity.DataBarang
 import com.girsang.stiker.repository.DataBarangRepository
 import com.girsang.stiker.repository.DataRiwayatStokRepository
+import com.girsang.stiker.service.EntityDeletionService
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

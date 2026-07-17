@@ -1,4 +1,4 @@
-package com.girsang.stiker.service
+package com.girsang.stiker.service.persediaan
 
 import com.girsang.stiker.config.JenisRiwayatStok
 import com.girsang.stiker.model.dto.request.PenyesuaianStokRequest

@@ -3,7 +3,7 @@ package com.girsang.stiker.controller
 import com.girsang.stiker.model.dto.request.PembelianRequest
 import com.girsang.stiker.model.dto.response.PembelianResponse
 import com.girsang.stiker.model.dto.response.PembelianRinciResponse
-import com.girsang.stiker.service.data.persediaan.DataPembelianService
+import com.girsang.stiker.service.persediaan.DataPembelianService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping

@@ -1,0 +1,135 @@
+<div class="data-orderan">
+    <!-- SEARCH -->
+    <div class="search-bar">
+        <div class="search-box">
+            <span class="material-symbols-sharp">search</span>
+            <label>
+                <input type="text" id="txt-cari-data-orderan" placeholder="Cari Data Orderan">
+            </label>
+        </div>
+        <!-- RANGE TANGGAL -->
+        <div class="date-range-box">
+            <label for="cari-tanggal-awal">Dari</label>
+            <input type="date" id="cari-tanggal-awal">
+
+            <span class="separator">-</span>
+
+            <label for="cari-tanggal-akhir">Sampai</label>
+            <input type="date" id="cari-tanggal-akhir">
+        </div>
+        <button class="add-btn" id="btn-tambah-data-orderan">
+            <span class="material-symbols-sharp">add</span>
+            Tambah Data Orderan
+        </button>
+    </div>
+    <!-- TABLE -->
+    <div class="table-page-container">
+        <div class="tabel-page-card">
+            <table class="tbl-data">
+                <thead>
+                <tr>
+                    <th onclick="sortTabelOrderan('faktur')">Faktur</th>
+                    <th onclick="sortTabelOrderan('tanggal')">Tanggal</th>
+                    <th onclick="sortTabelOrderan('namaUmkm')">Nama Usaha</th>
+                    <th onclick="sortTabelOrderan('totalStiker')">Total Stiker</th>
+                </tr>
+                </thead>
+                <tbody id="tbl-body-data-orderan"></tbody>
+            </table>
+        </div>
+        <div id="pagination" class="pagination"></div>
+    </div>
+    <!-- POPUP ORDERAN -->
+    <div class="popup" id="popup-data-orderan">
+        <div class="content-popup-data-order">
+            <form id="form-data-order">
+                <div class="form-data-order-atas">
+                    <div class="form-data-order-atas-kiri">
+                        <h2 id="title-popup-data-orderan">Data Orderan</h2>
+                    </div>
+                    <div class="form-data-order-atas-kanan">
+                        <label id="data-order-tanggal">Tanggal Orderan</label>
+                        <label id="data-order-faktur">Faktur</label>
+                        <label id="data-order-jumlah">10 Lembar</label>
+                    </div>
+                </div>
+                <div class="form-data-order-grid">
+                    <div class="form-data-order-grid-kiri" id="form-data-order-grid-kiri">
+                        <div class="form-data-order-grid-kiri-atas">
+                            <div class="input-group">
+                                <input
+                                        type="text"
+                                        id="data-order-nama-usaha"
+                                        placeholder=" "
+                                        readonly>
+
+                                <label for="data-order-nama-usaha">
+                                    Nama Usaha
+                                </label>
+                            </div>
+
+                            <div class="input-group">
+                                <input
+                                        type="text"
+                                        id="data-order-nama-pemilik"
+                                        placeholder=" "
+                                        readonly>
+
+                                <label for="data-order-nama-pemilik">
+                                    Nama Pemilik Usaha
+                                </label>
+                            </div>
+
+                            <div class="input-group">
+                                <input
+                                        type="text"
+                                        id="data-order-instagram"
+                                        placeholder=" "
+                                        readonly>
+
+                                <label for="data-order-instagram">
+                                    Akun Instagram
+                                </label>
+                            </div>
+
+                            <div class="input-group">
+                                <input
+                                        type="text"
+                                        id="data-order-kontak"
+                                        placeholder=" "
+                                        readonly>
+
+                                <label for="data-order-kontak">
+                                    Kontak
+                                </label>
+                            </div>
+
+                            <div class="textarea-group">
+                                <textarea
+                                        id="data-order-alamat"
+                                        placeholder=" "
+                                        rows="4"></textarea>
+
+                                <label for="data-order-alamat">
+                                    Alamat Usaha
+                                </label>
+                            </div>
+
+                        </div>
+                        <div class="form-data-order-grid-kiri-bawah">
+                            <button type="button" id="btn-umkm-data-order">Pilih UMKM</button>
+                        </div>
+                    </div>
+                    <div class="form-data-order-grid-kanan" id="form-data-order-grid-kanan">
+                        <div id="data-order-stiker-list" class="data-order-stiker-list"></div>
+                        <button type="button" id="btn-stiker-data-order">Tambah Stiker</button>
+                    </div>
+                </div>
+                <div class="popup-actions">
+                    <button type="button" id="btn-simpan-data-order">Simpan</button>
+                    <button type="button" id="btn-batal-data-order">Batal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

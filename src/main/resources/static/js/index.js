@@ -58,7 +58,8 @@ async function loadPage(page) {
             "data-persediaan/data-riwayat-stok": initDataRiwayatStok,
             "data-persediaan/data-penyesuaian": initDataPenyesuaian,
             "data-umkm/data-umkm": initDataUmkm,
-            "data-umkm/data-stiker": initDataStiker
+            "data-umkm/data-stiker": initDataStiker,
+            "data-orderan": initDataOrderan
         };
 
         pageHandlers[page]?.();
@@ -88,6 +89,9 @@ async function destroyCurrentPage() {
 
     if (typeof destroyDataPembelian === "function")
         await destroyDataPembelian();
+
+    if (typeof destroyDataOrderan === "function")
+        await destroyDataOrderan();
 }
 
 // SUBMENU

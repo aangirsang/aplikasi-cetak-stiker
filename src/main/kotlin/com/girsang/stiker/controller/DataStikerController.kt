@@ -3,7 +3,7 @@ package com.girsang.stiker.controller
 import com.girsang.stiker.model.dto.request.DataStikerRequest
 import com.girsang.stiker.model.dto.response.DataStikerResponse
 import com.girsang.stiker.model.entity.DataStiker
-import com.girsang.stiker.service.DataStikerService
+import com.girsang.stiker.service.umkm.DataStikerService
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*

@@ -2,7 +2,7 @@ package com.girsang.stiker.controller
 
 import com.girsang.stiker.model.dto.response.RiwayatStokResponse
 import com.girsang.stiker.model.entity.DataBarang
-import com.girsang.stiker.service.DataBarangService
+import com.girsang.stiker.service.persediaan.DataBarangService
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping

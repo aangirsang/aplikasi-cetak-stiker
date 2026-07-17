@@ -1,7 +1,7 @@
 package com.girsang.stiker.controller
 
 import com.girsang.stiker.model.entity.DataLevel
-import com.girsang.stiker.service.DataLevelService
+import com.girsang.stiker.service.master.DataLevelService
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*

@@ -1,7 +1,8 @@
-package com.girsang.stiker.service
+package com.girsang.stiker.service.master
 
 import com.girsang.stiker.model.entity.DataKategori
 import com.girsang.stiker.repository.DataKategoriRepository
+import com.girsang.stiker.service.EntityDeletionService
 import org.springframework.stereotype.Service
 
 @Service

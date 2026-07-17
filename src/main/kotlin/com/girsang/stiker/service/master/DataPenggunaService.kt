@@ -1,4 +1,4 @@
-package com.girsang.stiker.service
+package com.girsang.stiker.service.master
 
 import com.girsang.stiker.model.mapper.MasterDataMapper
 import com.girsang.stiker.model.dto.request.DataPenggunaRequest
@@ -6,6 +6,7 @@ import com.girsang.stiker.model.dto.response.DataPenggunaResponse
 import com.girsang.stiker.model.entity.DataPengguna
 import com.girsang.stiker.repository.DataLevelRepository
 import com.girsang.stiker.repository.DataPenggunaRepository
+import com.girsang.stiker.service.EntityDeletionService
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 

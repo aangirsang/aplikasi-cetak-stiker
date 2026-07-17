@@ -12,6 +12,8 @@ const BASE_URL_PEMBELIAN = `${BASE_URL}/data-pembelian`;
 const BASE_URL_RIWAYAT = `${BASE_URL_BARANG}/riwayat-stok`;
 const BASE_URL_PENYESUAIAN = `${BASE_URL}/penyesuaian-stok`;
 
+const BASE_URL_ORDERAN = `${BASE_URL}/data-orderan`;
+
 const BASE_URL_UMKM = `${BASE_URL}/data-umkm`;
 const BASE_URL_STIKER = `${BASE_URL}/data-stiker`;
 

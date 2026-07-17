@@ -1,4 +1,4 @@
-package com.girsang.stiker.service
+package com.girsang.stiker.service.umkm
 
 import com.girsang.stiker.model.mapper.DataUmkmMapper
 import com.girsang.stiker.model.dto.request.DataUmkmRequest
@@ -6,6 +6,7 @@ import com.girsang.stiker.model.dto.response.DataUmkmResponse
 import com.girsang.stiker.model.entity.DataUmkm
 import com.girsang.stiker.repository.DataKategoriRepository
 import com.girsang.stiker.repository.DataUmkmRepository
+import com.girsang.stiker.service.EntityDeletionService
 import org.springframework.stereotype.Service
 
 @Service

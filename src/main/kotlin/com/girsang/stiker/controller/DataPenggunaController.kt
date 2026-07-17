@@ -3,7 +3,7 @@ package com.girsang.stiker.controller
 
 import com.girsang.stiker.model.dto.request.DataPenggunaRequest
 import com.girsang.stiker.model.dto.response.DataPenggunaResponse
-import com.girsang.stiker.service.DataPenggunaService
+import com.girsang.stiker.service.master.DataPenggunaService
 import jakarta.servlet.http.HttpSession
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity

@@ -45,7 +45,8 @@ class DataUmkmMapper {
             catatan = stiker.catatan,
             status = stiker.status,
             pathGambar1 = stiker.pathGambar1,
-            pathGambar2 = stiker.pathGambar2
+            pathGambar2 = stiker.pathGambar2,
+            dataBarang = stiker.dataBarang
         )
     }
 }

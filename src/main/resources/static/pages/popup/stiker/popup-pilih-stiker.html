@@ -1,0 +1,30 @@
+<div class="popup" id="popup-pilih-stiker">
+    <div class="popup-content-pilih-stiker">
+        <form id="form-popup-pilih-stiker">
+            <h2 id="popup-pilih-stiker-title">Data Stiker</h2>
+            <div class="search-bar">
+                <div class="search-box">
+                    <span class="material-symbols-sharp">search</span>
+                    <label>
+                        <input type="text" id="cari-popup-pilih-stiker" placeholder="Cari Data Stiker">
+                    </label>
+                </div>
+                <button type="button" id="batal-pilih-stiker-btn-popup">
+                    <span class="material-symbols-sharp">close</span>
+                </button>
+            </div>
+
+            <!-- TABLE -->
+            <div class="table-container-popup-stiker" id="table-container-popup-stiker">
+                <div id="popup-stiker-list" class="popup-stiker-list"></div>
+
+            </div>
+
+            <button type="button" class="btn-pilih-stiker" id="btn-pilih-stiker" onclick="pilihPopupStiker()">
+                Pilih
+            </button>
+
+        </form>
+    </div>
+    <div id="tooltip-stiker" class="tooltip-stiker"></div>
+</div>

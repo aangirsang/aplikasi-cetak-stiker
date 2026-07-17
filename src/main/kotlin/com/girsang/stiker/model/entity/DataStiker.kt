@@ -16,6 +16,10 @@ class DataStiker(
     @JoinColumn(nullable = false)
     var dataUmkm: DataUmkm,
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(nullable = false)
+    var dataBarang: DataBarang,
+
     @field:NotBlank(message = "Kode stiker tidak boleh kosong")
     @Column(nullable = false, unique = true)
     var kodeStiker: String = "",

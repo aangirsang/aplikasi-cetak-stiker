@@ -1,4 +1,4 @@
-package com.girsang.stiker.service.data.persediaan
+package com.girsang.stiker.service.persediaan
 
 import com.girsang.stiker.config.JenisRiwayatStok
 import com.girsang.stiker.model.mapper.PembelianMapper
@@ -12,7 +12,6 @@ import com.girsang.stiker.repository.DataBarangRepository
 import com.girsang.stiker.repository.DataPenggunaRepository
 import com.girsang.stiker.repository.DataPembelianRepository
 import com.girsang.stiker.repository.DataPembelianRinciRepository
-import com.girsang.stiker.service.StokService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal

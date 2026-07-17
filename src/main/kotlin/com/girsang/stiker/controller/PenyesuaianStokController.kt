@@ -2,7 +2,7 @@ package com.girsang.stiker.controller
 
 import com.girsang.stiker.model.dto.request.PenyesuaianStokRequest
 import com.girsang.stiker.model.dto.response.PenyesuaianStokResponse
-import com.girsang.stiker.service.PenyesuaianStokService
+import com.girsang.stiker.service.persediaan.PenyesuaianStokService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping

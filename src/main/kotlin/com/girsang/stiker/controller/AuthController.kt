@@ -1,7 +1,7 @@
 package com.girsang.stiker.controller
 
 import com.girsang.stiker.model.dto.request.LoginRequest
-import com.girsang.stiker.service.DataPenggunaService
+import com.girsang.stiker.service.master.DataPenggunaService
 import jakarta.servlet.http.HttpSession
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping

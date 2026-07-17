@@ -8,6 +8,7 @@ let sortDirectionStiker = "asc";
 let dataStiker = [];
 let selectedStiker = null;
 let selectedUmkm = null;
+let selectedBarang = null;
 
 let isEditModeStiker = false;
 let openedDetailStikerId = null;
@@ -23,13 +24,20 @@ let pathGambarLama = {
     2: ""
 };
 
+let gambarBerubah = {
+    1: false,
+    2: false
+};
+
 async function initDataStiker() {
+
     setDefaultGambarStiker(1);
     setDefaultGambarStiker(2);
     await initPopupLoading();
     await initPopupLihatGambar();
     await loadTabelDataStiker(true);
     await initPopupPilihUmkm();
+    await initPilihBarang();
     await initPopupHapus();
 
     getEl("btn-tambah-data-stiker").addEventListener("" +
@@ -50,6 +58,10 @@ async function initDataStiker() {
     getEl("popup-data-stiker-file-input-2")
         .addEventListener("change", (event) => handlePreviewGambar(event, 2));
 
+    // BARANG
+    getEl("popup-data-stiker-barang")
+        .addEventListener("click", () => tampilPopupPilihBarang())
+
     getEl("search-stiker").addEventListener("input", async function(){
         cariDataStiker = this.value.trim().toLowerCase();
         currentPageStiker = 1;
@@ -59,6 +71,9 @@ async function initDataStiker() {
 
     document.removeEventListener("click", closeDetailStikerOutside);
     document.addEventListener("click", closeDetailStikerOutside);
+
+    initDragDrop(1);
+    initDragDrop(2);
 
 }
 
@@ -207,7 +222,6 @@ function createTabelStiker(item, umkm, isOpened) {
     `
 }
 async function sortTableStiker(field) {
-    console.log(field)
     if(sortFieldDataStiker === field) {
         sortDirectionStiker = sortDirectionStiker === "asc" ? "desc" : "asc";
     } else {
@@ -302,8 +316,10 @@ function isiDataStiker(stiker) {
     showLoading("Memuat Data Stiker...");
 
     const umkm = stiker.dataUmkm;
+    const barang = stiker.dataBarang;
 
     selectedUmkm = umkm;
+    selectedBarang = barang;
     pathGambarLama[1] = stiker.pathGambar1 ?? "";
     pathGambarLama[2] = stiker.pathGambar2 ?? "";
 
@@ -316,6 +332,7 @@ function isiDataStiker(stiker) {
     getEl("popup-data-stiker-panjang").value = stiker.panjang;
     getEl("popup-data-stiker-lebar").value = stiker.lebar;
     getEl("popup-data-stiker-catatan").value = stiker.catatan;
+    getEl("popup-data-stiker-barang").value = barang.namaBarang;
 
     setKodeStiker(stiker.kodeStiker);
 
@@ -360,7 +377,7 @@ function isiDataStiker(stiker) {
     };
 
     previewImage2.src =
-        stiker.pathGambar1
+        stiker.pathGambar2
             ? `${BASE_URL}${stiker.pathGambar2}`
             : noImageStiker;
 
@@ -434,13 +451,22 @@ async function loadKodeStiker(umkmId) {
         showToast(error.message, "error");
     }
 }
+async function tampilPopupPilihBarang(){
+    await showPopupPilihBarang(async (barang) =>{
+        selectedBarang = barang;
+
+        getEl("popup-data-stiker-barang").value = barang.namaBarang;
+    });
+}
 
 // FORM
 function bersihPopupDataStiker() {
     selectedStiker = null;
     selectedUmkm = null;
+    selectedBarang = null
     cariDataStiker = "";
     isEditModeStiker = false;
+
     selectedWebpFiles = {
         1: null,
         2: null
@@ -451,9 +477,13 @@ function bersihPopupDataStiker() {
         2: ""
     };
 
+    gambarBerubah = {
+        1: false,
+        2: false
+    };
 
     setDefaultGambarStiker(1);
-   setDefaultGambarStiker(2);
+    setDefaultGambarStiker(2);
 
    [
        "popup-data-stiker-nama-usaha",
@@ -466,7 +496,8 @@ function bersihPopupDataStiker() {
        "popup-data-stiker-lebar",
        "popup-data-stiker-catatan",
        "popup-data-stiker-file-input-1",
-       "popup-data-stiker-file-input-2"
+       "popup-data-stiker-file-input-2",
+       "popup-data-stiker-barang"
    ].forEach(id => getEl(id).value = "");
 
     document.querySelectorAll('input[name="popup-data-stiker-status"]')
@@ -529,6 +560,7 @@ async function handlePreviewGambar(event, index) {
             );
 
         selectedWebpFiles[index] = webpFile;
+        gambarBerubah[index] = true;
 
         const previewImage =
             getEl(
@@ -543,26 +575,6 @@ async function handlePreviewGambar(event, index) {
             URL.createObjectURL(
                 webpFile
             );
-
-        const ukuranAwal =
-            (file.size / 1024 / 1024)
-                .toFixed(2);
-
-        const ukuranWebp =
-            (
-                webpFile.size /
-                1024 /
-                1024
-            ).toFixed(2);
-
-        console.log(
-            `Asli: ${ukuranAwal} MB`
-        );
-
-        console.log(
-            `WebP: ${ukuranWebp} MB`
-        );
-
     } catch(error){
 
         hideLoading();
@@ -574,14 +586,21 @@ async function handlePreviewGambar(event, index) {
 
         console.error(error);
     }
+
 }
 function hapusGambarStiker(index){
-    const img = document.getElementById(
-        `preview-gambar-${index}`
-    );
+    const img = getEl(`preview-gambar-${index}`);
 
     img.src = noImageStiker;
-    img.dataset.path = "";
+
+    selectedWebpFiles[index] = null;
+
+    if(index === 1){
+        pathGambarLama[1] = "";
+    }else{
+        pathGambarLama[2] = "";
+    }
+
     tutupMenuImageStiker();
 }
 function lihatGambarStiker(index){
@@ -598,10 +617,7 @@ function lihatGambarStiker(index){
 }
 function isGambarStikerBerubah(){
 
-    return (
-        getEl("popup-data-stiker-file-input-1").files.length > 0 ||
-        getEl("popup-data-stiker-file-input-2").files.length > 0
-    );
+    return gambarBerubah[1] || gambarBerubah[2];
 }
 async function uploadGambarStiker(){
 
@@ -638,6 +654,51 @@ async function uploadGambarStiker(){
 
     return await response.json();
 }
+function initDragDrop(index){
+
+    const container =
+        document.getElementById(
+            `preview-container-${index}`
+        );
+
+    container.addEventListener("dragover", e=>{
+        e.preventDefault();
+        container.classList.add("dragover");
+    });
+
+    container.addEventListener("dragenter", e=>{
+        e.preventDefault();
+        container.classList.add("dragover");
+    });
+
+    container.addEventListener("dragleave", e=>{
+
+        if(e.target === container){
+            container.classList.remove("dragover");
+        }
+
+    });
+
+    container.addEventListener("drop", async e=>{
+
+        e.preventDefault();
+
+        container.classList.remove("dragover");
+
+        const files = e.dataTransfer.files;
+
+        if(files.length === 0) return;
+
+        await handlePreviewGambar({
+            target:{
+                files:files
+            }
+        }, index);
+
+        container.classList.add("has-image");
+    });
+
+}
 
 // CRUD
 function validasiSimpanDataStiker() {
@@ -657,11 +718,17 @@ function validasiSimpanDataStiker() {
             "popup-data-stiker-panjang",
             "popup-data-stiker-lebar"
         ].forEach(id => {
-        if(!getValue(id)){
-            tandaiInvalid(getEl(id));
+            if(!getValue(id)){
+                tandaiInvalid(getEl(id));
+                valid = false;
+            }
+        });
+
+        if(!selectedBarang){
+            tandaiInvalid(getEl("popup-data-stiker-barang"));
             valid = false;
         }
-    });
+
     if(!document.querySelector('input[name="popup-data-stiker-status"]:checked')){
         tandaiInvalid(getEl("popup-data-stiker-status-grup"));
         valid = false;
@@ -696,8 +763,6 @@ async function simpanDataStiker() {
 
     if(isGambarStikerBerubah()){
 
-        console.log("gambar berubah")
-
         const hasil =
             await uploadGambarStiker();
 
@@ -717,6 +782,7 @@ async function simpanDataStiker() {
             ? "Mengubah Data Stiker..."
             : "Menyimpan Data Stiker..."
     );
+
     try {
         if(isEditModeStiker) {
             const response = await fetch(`${BASE_URL_STIKER}/${selectedStiker.id}`, {
@@ -724,6 +790,7 @@ async function simpanDataStiker() {
                 headers: {"Content-type": "application/json"},
                 body: JSON.stringify({
                     umkmId: selectedUmkm.id,
+                    barangId: selectedBarang.id,
                     kodeStiker: kodeStiker,
                     namaStiker: namaStiker,
                     panjang: panjangStiker,
@@ -731,7 +798,8 @@ async function simpanDataStiker() {
                     catatan: catatanStiker,
                     status: statusStiker,
                     pathGambar1: gambar1,
-                    pathGambar2: gambar2
+                    pathGambar2: gambar2,
+
                 })
             });
 
@@ -744,6 +812,7 @@ async function simpanDataStiker() {
                 },
                 body: JSON.stringify({
                     umkmId: selectedUmkm.id,
+                    barangId: selectedBarang.id,
                     kodeStiker: kodeStiker,
                     namaStiker: namaStiker,
                     panjang: panjangStiker,

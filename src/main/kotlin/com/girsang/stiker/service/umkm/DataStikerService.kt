@@ -1,12 +1,15 @@
-package com.girsang.stiker.service
+package com.girsang.stiker.service.umkm
 
 
 import com.girsang.stiker.model.mapper.DataUmkmMapper
 import com.girsang.stiker.model.dto.request.DataStikerRequest
 import com.girsang.stiker.model.dto.response.DataStikerResponse
+import com.girsang.stiker.model.entity.DataBarang
 import com.girsang.stiker.model.entity.DataStiker
+import com.girsang.stiker.repository.DataBarangRepository
 import com.girsang.stiker.repository.DataStikerRepository
 import com.girsang.stiker.repository.DataUmkmRepository
+import com.girsang.stiker.service.EntityDeletionService
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
@@ -14,6 +17,7 @@ import java.time.LocalDate
 class DataStikerService(
     private val repoStiker: DataStikerRepository,
     private val repoUmkm: DataUmkmRepository,
+    private val repoBarang: DataBarangRepository,
     private val mapper: DataUmkmMapper,
     private val deletionService: EntityDeletionService
 ) {
@@ -38,6 +42,10 @@ fun cariByumkmDanStatus(umkmId: String): List<DataStikerResponse> {
 
     fun simpan(request: DataStikerRequest): DataStikerResponse {
 
+        val barang = repoBarang.findById(request.barangId)
+            .orElseThrow { throw IllegalArgumentException("Data Barang dengan ID ${request.barangId} tidak ditemukan!!") }
+
+
         // 🔹 Ambil entity DataUmkm dari database
         val umkmEntity = repoUmkm.findById(request.umkmId)
             .orElseThrow{
@@ -60,7 +68,8 @@ fun cariByumkmDanStatus(umkmId: String): List<DataStikerResponse> {
             catatan = request.catatan,
             status = request.status,
             pathGambar1 = request.pathGambar1,
-            pathGambar2 = request.pathGambar2
+            pathGambar2 = request.pathGambar2,
+            dataBarang = barang
         )
 
         val simpan = repoStiker.save(stiker)
@@ -72,6 +81,10 @@ fun cariByumkmDanStatus(umkmId: String): List<DataStikerResponse> {
 
     fun ubah(id: String, request: DataStikerRequest): DataStikerResponse {
         val stiker = repoStiker.findById(id).orElseThrow { NoSuchElementException("Stiker tidak ditemukan") }
+
+        val barang = repoBarang.findById(request.barangId)
+            .orElseThrow { throw IllegalArgumentException("Data Barang dengan ID ${request.barangId} tidak ditemukan!!") }
+
 
         val umkmEntity = repoUmkm.findById(request.umkmId)
             .orElseThrow{
@@ -89,6 +102,7 @@ fun cariByumkmDanStatus(umkmId: String): List<DataStikerResponse> {
             stiker.status = request.status
             stiker.pathGambar1 = request.pathGambar1
             stiker.pathGambar2 = request.pathGambar2
+            stiker.dataBarang = barang
         }
 
 
