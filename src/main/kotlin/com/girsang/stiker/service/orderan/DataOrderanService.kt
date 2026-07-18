@@ -72,7 +72,7 @@ class DataOrderanService(
         val simpan = repoOrder.save(orderan)
 
         simpan.rincian.forEach {
-            stokService.tambahStok(
+            stokService.kurangiStok(
                 barangId = it.dataStiker.dataBarang.id,
                 jumlah = it.jumlah.toLong(),
                 jenis = JenisRiwayatStok.ORDER,
@@ -111,20 +111,20 @@ class DataOrderanService(
 
         orderan.rincian.clear()
 
-
         orderan.dataPengguna = pengguna
         orderan.dataUMKM = umkm
 
-        orderan.rincian = request.rincian
-            .map { buatRincian(orderan, it) }
-            .toMutableList()
-
+        orderan.rincian.addAll(
+            request.rincian.map {
+                buatRincian(orderan, it)
+            }
+        )
         orderan.totalStiker = hitungStiker(orderan.rincian)
 
         val simpan = repoOrder.save(orderan)
 
         simpan.rincian.forEach {
-            stokService.tambahStok(
+            stokService.kurangiStok(
                 barangId = it.dataStiker.dataBarang.id,
                 jumlah = it.jumlah.toLong(),
                 jenis = JenisRiwayatStok.ORDER,

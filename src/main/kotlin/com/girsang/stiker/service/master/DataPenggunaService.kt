@@ -93,7 +93,7 @@ class DataPenggunaService(
         dataLama.dataLevel = level
 
         // hanya update password jika diisi
-        if(!request.kataSandi.isNullOrBlank()){
+        if(request.kataSandi.isNotBlank()){
             dataLama.kataSandi =
                 passwordEncoder.encode(
                     request.kataSandi

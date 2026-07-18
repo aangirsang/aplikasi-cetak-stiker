@@ -50,6 +50,45 @@ class StokService(
     }
 
     @Transactional
+    fun kurangiStok(
+        barangId: String,
+        jumlah: Long,
+        jenis: JenisRiwayatStok,
+        referensiId: String,
+        pengguna: DataPengguna,
+        keterangan: String? = null
+    ) {
+
+        val barang = repoBarang.findById(barangId)
+            .orElseThrow { IllegalArgumentException("Barang tidak ditemukan") }
+
+        if (barang.stokBarang < jumlah) {
+            throw IllegalArgumentException(
+                "Stok ${barang.namaBarang} tidak mencukupi. " +
+                        "Stok tersedia ${barang.stokBarang}, diminta $jumlah."
+            )
+        }
+
+        barang.stokBarang -= jumlah
+
+        repoRiwayat.save(
+            DataRiwayatStok(
+                dataBarang = barang,
+                tanggal = System.currentTimeMillis(),
+                jenis = jenis,
+                referensiId = referensiId,
+                perubahan = -jumlah,
+                saldoAwal = 0,
+                saldoAkhir = 0,
+                dataPengguna = pengguna,
+                keterangan = keterangan
+            )
+        )
+
+        hitungUlangSaldo(barang.id)
+    }
+
+    @Transactional
     fun ubahStok(
         referensiId: String,
         barangId: String,

@@ -19,6 +19,7 @@ let rincian = [];
 async function initDataOrderan() {
 
     await initPopupLoading();
+    await initPopupHapus();
     await initPopupPilihUmkm();
     await initPopupPilihStiker();
 
@@ -54,12 +55,56 @@ async function showPopupOrderan(id = null) {
     if(id) {
         popupTitle.textContent = "Edit Data Orderan";
         isEdit = true;
+        selectOrderan = dataOrderan.find(order => order.id === id);
+        rincian = selectOrderan.rincian;
+
+        isiPopupOrderan();
+
     } else {
         popupTitle.textContent = "Tambah Data Orderan";
         isEdit = false;
     }
 
     popup.classList.add("show");
+}
+function isiPopupOrderan() {
+    selectUmkm = {
+        id: selectOrderan.dataUmkmId,
+        namaUmkm: selectOrderan.namaUmkm,
+        namaPemilik: selectOrderan.namaPemilik,
+        alamat: selectOrderan.alamat,
+        instagram: selectOrderan.instagram,
+        noTelpon: selectOrderan.noTelpon
+    };
+
+    rincian.map(rinci => {
+        stikerTerpilih.push({
+            id: rinci.stikerId,
+            kodeStiker: rinci.kodeStiker,
+            namaStiker: rinci.namaStiker,
+            pathGambar1: rinci.pathGambar1,
+        })
+    })
+
+    getEl("data-order-nama-usaha").value =
+        selectOrderan.namaUmkm;
+    getEl("data-order-nama-pemilik").value =
+        selectOrderan.namaPemilik;
+    getEl("data-order-instagram").value =
+        selectOrderan.instagram;
+    getEl("data-order-kontak").value =
+        selectOrderan.noTelpon;
+    getEl("data-order-alamat").value =
+        selectOrderan.alamat;
+
+    getEl("data-order-faktur").textContent =
+        selectOrderan.faktur;
+    getEl("data-order-tanggal").textContent =
+        formatTanggal(selectOrderan.tanggal)
+
+    tampilBtnStikerDataOrder(false)
+    renderListStikerDataOrder();
+    updateTotalJumlahDataOrder();
 }
 function closePopupOrderan() {
     getEl("popup-data-orderan").classList.remove("show");
@@ -140,24 +185,24 @@ function renderListStikerDataOrder(){
     container.innerHTML =
         rincian.map(rinci => `
         <div class="item-card"
-        id="item-card-${rinci.dataStikerId}"
-        onclick="lihatStiker(${rinci.dataStikerId})">
+        id="item-card-${rinci.stikerId}"
+        onclick="lihatStiker(${rinci.stikerId})">
 
             <div class="stiker-image">
                 <img
-                    src="${rinci.stiker.pathGambar1
-                    ? `${BASE_URL}${rinci.stiker.pathGambar1}`
+                    src="${rinci.pathGambar1
+                    ? `${BASE_URL}${rinci.pathGambar1}`
                     : noImageStiker}"
-                    alt="${rinci.stiker.namaStiker}">
+                    alt="${rinci.namaStiker}">
             </div>
 
             <div class="stiker-info">
                 <div class="stiker-nama">
-                    ${rinci.stiker.namaStiker}
+                    ${rinci.namaStiker}
                 </div>
 
                 <div class="stiker-ukuran">
-                    ${rinci.stiker.panjang} x ${rinci.stiker.lebar} cm
+                    ${rinci.ukuranStiker} cm
                 </div>
             </div>
 
@@ -174,7 +219,7 @@ function renderListStikerDataOrder(){
                         onclick="event.stopPropagation()"
                         oninput="
                             this.value=this.value.replace(/[^0-9]/g,'');
-                            updateJumlahCetakDataOrder('${rinci.dataStikerId}', this.value);
+                            updateJumlahCetakDataOrder('${rinci.stikerId}', this.value);
                         "
                         placeholder="Masukkan jumlah cetak">
             
@@ -185,7 +230,7 @@ function renderListStikerDataOrder(){
                     type="button"
                     onclick="
                     event.stopPropagation();
-                    hapusStikerDataOrder('${rinci.dataStikerId}')
+                    hapusStikerDataOrder('${rinci.stikerId}')
                     ">
                     Hapus
                 </button>
@@ -227,7 +272,6 @@ async function tampilPopupPilihUmkm(){
     }, selectUmkm);
 }
 async function tampilPopupPilihStiker(){
-
     await showPopupPilihStiker((stikerDipilih) => {
 
         const rincianBaru = [];
@@ -236,21 +280,23 @@ async function tampilPopupPilihStiker(){
 
             // cek apakah sudah ada sebelumnya
             const lama = rincian.find(r =>
-                r.dataStikerId === stiker.id
+                r.stikerId === stiker.id
             );
 
             if (lama) {
                 // pertahankan jumlah lama
                 rincianBaru.push({
-                    ...lama,
-                    stiker: stiker
+                    ...lama
                 });
             } else {
                 // stiker baru
                 rincianBaru.push({
-                    dataStikerId: stiker.id,
-                    jumlah: 1,
-                    stiker: stiker
+                    stikerId: stiker.id,
+                    kodeStiker: stiker.kodeStiker,
+                    namaStiker: stiker.namaStiker,
+                    ukuranStiker: `${stiker.panjang} x ${stiker.lebar}`,
+                    pathGambar1: stiker.pathGambar1,
+                    jumlah: 1
                 });
             }
         });
@@ -259,13 +305,13 @@ async function tampilPopupPilihStiker(){
         stikerTerpilih = [...stikerDipilih];
 
         renderListStikerDataOrder();
-    },selectUmkm,stikerTerpilih);
+    },selectUmkm, stikerTerpilih);
 }
 function hapusStikerDataOrder(id){
 
     rincian =
         rincian.filter(
-            item => item.dataStikerId !== id
+            item => item.stikerId !== id
         );
 
     stikerTerpilih =
@@ -279,7 +325,7 @@ function hapusStikerDataOrder(id){
 function updateJumlahCetakDataOrder(id, value){
 
     const stiker = rincian.find(
-        item => item.dataStikerId  === id
+        item => item.stikerId  === id
     );
 
     if(stiker){
@@ -517,7 +563,7 @@ async function simpanDataOrderan(){
         dataPenggunaId: penggunaAktif.id,
         dataUmkmId: selectUmkm.id,
         rincian: rincian.map(rinci =>({
-            dataStikerId: rinci.dataStikerId,
+            dataStikerId: rinci.stikerId,
             jumlah: rinci.jumlah
         }))
     };
@@ -553,6 +599,32 @@ async function simpanDataOrderan(){
         hideLoading();
     }
 }
+async function hapusDataOrderan(id){
+    showLoading("Menghapus Data Orderan...");
+    try {
+        const response = await fetch(`${BASE_URL_ORDERAN}/${id}`, {
+            method: "DELETE"
+        });
+        
+        if(await gagalHapus(response)) return;
+        
+        await loadTabelDataOrderan(true);
+        showToast("Hapus data orderan berhasil..", "success")
+    } catch (e){
+        showToast(e.message, "error");
+    } finally {
+        hideLoading();
+    }
+}
+function konfirmasiHapusDataOrderan(id) {
+    showPopupHapus({
+        title: "Konfirmasi Hapus Data Orderan",
+        message: "Anda yakin ingin menghapus Data Orderan ini?",
+        onConfirm: async () => {
+            await hapusDataOrderan(id);
+        }
+    });
+}
 
 window.initDataOrderan = initDataOrderan;
 window.updateJumlahCetakDataOrder = updateJumlahCetakDataOrder;
@@ -560,3 +632,5 @@ window.hapusStikerDataOrder = hapusStikerDataOrder;
 window.sortTabelOrderan = sortTabelOrderan;
 window.destroyDataOrderan = destroyDataOrderan;
 window.toggleDetailOrderan = toggleDetailOrderan;
+window.showPopupOrderan = showPopupOrderan;
+window.konfirmasiHapusDataOrderan = konfirmasiHapusDataOrderan;
