@@ -1,9 +1,10 @@
 const BASE_URL = "http://localhost:8080/api" // UNTUK CODING/PENGEMBANG
 
 //const BASE_URL = "/api" // UNTUK JARINGAN
+const BASE_URL_UPLOAD_GAMBAR = `${BASE_URL}/upload/gambar`
+const BASE_URL_UPLOAD_CDR = `${BASE_URL}/upload/cdr`
 
 const BASE_URL_PENGGUNA = `${BASE_URL}/data-pengguna`;
-const BASE_URL_UPLOAD_GAMBAR = `${BASE_URL}/upload/gambar`
 const BASE_URL_LEVEL = `${BASE_URL}/data-level`;
 const BASE_URL_KATEGORI = `${BASE_URL}/data-kategori`;
 

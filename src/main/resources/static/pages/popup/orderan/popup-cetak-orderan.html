@@ -1,0 +1,85 @@
+<div class="popup" id="popup-cetak-orderan">
+    <div class="content-popup-cetak-orderan">
+        <form id="form-popup-cetak-orderan">
+            <div class="popup-cetak-orderan-atas">
+                <div class="popup-cetak-orderan-atas-kiri">
+                    <h2 id="popup-cetak-orderan-title">Cetak Orderan</h2>
+                </div>
+                <div class="popup-cetak-orderan-atas-kanan">
+                    <label id="popup-cetak-orderan-tanggal">Tanggal Orderan</label>
+                    <label id="popup-cetak-orderan-faktur">Faktur</label>
+                    <label id="popup-cetak-orderan-jumlah">Jumlah</label>
+                </div>
+            </div>
+            <div class="popup-cetak-orderan-grid">
+                <div class="popup-cetak-orderan-grid-kiri">
+                    <div class="input-group">
+                        <input
+                                type="text"
+                                id="cetak-order-nama-usaha"
+                                placeholder=" "
+                                readonly>
+
+                        <label for="cetak-order-nama-usaha">
+                            Nama Usaha
+                        </label>
+                    </div>
+
+                    <div class="input-group">
+                        <input
+                                type="text"
+                                id="cetak-order-nama-pemilik"
+                                placeholder=" "
+                                readonly>
+
+                        <label for="cetak-order-nama-pemilik">
+                            Nama Pemilik Usaha
+                        </label>
+                    </div>
+
+                    <div class="input-group">
+                        <input
+                                type="text"
+                                id="cetak-order-instagram"
+                                placeholder=" "
+                                readonly>
+
+                        <label for="cetak-order-instagram">
+                            Akun Instagram
+                        </label>
+                    </div>
+
+                    <div class="input-group">
+                        <input
+                                type="text"
+                                id="cetak-order-kontak"
+                                placeholder=" "
+                                readonly>
+
+                        <label for="cetak-order-kontak">
+                            Kontak
+                        </label>
+                    </div>
+
+                    <div class="textarea-group">
+                                <textarea
+                                        id="cetak-order-alamat"
+                                        placeholder=" "
+                                        rows="4"></textarea>
+
+                        <label for="cetak-order-alamat">
+                            Alamat Usaha
+                        </label>
+                    </div>
+                </div>
+                <div class="popup-cetak-oreran-grid-kanan">
+                    <div id="popup-cetak-oreran-list" class="popup-cetak-oreran-list"></div>
+                </div>
+            </div>
+            <div class="popup-actions">
+                <button type="button" id="btn-simpan-cetak-oreran">Simpan</button>
+                <button type="button" id="btn-batal-cetak-oreran">Batal</button>
+            </div>
+        </form>
+    </div>
+</div>

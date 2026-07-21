@@ -46,7 +46,10 @@ class DataStiker(
     var pathGambar1: String = "",
 
     @Column(nullable = true)
-    var pathGambar2: String = ""
+    var pathGambar2: String = "",
+
+    @Column(nullable = true)
+    var pathCDR: String = ""
 //
 //    @OneToMany(mappedBy = "dataStiker", fetch = FetchType.LAZY, targetEntity = DataOrderanRinci::class)
 //    @JsonIgnore // supaya JSON tidak error lazy loading

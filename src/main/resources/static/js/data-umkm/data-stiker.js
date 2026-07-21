@@ -13,6 +13,8 @@ let selectedBarang = null;
 let isEditModeStiker = false;
 let openedDetailStikerId = null;
 
+let selectedCdr = null;
+let pathCdr = "";
 
 let selectedWebpFiles = {
     1: null,
@@ -62,6 +64,18 @@ async function initDataStiker() {
     getEl("popup-data-stiker-barang")
         .addEventListener("click", () => tampilPopupPilihBarang())
 
+    // CDR
+    getEl("popup-data-stiker-file-cdr")
+        .addEventListener("click", () => {
+
+            getEl("file-cdr").click();
+
+        });
+
+    getEl("file-cdr")
+        .addEventListener("change", handleUploadCdr);
+
+    // CARI STIKER
     getEl("search-stiker").addEventListener("input", async function(){
         cariDataStiker = this.value.trim().toLowerCase();
         currentPageStiker = 1;
@@ -381,6 +395,13 @@ function isiDataStiker(stiker) {
             ? `${BASE_URL}${stiker.pathGambar2}`
             : noImageStiker;
 
+    // cdr
+    pathCdr = stiker.pathCDR ?? "";
+
+    getEl("popup-data-stiker-file-cdr").value =
+        stiker.pathCDR
+            ? stiker.pathCDR.split("/").pop()
+            : "";
 }
 function tutupPopupStiker() {
     getEl("popup-data-stiker").classList.remove("show");
@@ -481,6 +502,12 @@ function bersihPopupDataStiker() {
         1: false,
         2: false
     };
+
+    selectedCdr = null;
+    pathCdr = "";
+
+    getEl("popup-data-stiker-file-cdr").value = "";
+    getEl("file-cdr").value = "";
 
     setDefaultGambarStiker(1);
     setDefaultGambarStiker(2);
@@ -700,6 +727,69 @@ function initDragDrop(index){
 
 }
 
+// CDR
+function handleUploadCdr(event){
+
+    const file = event.target.files[0];
+
+    if(!file) return;
+
+    if(!file.name.toLowerCase().endsWith(".cdr")){
+
+        showToast(
+            "File harus berekstensi .cdr",
+            "warning"
+        );
+
+        return;
+    }
+
+    selectedCdr = file;
+
+    getEl("popup-data-stiker-file-cdr").value =
+        file.name;
+
+}
+async function uploadFileCdr(kodeStiker){
+
+    if(!selectedCdr){
+
+        return pathCdr;
+
+    }
+
+    const formData = new FormData();
+
+    formData.append(
+        "file",
+        selectedCdr
+    );
+
+    formData.append(
+        "fileName",
+        `${kodeStiker}.cdr`
+    );
+
+    const response = await fetch(
+        BASE_URL_UPLOAD_CDR,
+        {
+            method:"POST",
+            body:formData
+        }
+    );
+
+    if(!response.ok){
+
+        throw new Error(
+            "Gagal upload file CDR"
+        );
+
+    }
+
+    return await response.json();
+
+}
+
 // CRUD
 function validasiSimpanDataStiker() {
     let valid = true
@@ -777,11 +867,39 @@ async function simpanDataStiker() {
         }
     }
 
+    let pathFileCdr = pathCdr;
+
+    if(selectedCdr){
+
+        const hasil =
+            await uploadFileCdr(kodeStiker);
+
+        pathFileCdr =
+            hasil.path;
+
+        console.log(pathFileCdr);
+
+    }
+
     showLoading(
         isEditModeStiker
             ? "Mengubah Data Stiker..."
             : "Menyimpan Data Stiker..."
     );
+
+    console.log({
+        umkmId: selectedUmkm.id,
+        barangId: selectedBarang.id,
+        kodeStiker,
+        namaStiker,
+        panjang: panjangStiker,
+        lebar: lebarStiker,
+        catatan: catatanStiker,
+        status: statusStiker,
+        pathGambar1: gambar1,
+        pathGambar2: gambar2,
+        pathCdr: pathFileCdr
+    });
 
     try {
         if(isEditModeStiker) {
@@ -799,6 +917,7 @@ async function simpanDataStiker() {
                     status: statusStiker,
                     pathGambar1: gambar1,
                     pathGambar2: gambar2,
+                    pathCDR: pathFileCdr
 
                 })
             });
@@ -820,7 +939,8 @@ async function simpanDataStiker() {
                     catatan: catatanStiker,
                     status: statusStiker,
                     pathGambar1: gambar1,
-                    pathGambar2: gambar2
+                    pathGambar2: gambar2,
+                    pathCDR: pathFileCdr
                 })
             });
 

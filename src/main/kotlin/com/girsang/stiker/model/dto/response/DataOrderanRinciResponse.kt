@@ -9,7 +9,12 @@ data class DataOrderanRinciResponse(
     val kodeStiker: String,
     val namaStiker: String,
     val ukuranStiker: String,
+    var panjang: Int = 0,
+    var lebar: Int = 0,
+    var status: Boolean = true,
+    var catatan: String? = "",
     val pathGambar1: String,
-
-    val jumlah: Int
+    val pathGambar2: String,
+    val jumlah: Int,
+    var pathCDR: String = ""
 )

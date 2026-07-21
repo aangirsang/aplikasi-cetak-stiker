@@ -36,9 +36,15 @@ class DataOrderanMapper {
             stikerId = entity.dataStiker.id,
             kodeStiker = entity.dataStiker.kodeStiker,
             namaStiker = entity.dataStiker.namaStiker,
+            panjang = entity.dataStiker.panjang,
+            lebar = entity.dataStiker.lebar,
+            status = entity.dataStiker.status,
+            catatan = entity.dataStiker.catatan,
             ukuranStiker = "${entity.dataStiker.panjang} X ${entity.dataStiker.lebar}",
             pathGambar1 = entity.dataStiker.pathGambar1,
-            jumlah = entity.jumlah
+            pathGambar2 = entity.dataStiker.pathGambar2,
+            jumlah = entity.jumlah,
+            pathCDR = entity.dataStiker.pathCDR
         )
     }
 }

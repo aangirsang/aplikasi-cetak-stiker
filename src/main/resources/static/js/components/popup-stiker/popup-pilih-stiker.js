@@ -260,6 +260,8 @@ function getStiker(id){
 }
 async function lihatStiker(id) {
 
+    console.log(id)
+
     const stiker = getStiker(id);
 
     if (!stiker) return;

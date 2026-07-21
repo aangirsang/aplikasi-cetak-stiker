@@ -40,6 +40,9 @@ fun cariByumkmDanStatus(umkmId: String): List<DataStikerResponse> {
     }
 
     fun simpan(request: DataStikerRequest): DataStikerResponse {
+        println(request)
+        println("pathCDR = ${request.pathCDR}")
+
 
         val barang = repoBarang.findById(request.barangId)
             .orElseThrow { throw IllegalArgumentException("Data Barang dengan ID ${request.barangId} tidak ditemukan!!") }
@@ -68,8 +71,10 @@ fun cariByumkmDanStatus(umkmId: String): List<DataStikerResponse> {
             status = request.status,
             pathGambar1 = request.pathGambar1,
             pathGambar2 = request.pathGambar2,
-            dataBarang = barang
+            dataBarang = barang,
+            pathCDR = request.pathCDR
         )
+
 
         val simpan = repoStiker.save(stiker)
 
@@ -102,9 +107,12 @@ fun cariByumkmDanStatus(umkmId: String): List<DataStikerResponse> {
             stiker.pathGambar1 = request.pathGambar1
             stiker.pathGambar2 = request.pathGambar2
             stiker.dataBarang = barang
+            stiker.pathCDR = request.pathCDR
         }
 
 
+        println("request: ${request.pathCDR}")
+        println("data: ${stiker.pathCDR}")
 
         val updated = repoStiker.save(stiker)
         return mapper.toResponse(updated)

@@ -2,6 +2,8 @@ let isEdit = false;
 
 let currentPageOrderan = 1;
 let cariDataOrderan = "";
+let tanggalAwalOrderan = "";
+let tanggalAkhirOrderan = "";
 const rowsPerPageOrderan = 15;
 
 let sortFieldDataOrderan = "tanggal";
@@ -22,6 +24,7 @@ async function initDataOrderan() {
     await initPopupHapus();
     await initPopupPilihUmkm();
     await initPopupPilihStiker();
+    await initPopupCetakOrderan();
 
     await loadTabelDataOrderan(true);
 
@@ -39,6 +42,32 @@ async function initDataOrderan() {
 
     getEl("btn-simpan-data-order")
         .addEventListener("click",  () => simpanDataOrderan());
+
+    cariDataOrderan = "";
+    tanggalAwalOrderan = "";
+    tanggalAkhirOrderan = "";
+
+    getEl("txt-cari-data-orderan")
+        .addEventListener("input", async function() {
+            cariDataOrderan = this.value.trim().toLowerCase();
+            currentPageOrderan = 1;
+            openedDetailOrderanId = null;
+            await loadTabelDataOrderan();
+        })
+
+    getEl("cari-tanggal-awal")
+        .addEventListener("change", async function () {
+        tanggalAwalOrderan = this.value;
+        currentPageOrderan = 1;
+        await loadTabelDataOrderan();
+    });
+
+    getEl("cari-tanggal-akhir")
+        .addEventListener("change", async function () {
+        tanggalAkhirOrderan = this.value;
+        currentPageOrderan = 1;
+        await loadTabelDataOrderan();
+    });
 
 
     document.removeEventListener("click", closeDetailOrderanOutside);
@@ -66,6 +95,12 @@ async function showPopupOrderan(id = null) {
     }
 
     popup.classList.add("show");
+}
+function tampilPopupCetakOrderan(id) {
+    selectOrderan = dataOrderan.find(order => order.id === id);
+    if(selectOrderan){
+        showPopupCetakOrderan(selectOrderan)
+    }
 }
 function isiPopupOrderan() {
     selectUmkm = {
@@ -393,16 +428,45 @@ function getFilterDataOrderan() {
         const keyword = cariDataOrderan;
         const tanggal = formatTanggal(orderan.tanggal).toLowerCase();
 
-        return (
+        // =====================
+        // Filter tanggal
+        // =====================
+
+        const tanggalOrder = new Date(orderan.tanggal);
+        tanggalOrder.setHours(0, 0, 0, 0);
+
+        let cocokTanggal = true;
+
+        if (tanggalAwalOrderan || tanggalAkhirOrderan) {
+
+            const awal = new Date(tanggalAwalOrderan || tanggalAkhirOrderan);
+            awal.setHours(0, 0, 0, 0);
+
+            const akhir = new Date(tanggalAkhirOrderan || tanggalAwalOrderan);
+            akhir.setHours(23, 59, 59, 999);
+
+            cocokTanggal =
+                tanggalOrder >= awal &&
+                tanggalOrder <= akhir;
+        }
+
+        // =====================
+        // Filter keyword
+        // =====================
+
+        const cocokKeyword =
             orderan.namaPengguna.toLowerCase().includes(keyword) ||
             orderan.namaUmkm.toLowerCase().includes(keyword) ||
             orderan.faktur.toLowerCase().includes(keyword) ||
             tanggal.includes(keyword) ||
             orderan.totalStiker.toString().includes(keyword) ||
             orderan.rincian.some(rinci =>
-                rinci.dataStiker.namaStiker.toLowerCase().includes(keyword)
-            )
-        );
+                rinci.namaStiker.toLowerCase().includes(keyword) ||
+                rinci.kodeStiker.toLowerCase().includes(keyword) ||
+                rinci.ukuranStiker.toLowerCase().includes(keyword)
+            );
+
+        return cocokKeyword && cocokTanggal;
     });
 }
 function getsortedDataOrderan(data) {
@@ -460,6 +524,11 @@ function createTabelOrderan(item, isOpened) {
             <td>${item.totalStiker}</td>
             <td>
                 <div class="actions">
+                    <button
+                        onclick="event.stopPropagation(); tampilPopupCetakOrderan('${item.id}')">
+                        <span class="material-symbols-sharp">print</span>
+                    </button>
+
                     <button
                         onclick="event.stopPropagation(); showPopupOrderan('${item.id}')">
                         <span class="material-symbols-sharp">edit</span>
@@ -633,4 +702,5 @@ window.sortTabelOrderan = sortTabelOrderan;
 window.destroyDataOrderan = destroyDataOrderan;
 window.toggleDetailOrderan = toggleDetailOrderan;
 window.showPopupOrderan = showPopupOrderan;
+window.tampilPopupCetakOrderan = tampilPopupCetakOrderan;
 window.konfirmasiHapusDataOrderan = konfirmasiHapusDataOrderan;

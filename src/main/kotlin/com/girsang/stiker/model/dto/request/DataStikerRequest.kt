@@ -9,5 +9,6 @@ data class DataStikerRequest(
     var catatan: String? = "-",
     var status: Boolean = true,
     var pathGambar1: String = "",
-    var pathGambar2: String = ""
+    var pathGambar2: String = "",
+    var pathCDR: String = ""
 )

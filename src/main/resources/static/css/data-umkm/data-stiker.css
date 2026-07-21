@@ -4,7 +4,7 @@
     background: var(--color-background);
 
     width: 90rem;
-    height: 47rem;
+    height: 50rem;
 }
 
 .form-stiker-grid {
@@ -12,7 +12,7 @@
     grid-template-columns: 1fr 1fr 1.3fr;
     gap: 1.6rem;
 
-    height: 37rem;
+    height: 40rem;
 }
 
 .content-form-data-stiker {
@@ -40,7 +40,7 @@
 
     transition: all 300ms ease;
 
-    height: 37rem;
+    height: 40rem;
 }
 
 .data-stiker .popup-actions {
@@ -130,7 +130,7 @@
 /* ----------------- IMAGE ----------------- */
 .preview-img{
     width: 100%;
-    height: 16rem;
+    height: 17.5rem;
 
     object-fit: contain;
     display: block;
@@ -282,6 +282,7 @@
 }
 
 /* ----------------- BARANG ----------------- */
-#popup-data-stiker-barang{
+#popup-data-stiker-barang,
+#popup-data-stiker-file-cdr{
     cursor: pointer;
 }
