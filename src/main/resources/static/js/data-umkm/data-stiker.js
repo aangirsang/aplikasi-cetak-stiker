@@ -44,8 +44,14 @@ async function initDataStiker() {
     await initPopupLayoutCetak();
 
 
+    getEl("btn-refresh-data-stiker").addEventListener("" +
+        "click", () => loadTabelDataStiker(true));
+
     getEl("btn-tambah-data-stiker").addEventListener("" +
         "click", () => showPopupStiker());
+
+    getEl("btn-download-data-stiker").addEventListener("" +
+        "click", () => downloadDataStiker());
 
     getEl("btn-popup-data-stiker-batal").addEventListener(
         "click", tutupPopupStiker);
@@ -104,6 +110,10 @@ async function loadTabelDataStiker(reload = false) {
         if (reload) {
             cariDataStiker = "";
             dataStiker = await fetchDataStiker();
+
+            const cari = getEl("search-stiker");
+            cari.value = "";
+            cari.focus();
         }
 
         const filtered = await getFilterDataStiker();
@@ -139,7 +149,7 @@ function getFilterDataStiker() {
     return dataStiker.filter(stiker => {
         const semuaData = `
             ${stiker.kodeStiker}
-            ${stiker.dataUmkm.namaUsaha}
+            ${stiker.namaUsaha}
             ${stiker.namaStiker}
             ${stiker.ukuran}
             ${stiker.status ? "aktif" : "non-aktif"}
@@ -184,17 +194,17 @@ function renderTabelStiker(data) {
         const umkm = item.dataUmkm
         const isOpened = openedDetailStikerId === item.id;
 
-        return createTabelStiker(item, umkm, isOpened);
+        return createTabelStiker(item, isOpened);
     }).join("");
 }
-function createTabelStiker(item, umkm, isOpened) {
+function createTabelStiker(item, isOpened) {
     return `
         <tr 
             class="stiker-row ${isOpened ? 'selected' : ''}"
             onclick="event.stopPropagation(); toggleDetailStiker('${item.id}')"
         >
             <td>${item.kodeStiker}</td>
-            <td>${item.dataUmkm.namaUsaha}</td>
+            <td>${item.namaUsaha}</td>
             <td>${item.namaStiker}</td>
             <td>${item.ukuran}</td>
             <td>${item.status ? "aktif" : "non-aktif"}</td>
@@ -228,11 +238,11 @@ function createTabelStiker(item, umkm, isOpened) {
                         </thead>
                         <tbody>
                             <tr>
-                                <td>${umkm.namaPemilik ?? "-"}</td>
-                                <td>${umkm.whatsapp ?? "-"}</td>
-                                <td>${umkm.facebook ?? "-"}</td>
-                                <td>${umkm.instagram ?? "-"}</td>
-                                <td class="cell-panjang">${umkm.alamat ?? "-"}</td>
+                                <td>${item.namaPemilik ?? "-"}</td>
+                                <td>${item.whatsapp ?? "-"}</td>
+                                <td>${item.facebook ?? "-"}</td>
+                                <td>${item.instagram ?? "-"}</td>
+                                <td class="cell-panjang">${item.alamat ?? "-"}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -335,18 +345,25 @@ function showPopupStiker(id = null){
 function isiDataStiker(stiker) {
     showLoading("Memuat Data Stiker...");
 
-    const umkm = stiker.dataUmkm;
-    const barang = stiker.dataBarang;
+    const barang = {
+        barangId: stiker.barangId,
+        namaBarang: stiker.namaBarang,
+        stokBarang: stiker.stokBarang
+    };
 
-    selectedUmkm = umkm;
+    selectedUmkm = {
+        namaUsaha: stiker.namaUsaha,
+        namaPemilik: stiker.namaPemilik,
+        noTelpon: stiker.noTelpon,
+        alamat: stiker.alamat};
     selectedBarang = barang;
     pathGambarLama[1] = stiker.pathGambar1 ?? "";
     pathGambarLama[2] = stiker.pathGambar2 ?? "";
 
-    getEl("popup-data-stiker-nama-usaha").value = umkm.namaUsaha;
-    getEl("popup-data-stiker-nama-pemilik").value = umkm.namaPemilik;
-    getEl("popup-data-stiker-telepon").value = umkm.noTelpon;
-    getEl("popup-data-stiker-alamat").value = umkm.alamat;
+    getEl("popup-data-stiker-nama-usaha").value = stiker.namaUsaha;
+    getEl("popup-data-stiker-nama-pemilik").value = stiker.namaPemilik;
+    getEl("popup-data-stiker-telepon").value = stiker.noTelpon;
+    getEl("popup-data-stiker-alamat").value = stiker.alamat;
     getEl("popup-data-stiker-kode").value = stiker.kodeStiker;
     getEl("popup-data-stiker-nama").value = stiker.namaStiker;
     getEl("popup-data-stiker-panjang").value = stiker.panjang;
@@ -983,6 +1000,59 @@ async function hapusDataStiker(id) {
     } finally {
         hideLoading();
     }
+}
+
+// DOWNLOAD DATA
+async function downloadDataStiker() {
+    const data = await fetchDataStiker();
+
+    const sortedData = [...data].sort((a, b) =>
+        a.kodeStiker.localeCompare(b.kodeStiker, undefined, {
+            numeric: true,
+            sensitivity: "base"
+        })
+    );
+
+    const header = [
+        "No",
+        "Kode Stiker",
+        "Nama Usaha",
+        "Nama Stiker",
+        "Ukuran Panjang",
+        "Ukuran Lebar",
+        "Status"
+    ];
+
+    const rows = sortedData.map((item, index) => [
+        index + 1,
+        item.kodeStiker,
+        item.namaUsaha,
+        item.namaStiker,
+        formatAngkaDownload(item.panjang),
+        formatAngkaDownload(item.lebar),
+        item.status ? "aktif" : "non-aktif"
+    ]);
+
+    const csv = [
+        header,
+        ...rows
+    ]
+        .map(row => row.join("|"))
+        .join("\n");
+
+    const blob = new Blob(
+        ["\uFEFF" + csv],
+        {type: "text/csv;charset=utf-8;"}
+    );
+
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "Data_Stiker.csv";
+    a.click();
+
+    URL.revokeObjectURL(url);
 }
 
 window.destroyDataStiker = destroyDataStiker;

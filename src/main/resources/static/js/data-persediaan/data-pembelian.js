@@ -37,10 +37,18 @@ async function initDataPembelian(){
 
     getEl("btn-download-data-pembelian").addEventListener(
         "click", showPopupDownloadPembelian);
+
     getEl("btn-popup-download-data-pembelian-batal").addEventListener(
         "click", closePopupDownloadPembelian);
+
     getEl("btn-popup-download-data-pembelian-download").addEventListener(
         "click", downloadDataPembelian);
+
+    getEl("btn-refresh-data-pembelian").addEventListener(
+        "click",async () => {
+            picker.clear();
+            await loadTabelDataPembelian(true)
+        });
 
 
     getEl("txt-cari-data-pembelian").addEventListener("input", async function(){
@@ -156,6 +164,7 @@ async function loadTabelDataPembelian(reload = false) {
             cariDataPembelian = "";
             tanggalAwalPembelian = "";
             tanggalAkhirPembelian = "";
+            getEl("cari-range-tanggal-data-pembelian").value = "";
         }
 
         const filtered = await getFilterDataPembelian();
@@ -574,7 +583,7 @@ function getDataPembelian(data, tanggalAwal, tanggalAkhir) {
             item.harga,
             item.jumlah,
             item.total
-        ].join(",");
+        ].join("|");
 
         csv += "\n";
     });

@@ -161,7 +161,7 @@ function getFilterDataPopupPilihUmkm(){
         const semuaData = `
             ${umkm.namaUsaha}
             ${umkm.namaPemilik}
-            ${umkm.dataKategori.kategori}
+            ${umkm.kategori}
             ${umkm.noTelpon}
             ${umkm.alamat}
        `.toLowerCase();
@@ -225,7 +225,7 @@ function createRowPopupPilihUmkm(umkm){
             ondblclick="pilihPopupUmkm('${umkm.id}')">
             <td>${umkm.namaUsaha}</td>
             <td>${umkm.namaPemilik}</td>
-            <td>${umkm.dataKategori.kategori}</td>
+            <td>${umkm.kategori}</td>
             <td>${umkm.noTelpon}</td>
             <td class="cell-alamat">${umkm.alamat}</td>
         </tr>

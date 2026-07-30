@@ -11,6 +11,10 @@ let tanggalAwalPenyesuaian = "";
 let tanggalAkhirPenyesuaian = "";
 const rowsPerPagePenyesuaian = 15;
 
+let tanggalAwalDownloadPenyesuaian = "";
+let tanggalAkhirDownloadPenyesuaian = "";
+let pickerDownload = "";
+
 let sortFieldDataPenyesuaian = "tanggal";
 let sortDirectionPenyesuaian = "desc";
 
@@ -39,10 +43,22 @@ async function initDataPenyesuaian() {
     getEl("btn-popup-data-penyesuaian-barang").addEventListener(
         "click", () => tampilPopupPilihBarang());
 
-    getEl("popup-data-penyesuaian-stok-fisik").addEventListener("input", hitungSelisih);
+    getEl("popup-data-penyesuaian-stok-fisik")
+        .addEventListener("input", hitungSelisih);
 
-    getEl("btn-popup-data-penyesuaian-cari-gambar").addEventListener("click", cariGambar);
-    getEl("popup-data-penyesuaian-file-input").addEventListener("change", handlePreviewGambar);
+    getEl("btn-popup-data-penyesuaian-cari-gambar")
+        .addEventListener("click", cariGambar);
+
+    getEl("popup-data-penyesuaian-file-input")
+        .addEventListener("change", handlePreviewGambar);
+    getEl("btn-download-data-penyesuaian").addEventListener(
+        "click", showPopupDownloadPenyesuaian);
+
+    getEl("btn-popup-download-data-penyesuaian-batal").addEventListener(
+        "click", closePopupDownloadPenyesuaian);
+
+    getEl("btn-popup-download-data-penyesuaian-download").addEventListener(
+        "click", downloadDataPenyesuaian);
 
     getEl("txt-cari-data-penyesuaian").addEventListener("input", async function(){
         cariDataPenyesuaian = this.value.trim().toLowerCase();
@@ -50,6 +66,12 @@ async function initDataPenyesuaian() {
         //openedDetailStiker = null;
         await loadTabelDataPenyesuaian();
     });
+
+    getEl("btn-refresh-data-penyesuaian").addEventListener(
+        "click", async () => {
+            picker.clear();
+            await loadTabelDataPenyesuaian(true);
+        });
 
     const picker = flatpickr("#cari-range-tanggal-data-penyesuaian", {
         locale: "id",
@@ -67,6 +89,19 @@ async function initDataPenyesuaian() {
         }
     });
 
+    pickerDownload = flatpickr("#cari-range-tanggal-download-data-penyesuaian", {
+        locale: "id",
+        mode: "range",
+        dateFormat: "d F Y",
+        async onClose(selectedDates) {
+
+            if (selectedDates.length === 2) {
+                tanggalAwalDownloadPenyesuaian = selectedDates[0];
+                tanggalAkhirDownloadPenyesuaian = selectedDates[1];
+            }
+        }
+    });
+
 }
 
 //TABEL DATA
@@ -74,6 +109,7 @@ async function loadTabelDataPenyesuaian(reload = false) {
     showLoading("Memuat Data Penyesuaian..");
     try {
         if(reload){
+            getEl("cari-range-tanggal-data-penyesuaian").value = "";
             cariDataPenyesuaian = "";
             tanggalAwalPenyesuaian = "";
             tanggalAkhirPenyesuaian = "";
@@ -599,6 +635,89 @@ async function uploadGambarPenyesuaian() {
         await response.json();
 
     return result[0]?.path ?? "";
+}
+
+//DOWNLOAD DATA
+function showPopupDownloadPenyesuaian(){
+    const popup = getEl("popup-download-data-penyesuaian");
+
+    pickerDownload.clear();
+    popup.classList.add("show");
+}
+function closePopupDownloadPenyesuaian(){
+    getEl("popup-download-data-penyesuaian")
+        .classList.remove("show");
+}
+function getDataPenyesuaian(data, tanggalAwal, tanggalAkhir) {
+
+    let hasilFilter = data;
+
+    // Jika kedua tanggal dipilih, baru lakukan filter
+    if (tanggalAwal && tanggalAkhir) {
+
+        const awal = new Date(tanggalAwal);
+        awal.setHours(0, 0, 0, 0);
+
+        const akhir = new Date(tanggalAkhir);
+        akhir.setHours(23, 59, 59, 999);
+
+        hasilFilter = data.filter(item => {
+            const tanggal = new Date(item.tanggal);
+            return tanggal >= awal && tanggal <= akhir;
+        });
+    }
+
+    let csv = "\uFEFF";
+    csv += "No,Tanggal,Nama Barang,Stok Sistem,Stok Fisik,Selisih,Keterangan\n";
+
+    hasilFilter.forEach((item, index) => {
+
+        csv += [
+            index + 1,
+            formatTanggalDownload(item.tanggal),
+            `"${item.namaBarang.replace(/"/g, '""')}"`,
+            item.stokSistem,
+            item.stokFisik,
+            item.selisih,
+            item.alasan
+        ].join("|");
+
+        csv += "\n";
+    });
+
+    const blob = new Blob(
+        [csv],
+        { type: "text/csv;charset=utf-8;" }
+    );
+
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+
+    // Nama file
+    if (tanggalAwal && tanggalAkhir) {
+        a.download = `Data_Penyesuaian_${formatTanggalFile(tanggalAwal)}_${formatTanggalFile(tanggalAkhir)}.csv`;
+    } else {
+        a.download = "Data_Penyesuaian_Semua.csv";
+    }
+
+    a.click();
+
+    URL.revokeObjectURL(url);
+}
+async function downloadDataPenyesuaian(){
+    showLoading("Download Data Penyesuaian Stok...");
+    try {
+        const data = await fetchDataPenyesuaian()
+
+        getDataPenyesuaian(data, tanggalAwalDownloadPenyesuaian, tanggalAkhirDownloadPenyesuaian)
+        closePopupDownloadPenyesuaian();
+    } catch (e){
+        showToast(e.message, "error");
+    } finally {
+        hideLoading();
+    }
 }
 
 window.initDataPenyesuaian = initDataPenyesuaian;

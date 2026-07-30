@@ -303,6 +303,17 @@ function formatTanggalDownload(timestamp) {
 
     return `${tanggal} • ${jam}`;
 }
+function formatTanggalTanpaJam(timestamp) {
+    const date = new Date(timestamp);
+
+    const tanggal = date.toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+    });
+
+    return `${tanggal}`;
+}
 function formatTanggalFile(timestamp) {
 
     const d = new Date(timestamp);
@@ -312,6 +323,9 @@ function formatTanggalFile(timestamp) {
     const dd = String(d.getDate()).padStart(2, "0");
 
     return `${yyyy}-${mm}-${dd}`;
+}
+function formatAngkaDownload(nilai) {
+    return Number(nilai).toLocaleString("id-ID");
 }
 
 async function gagalHapus(response) {

@@ -17,9 +17,16 @@ async function initDataBarang() {
     await initPopupHapus();
     bersihDataBarang();
 
-    getEl("btn-tambah-data-barang").addEventListener("click", () => showPopupBarang());
-    getEl("btn-batal-data-barang").addEventListener("click", closePopupBarang);
-    getEl("btn-simpan-data-barang").addEventListener("click", () => simpanDataBarang());
+    getEl("btn-refresh-data-barang").addEventListener(
+        "click", () => loadTabelDataBarang(true));
+    getEl("btn-tambah-data-barang").addEventListener(
+        "click", () => showPopupBarang());
+    getEl("btn-download-data-barang").addEventListener(
+        "click", () => downloadDataBarang());
+    getEl("btn-batal-data-barang").addEventListener(
+        "click", closePopupBarang);
+    getEl("btn-simpan-data-barang").addEventListener(
+        "click", () => simpanDataBarang());
 
     getEl("txt-cari-data-barang").addEventListener("input", async function(){
         cariDataBarang = this.value.trim().toLowerCase();
@@ -40,6 +47,9 @@ async function loadTabelDataBarang(reload = false) {
         if(reload) {
             dataBarang = await fetchDataBarang();
             cariDataBarang = "";
+            const cari = getEl("txt-cari-data-barang")
+            cari.value = "";
+            cari.focus();
         }
 
         const filtered = getFilterDataBarang();
@@ -249,6 +259,40 @@ async function hapusDataBarang(id) {
     } finally {
         hideLoading();
     }
+}
+
+// DOWNLOAD DATA
+async function downloadDataBarang() {
+    const data = await fetchDataBarang();
+
+    const header = ["No", "Nama Barang", "Stok"];
+
+    const rows = data.map((item, index) => [
+        index + 1,
+        item.namaBarang,
+        item.stokBarang
+    ]);
+
+    const csv = [
+        header,
+        ...rows
+    ]
+        .map(row => row.join("|"))
+        .join("\n");
+
+    const blob = new Blob(
+        ["\uFEFF" + csv],
+        {type: "text/csv;charset=utf-8;"}
+    );
+
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "Data_Barang.csv";
+    a.click();
+
+    URL.revokeObjectURL(url);
 }
 
 window.initDataBarang = initDataBarang;

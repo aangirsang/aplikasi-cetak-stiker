@@ -18,6 +18,9 @@
 
         </div>
         <div class="search-bar-buttons">
+            <button class="add-btn" id="btn-refresh-data-penyesuaian">
+                <span class="material-symbols-sharp">autorenew</span>
+            </button>
             <button class="add-btn" id="btn-tambah-data-penyesuaian">
                 <span class="material-symbols-sharp">add</span>
             </button>
@@ -140,6 +143,26 @@
                 <div class="popup-actions">
                     <button type="button" id="btn-popup-data-penyesuaian-simpan">Simpan</button>
                     <button type="button" id="btn-popup-data-penyesuaian-batal">Batal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!--POPUP DOWNLOAD PENYESUAIAN-->
+    <div class="popup" id="popup-download-data-penyesuaian">
+        <div class="content-popup-download-data-penyesuaian">
+            <form id="form-popup-download-data-penyesuaian">
+                <h2 id="popup-download-data-penyesuaian-title">Download Data Penyesuaian</h2>
+                <div class="date-range-box">
+                    <span class="material-symbols-sharp">calendar_month</span>
+                    <input
+                            type="text"
+                            id="cari-range-tanggal-download-data-penyesuaian"
+                            placeholder="Pilih rentang tanggal">
+                </div>
+                <div class="popup-actions">
+                    <button type="button" id="btn-popup-download-data-penyesuaian-download">Download</button>
+                    <button type="button" id="btn-popup-download-data-penyesuaian-batal">Batal</button>
                 </div>
             </form>
         </div>

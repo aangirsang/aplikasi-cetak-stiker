@@ -22,9 +22,16 @@ async function initDataUmkm(){
     await initPopupHapus();
     await initPopupLoading();
 
-    getEl("btn-tambah-data-umkm").addEventListener("click", () => showPopupUmkm());
-    getEl("btn-batal-umkm").addEventListener("click", closePopupUmkm);
-    getEl("btn-simpan-umkm").addEventListener("click", () => simpanDataUmkm());
+    getEl("btn-refresh-data-umkm").addEventListener(
+        "click", () => loadTableDataUmkm(true));
+    getEl("btn-tambah-data-umkm").addEventListener(
+        "click", () => showPopupUmkm());
+    getEl("btn-download-data-umkm").addEventListener(
+        "click", () => downloadDataUmkm());
+    getEl("btn-batal-umkm").addEventListener(
+        "click", closePopupUmkm);
+    getEl("btn-simpan-umkm").addEventListener(
+        "click", () => simpanDataUmkm());
 
     getEl("txt-cari-data-umkm").addEventListener("input", async function(){
         cariDataUmkm = this.value.trim().toLowerCase();
@@ -43,6 +50,11 @@ async function loadTableDataUmkm(reload = false){
     try {
         if(reload){
             dataUmkm = await fetchDataUmkm();
+            cariDataUmkm = "";
+
+            const cari = getEl("txt-cari-data-umkm");
+            cari.value = "";
+            cari.focus();
         }
 
         const filtered = getFilterDataUmkm();
@@ -80,7 +92,7 @@ function getFilterDataUmkm(){
             ${umkm.namaPemilik}
             ${umkm.noTelpon}
             ${umkm.alamat}
-            ${umkm.dataKategori.kategori}
+            ${umkm.kategori}
             ${umkm.status ? "aktif" : "non-aktif"}
        `.toLowerCase();
 
@@ -133,7 +145,7 @@ function createRowUmkm(item, isOpened){
             <td>${item.namaUsaha}</td>
             <td>${item.namaPemilik}</td>
             <td>${item.noTelpon}</td>
-            <td>${item.dataKategori.kategori}</td>
+            <td>${item.kategori}</td>
             <td class="cell-panjang">${item.alamat}</td>
             <td>${item.status ? "Aktif" : "Non-Aktif"}</td>
 
@@ -316,9 +328,14 @@ function isiPopupDataUmkm(data){
             ? new Date(data.tglLahir).toISOString().split("T")[0]
             : "";
 
-    if(data.dataKategori) {
-        selectedKategori = data.dataKategori;
-        getEl("selected-text-data-umkm-kategori").textContent = data.dataKategori.kategori;
+    const dataKategori = {
+        id: data.kategoriId,
+        kategori: data.kategori,
+    }
+
+    if(dataKategori) {
+        selectedKategori = dataKategori;
+        getEl("selected-text-data-umkm-kategori").textContent = data.kategori;
         getEl("selected-text-data-umkm-kategori").classList.remove("empty");
         getEl("custom-select-data-umkm-kategori").classList.add("filled");
     }
@@ -610,6 +627,62 @@ async function destroyDataUmkm() {
     openedDetailUmkmId = null;
     selectedUmkm = null;
 
+}
+
+// DOWNLOAD DATA
+async function downloadDataUmkm() {
+    const data = await fetchDataUmkm();
+
+    const header = [
+        "No",
+        "Nama Usaha",
+        "Nama Pemilik",
+        "Tanggal Lahir",
+        "Jenis Kelamin",
+        "Kategori Usaha",
+        "No. Telepon",
+        "Alamat",
+        "Email",
+        "Instagram",
+        "Facebook",
+        "Deskripsi Usaha"
+    ];
+
+    const rows = data.map((item, index) => [
+        index + 1,
+        item.namaUsaha,
+        item.namaPemilik,
+        formatTanggalTanpaJam(item.tglLahir),
+        item.status ? "Perempuan" : "Laki - Laki",
+        item.kategori,
+        item.noTelpon,
+        item.alamat,
+        item.email,
+        item.instagram,
+        item.facebook,
+        item.deskripsi
+    ]);
+
+    const csv = [
+        header,
+        ...rows
+    ]
+        .map(row => row.join("|"))
+        .join("\n");
+
+    const blob = new Blob(
+        ["\uFEFF" + csv],
+        {type: "text/csv;charset=utf-8;"}
+    );
+
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "Data_UMKM.csv";
+    a.click();
+
+    URL.revokeObjectURL(url);
 }
 
 window.initDataUmkm = initDataUmkm;

@@ -1,14 +1,11 @@
 package com.girsang.stiker.model.dto.response
 
-import com.girsang.stiker.model.entity.DataKategori
-
-
 data class DataUmkmResponse(
     val id: String,
     var namaUsaha: String,
     var namaPemilik: String,
-    var dataKategoriId: String,
-    var dataKategori: DataKategori,
+    var kategoriId: String,
+    var kategori: String,
     var deskripsi: String? = "-",
     var noKtp: String,
     var jenisKelamin: Boolean,

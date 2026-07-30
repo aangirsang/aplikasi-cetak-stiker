@@ -10,9 +10,36 @@
     transition: transform .25s ease;
 }
 
-.popup.show .content-popup-data-penyesuaian{
+.popup.show .content-popup-data-penyesuaian,
+.popup.show .content-popup-download-data-penyesuaian{
     transform: translateY(0);
 }
+
+.content-popup-download-data-penyesuaian{
+    padding: var(--card-padding);
+    border-radius: 12px;
+    background: var(--color-background);
+
+    width: 30rem;
+    height: 15rem;
+
+    transform: translateY(-60px);
+    transition: transform .25s ease;
+}
+
+.content-popup-download-data-penyesuaian h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+.content-popup-download-data-penyesuaian .date-range-box {
+    width: 100%;
+    margin-top: 2rem;
+
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
 .content-data-penyesuaian-atas{
     display: flex;
     justify-content: space-between;

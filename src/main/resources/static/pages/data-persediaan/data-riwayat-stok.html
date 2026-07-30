@@ -18,7 +18,10 @@
 
     </div>
     <div class="search-bar-buttons">
-      <button class="add-btn" id="btn-download-data-orderan">
+      <button class="add-btn" id="btn-refresh-data-riwayat-stok">
+        <span class="material-symbols-sharp">autorenew</span>
+      </button>
+      <button class="add-btn" id="btn-download-data-riwayat-stok">
         <span class="material-symbols-sharp">download</span>
       </button>
     </div>
@@ -43,5 +46,25 @@
       </table>
     </div>
     <div id="pagination" class="pagination"></div>
+  </div>
+
+  <!--POPUP DOWNLOAD RIWAYAT-->
+  <div class="popup" id="popup-download-data-riwayat-stok">
+    <div class="content-popup-download-data-riwayat-stok">
+      <form id="form-popup-download-data-riwayat-stok">
+        <h2 id="popup-download-data-riwayat-stok-title">Download Data Riwayat Stok</h2>
+        <div class="date-range-box">
+          <span class="material-symbols-sharp">calendar_month</span>
+          <input
+                  type="text"
+                  id="cari-range-tanggal-download-data-riwayat-stok"
+                  placeholder="Pilih rentang tanggal">
+        </div>
+        <div class="popup-actions">
+          <button type="button" id="btn-popup-download-data-riwayat-stok-download">Download</button>
+          <button type="button" id="btn-popup-download-data-riwayat-stok-batal">Batal</button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>

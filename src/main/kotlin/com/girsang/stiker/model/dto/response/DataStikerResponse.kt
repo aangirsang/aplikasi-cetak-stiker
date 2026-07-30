@@ -1,13 +1,18 @@
 package com.girsang.stiker.model.dto.response
 
-import com.girsang.stiker.model.entity.DataBarang
-import com.girsang.stiker.model.entity.DataUmkm
-
 data class DataStikerResponse(
     val id: String = "",
-    var dataUmkm: DataUmkm,
     var umkmId: String,
-    var dataBarang: DataBarang,
+    var namaUsaha: String,
+    var namaPemilik: String,
+    var noTelpon: String,
+    var whatsapp: String,
+    var facebook: String,
+    var instagram: String,
+    var alamat: String,
+    var barangId: String,
+    var namaBarang: String,
+    var stokBarang: Long,
     var kodeStiker: String = "",
     var namaStiker: String = "",
     var panjang: Double = 0.0,
