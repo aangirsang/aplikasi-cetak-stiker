@@ -37,4 +37,15 @@ class UploadController(
             uploadService.uploadCdr(file, fileName)
         )
     }
+
+    @PostMapping("/tif")
+    fun uploadFileTif(
+        @RequestParam("file") file: MultipartFile,
+        @RequestParam("fileName") fileName: String
+    ): ResponseEntity<UploadResponse> {
+
+        return ResponseEntity.ok(
+            uploadService.uploadTif(file, fileName)
+        )
+    }
 }

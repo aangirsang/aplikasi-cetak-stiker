@@ -1,15 +1,30 @@
 <div class="data-penyesuaian">
-    <div class="search-bar">
+    <div class="search-bar-date">
         <div class="search-box">
             <span class="material-symbols-sharp">search</span>
             <label>
                 <input type="text" id="txt-cari-data-penyesuaian" placeholder="Cari Data Penyesuaian Stok">
             </label>
         </div>
-        <button class="add-btn" id="btn-tambah-data-penyesuaian">
-            <span class="material-symbols-sharp">add</span>
-            Tambah Data Penyesuaian
-        </button>
+        <!-- RANGE TANGGAL -->
+        <div class="date-range-box">
+
+            <span class="material-symbols-sharp">calendar_month</span>
+
+            <input
+                    type="text"
+                    id="cari-range-tanggal-data-penyesuaian"
+                    placeholder="Pilih rentang tanggal">
+
+        </div>
+        <div class="search-bar-buttons">
+            <button class="add-btn" id="btn-tambah-data-penyesuaian">
+                <span class="material-symbols-sharp">add</span>
+            </button>
+            <button class="add-btn" id="btn-download-data-penyesuaian">
+                <span class="material-symbols-sharp">download</span>
+            </button>
+        </div>
     </div>
 
     <!-- TABLE -->

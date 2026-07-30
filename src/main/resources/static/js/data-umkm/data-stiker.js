@@ -13,8 +13,8 @@ let selectedBarang = null;
 let isEditModeStiker = false;
 let openedDetailStikerId = null;
 
-let selectedCdr = null;
-let pathCdr = "";
+let selectedTif = null;
+let pathTif = "";
 
 let selectedWebpFiles = {
     1: null,
@@ -41,6 +41,8 @@ async function initDataStiker() {
     await initPopupPilihUmkm();
     await initPilihBarang();
     await initPopupHapus();
+    await initPopupLayoutCetak();
+
 
     getEl("btn-tambah-data-stiker").addEventListener("" +
         "click", () => showPopupStiker());
@@ -64,16 +66,20 @@ async function initDataStiker() {
     getEl("popup-data-stiker-barang")
         .addEventListener("click", () => tampilPopupPilihBarang())
 
-    // CDR
-    getEl("popup-data-stiker-file-cdr")
+    // TIF
+    getEl("popup-data-stiker-file-tif")
         .addEventListener("click", () => {
 
-            getEl("file-cdr").click();
+            getEl("file-tif").click();
 
         });
 
-    getEl("file-cdr")
-        .addEventListener("change", handleUploadCdr);
+    getEl("file-tif")
+        .addEventListener("change", handleUploadTif);
+
+    // LAYOUT CETAK
+    getEl("btn-popup-data-stiker-layout-cetak")
+        .addEventListener("click", showPopupLayoutCetak);
 
     // CARI STIKER
     getEl("search-stiker").addEventListener("input", async function(){
@@ -395,12 +401,12 @@ function isiDataStiker(stiker) {
             ? `${BASE_URL}${stiker.pathGambar2}`
             : noImageStiker;
 
-    // cdr
-    pathCdr = stiker.pathCDR ?? "";
+    // TIF
+    pathTif = stiker.pathTIF ?? "";
 
-    getEl("popup-data-stiker-file-cdr").value =
-        stiker.pathCDR
-            ? stiker.pathCDR.split("/").pop()
+    getEl("popup-data-stiker-file-tif").value =
+        stiker.pathTIF
+            ? stiker.pathTIF.split("/").pop()
             : "";
 }
 function tutupPopupStiker() {
@@ -503,11 +509,11 @@ function bersihPopupDataStiker() {
         2: false
     };
 
-    selectedCdr = null;
-    pathCdr = "";
+    selectedTif = null;
+    pathTif = "";
 
-    getEl("popup-data-stiker-file-cdr").value = "";
-    getEl("file-cdr").value = "";
+    getEl("popup-data-stiker-file-tif").value = "";
+    getEl("file-tif").value = "";
 
     setDefaultGambarStiker(1);
     setDefaultGambarStiker(2);
@@ -728,33 +734,33 @@ function initDragDrop(index){
 }
 
 // CDR
-function handleUploadCdr(event){
+function handleUploadTif(event){
 
     const file = event.target.files[0];
 
     if(!file) return;
 
-    if(!file.name.toLowerCase().endsWith(".cdr")){
+    if(!file.name.toLowerCase().endsWith(".tif")){
 
         showToast(
-            "File harus berekstensi .cdr",
+            "File harus berekstensi .tif",
             "warning"
         );
 
         return;
     }
 
-    selectedCdr = file;
+    selectedTif = file;
 
-    getEl("popup-data-stiker-file-cdr").value =
+    getEl("popup-data-stiker-file-tif").value =
         file.name;
 
 }
-async function uploadFileCdr(kodeStiker){
+async function uploadFileTif(kodeStiker){
 
-    if(!selectedCdr){
+    if(!selectedTif){
 
-        return pathCdr;
+        return pathTif;
 
     }
 
@@ -762,16 +768,16 @@ async function uploadFileCdr(kodeStiker){
 
     formData.append(
         "file",
-        selectedCdr
+        selectedTif
     );
 
     formData.append(
         "fileName",
-        `${kodeStiker}.cdr`
+        `${kodeStiker}.tif`
     );
 
     const response = await fetch(
-        BASE_URL_UPLOAD_CDR,
+        BASE_URL_UPLOAD_TIF,
         {
             method:"POST",
             body:formData
@@ -781,7 +787,7 @@ async function uploadFileCdr(kodeStiker){
     if(!response.ok){
 
         throw new Error(
-            "Gagal upload file CDR"
+            "Gagal upload file TIF"
         );
 
     }
@@ -867,17 +873,17 @@ async function simpanDataStiker() {
         }
     }
 
-    let pathFileCdr = pathCdr;
+    let pathFileTif = pathTif;
 
-    if(selectedCdr){
+    if(selectedTif){
 
         const hasil =
-            await uploadFileCdr(kodeStiker);
+            await uploadFileTif(kodeStiker);
 
-        pathFileCdr =
+        pathFileTif =
             hasil.path;
 
-        console.log(pathFileCdr);
+        console.log(pathFileTif);
 
     }
 
@@ -898,7 +904,7 @@ async function simpanDataStiker() {
         status: statusStiker,
         pathGambar1: gambar1,
         pathGambar2: gambar2,
-        pathCdr: pathFileCdr
+        pathTIF: pathFileTif
     });
 
     try {
@@ -917,7 +923,7 @@ async function simpanDataStiker() {
                     status: statusStiker,
                     pathGambar1: gambar1,
                     pathGambar2: gambar2,
-                    pathCDR: pathFileCdr
+                    pathTIF: pathFileTif
 
                 })
             });
@@ -940,7 +946,7 @@ async function simpanDataStiker() {
                     status: statusStiker,
                     pathGambar1: gambar1,
                     pathGambar2: gambar2,
-                    pathCDR: pathFileCdr
+                    pathTIF: pathFileTif
                 })
             });
 

@@ -5,6 +5,10 @@ let sortDirectionPopupPembelian = "asc";
 
 let currentPagePembelian = 1;
 let cariDataPembelian = "";
+let tanggalAwalPembelian = "";
+let tanggalAkhirPembelian = "";
+let tanggalAwalDownloadPembelian = "";
+let tanggalAkhirDownloadPembelian = "";
 const rowsPerPagePembelian = 15;
 
 let sortFieldDataPembelian = "tanggal";
@@ -31,12 +35,48 @@ async function initDataPembelian(){
     getEl("btn-popup-data-pembelian-barang").addEventListener(
         "click", () => tampilPopupPilihBarang());
 
+    getEl("btn-download-data-pembelian").addEventListener(
+        "click", showPopupDownloadPembelian);
+    getEl("btn-popup-download-data-pembelian-batal").addEventListener(
+        "click", closePopupDownloadPembelian);
+    getEl("btn-popup-download-data-pembelian-download").addEventListener(
+        "click", downloadDataPembelian);
+
 
     getEl("txt-cari-data-pembelian").addEventListener("input", async function(){
         cariDataPembelian = this.value.trim().toLowerCase();
         currentPagePembelian = 1;
         openedDetailPembelianId = null;
         await loadTabelDataPembelian();
+    });
+
+    const picker = flatpickr("#cari-range-tanggal-data-pembelian", {
+        locale: "id",
+        mode: "range",
+        dateFormat: "d F Y",
+        async onClose(selectedDates) {
+
+            if (selectedDates.length === 2) {
+                tanggalAwalPembelian = selectedDates[0];
+                tanggalAkhirPembelian = selectedDates[1];
+
+                currentPagePembelian = 1;
+                await loadTabelDataPembelian();
+            }
+        }
+    });
+
+    const pickerDownload = flatpickr("#cari-range-tanggal-download-data-pembelian", {
+        locale: "id",
+        mode: "range",
+        dateFormat: "d F Y",
+        async onClose(selectedDates) {
+
+            if (selectedDates.length === 2) {
+                tanggalAwalDownloadPembelian = selectedDates[0];
+                tanggalAkhirDownloadPembelian = selectedDates[1];
+            }
+        }
     });
 
     document.removeEventListener("click", closeDetailPembelianOutside);
@@ -57,6 +97,7 @@ function bersihPopupDataPembelian() {
     selectPembelian = null;
     dataPembelianRinci = [];
     isEditDataPembelian = false;
+
 
     renderTablePembelianRinci();
 }
@@ -113,6 +154,8 @@ async function loadTabelDataPembelian(reload = false) {
         if(reload){
             dataPembelian = await fetchDataPembelian();
             cariDataPembelian = "";
+            tanggalAwalPembelian = "";
+            tanggalAkhirPembelian = "";
         }
 
         const filtered = await getFilterDataPembelian();
@@ -150,14 +193,36 @@ function getFilterDataPembelian() {
         const keyword = cariDataPembelian;
         const tanggal = formatTanggal(pembelian.tanggal).toLowerCase();
 
-        return (
+        // =====================
+        // Filter tanggal
+        // =====================
+
+        const tanggalPembelian = new Date(pembelian.tanggal);
+        tanggalPembelian.setHours(0, 0, 0, 0);
+
+        let cocokTanggal = true;
+
+        if (tanggalAwalPembelian || tanggalAkhirPembelian) {
+
+            const awal = new Date(tanggalAwalPembelian || tanggalAkhirPembelian);
+            awal.setHours(0, 0, 0, 0);
+
+            const akhir = new Date(tanggalAkhirPembelian || tanggalAwalPembelian);
+            akhir.setHours(23, 59, 59, 999);
+
+            cocokTanggal =
+                tanggalPembelian >= awal &&
+                tanggalPembelian <= akhir;
+        }
+
+        const cocokKeyword =
             pembelian.namaPengguna.toLowerCase().includes(keyword) ||
             tanggal.includes(keyword) ||
             pembelian.subtotal.toString().includes(keyword) ||
             pembelian.rincian.some(rinci =>
                 rinci.namaBarang.toLowerCase().includes(keyword)
-            )
-        );
+            );
+        return cocokKeyword && cocokTanggal;
     });
 }
 function getsortedDataPembelian(data) {
@@ -457,6 +522,88 @@ async function hapusDataPembelian(id) {
     } finally {
         hideLoading();
     }
+}
+
+// DOWNLOAD
+function showPopupDownloadPembelian(){
+    const popup = getEl("popup-download-data-pembelian");
+
+    popup.classList.add("show");
+}
+function closePopupDownloadPembelian(){
+    getEl("popup-download-data-pembelian")
+        .classList.remove("show");
+}
+async function fetchDownloadPembelian() {
+    const response = await fetch(`${BASE_URL_PEMBELIAN}/rincian`);
+
+    if(!response.ok){
+        showToast("Gagal memuat data!!","error")
+    }
+
+    return await response.json();
+}
+function getDataPembelian(data, tanggalAwal, tanggalAkhir) {
+
+    let hasilFilter = data;
+
+    // Jika kedua tanggal dipilih, baru lakukan filter
+    if (tanggalAwal && tanggalAkhir) {
+
+        const awal = new Date(tanggalAwal);
+        awal.setHours(0, 0, 0, 0);
+
+        const akhir = new Date(tanggalAkhir);
+        akhir.setHours(23, 59, 59, 999);
+
+        hasilFilter = data.filter(item => {
+            const tanggal = new Date(item.tanggal);
+            return tanggal >= awal && tanggal <= akhir;
+        });
+    }
+
+    let csv = "\uFEFF";
+    csv += "No,Tanggal,Nama Barang,Harga,Jumlah,Total\n";
+
+    hasilFilter.forEach((item, index) => {
+
+        csv += [
+            index + 1,
+            formatTanggalDownload(item.tanggal),
+            `"${item.namaBarang.replace(/"/g, '""')}"`,
+            item.harga,
+            item.jumlah,
+            item.total
+        ].join(",");
+
+        csv += "\n";
+    });
+
+    const blob = new Blob(
+        [csv],
+        { type: "text/csv;charset=utf-8;" }
+    );
+
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+
+    // Nama file
+    if (tanggalAwal && tanggalAkhir) {
+        a.download = `Data_Pembelian_${formatTanggalFile(tanggalAwal)}_${formatTanggalFile(tanggalAkhir)}.csv`;
+    } else {
+        a.download = "Data_Pembelian_Semua.csv";
+    }
+
+    a.click();
+
+    URL.revokeObjectURL(url);
+}
+async function downloadDataPembelian(){
+    const dataPembelian = await fetchDownloadPembelian();
+
+    getDataPembelian(dataPembelian, tanggalAwalDownloadPembelian, tanggalAkhirDownloadPembelian);
 }
 
 window.initDataPembelian = initDataPembelian;

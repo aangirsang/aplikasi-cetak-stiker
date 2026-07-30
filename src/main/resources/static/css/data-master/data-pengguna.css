@@ -13,6 +13,13 @@
     background: var(--color-background);
 
     box-sizing: border-box;
+
+    transform: translateY(-60px);
+    transition: transform .25s ease;
+}
+
+.popup.show .content-popup-data-pengguna{
+    transform: translateY(0);
 }
 
 /* ==========================================

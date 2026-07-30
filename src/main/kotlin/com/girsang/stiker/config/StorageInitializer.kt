@@ -13,12 +13,14 @@ class StorageInitializer(
 
         val uploadDir = pathProvider.uploadsDir()
         val uploadCdrDir = pathProvider.uploadCdrDir()
+        val uploadTifDir = pathProvider.uploadTifDir()
 
         val databaseDir = pathProvider.databaseDir()
         val databaseFile = pathProvider.databaseFile()
 
         uploadDir.mkdirs()
         uploadCdrDir.mkdirs()
+        uploadTifDir.mkdirs()
         databaseDir.mkdirs()
 
         if (!databaseFile.exists()) {

@@ -8,6 +8,13 @@
 
     width: 60rem;
     height: 45rem;
+
+    transform: translateY(-60px);
+    transition: transform .25s ease;
+}
+
+.popup.show .popup-content-lihat-stiker{
+    transform: translateY(0);
 }
 .popup-lihat-stiker-grid {
     display: grid;

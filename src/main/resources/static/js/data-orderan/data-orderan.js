@@ -18,6 +18,8 @@ let selectUmkm = null;
 let stikerTerpilih = [];
 let rincian = [];
 
+
+
 async function initDataOrderan() {
 
     await initPopupLoading();
@@ -55,7 +57,7 @@ async function initDataOrderan() {
             await loadTabelDataOrderan();
         })
 
-    getEl("cari-tanggal-awal")
+    /*getEl("cari-tanggal-awal")
         .addEventListener("change", async function () {
         tanggalAwalOrderan = this.value;
         currentPageOrderan = 1;
@@ -67,6 +69,24 @@ async function initDataOrderan() {
         tanggalAkhirOrderan = this.value;
         currentPageOrderan = 1;
         await loadTabelDataOrderan();
+    });
+
+     */
+
+    const picker = flatpickr("#cari-range-tanggal-data-orderan", {
+        locale: "id",
+        mode: "range",
+        dateFormat: "d F Y",
+        async onClose(selectedDates) {
+
+            if (selectedDates.length === 2) {
+                tanggalAwalOrderan = selectedDates[0];
+                tanggalAkhirOrderan = selectedDates[1];
+
+                currentPageOrderan = 1;
+                await loadTabelDataOrderan();
+            }
+        }
     });
 
 

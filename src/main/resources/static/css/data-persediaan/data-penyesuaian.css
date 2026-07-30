@@ -5,6 +5,13 @@
 
     width: 60vw;
     height: 76vh;
+
+    transform: translateY(-60px);
+    transition: transform .25s ease;
+}
+
+.popup.show .content-popup-data-penyesuaian{
+    transform: translateY(0);
 }
 .content-data-penyesuaian-atas{
     display: flex;

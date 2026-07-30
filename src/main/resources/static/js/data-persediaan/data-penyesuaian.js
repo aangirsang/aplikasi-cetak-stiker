@@ -7,6 +7,8 @@ let isEdit = false;
 
 let currentPagePenyesuaian = 1;
 let cariDataPenyesuaian = "";
+let tanggalAwalPenyesuaian = "";
+let tanggalAkhirPenyesuaian = "";
 const rowsPerPagePenyesuaian = 15;
 
 let sortFieldDataPenyesuaian = "tanggal";
@@ -49,6 +51,22 @@ async function initDataPenyesuaian() {
         await loadTabelDataPenyesuaian();
     });
 
+    const picker = flatpickr("#cari-range-tanggal-data-penyesuaian", {
+        locale: "id",
+        mode: "range",
+        dateFormat: "d F Y",
+        async onClose(selectedDates) {
+
+            if (selectedDates.length === 2) {
+                tanggalAwalPenyesuaian = selectedDates[0];
+                tanggalAkhirPenyesuaian = selectedDates[1];
+
+                currentPagePenyesuaian = 1;
+                await loadTabelDataPenyesuaian();
+            }
+        }
+    });
+
 }
 
 //TABEL DATA
@@ -57,6 +75,8 @@ async function loadTabelDataPenyesuaian(reload = false) {
     try {
         if(reload){
             cariDataPenyesuaian = "";
+            tanggalAwalPenyesuaian = "";
+            tanggalAkhirPenyesuaian = "";
             dataPenyesuaian = await fetchDataPenyesuaian();
         }
 
@@ -95,7 +115,33 @@ function getFilterDataPenyesuaian() {
         const keyword = cariDataPenyesuaian;
         const tanggal = formatTanggal(penyesuaian.tanggal).toLowerCase();
 
-        return (
+        // =====================
+        // Filter tanggal
+        // =====================
+
+        const tanggalOrder = new Date(penyesuaian.tanggal);
+        tanggalOrder.setHours(0, 0, 0, 0);
+
+        let cocokTanggal = true;
+
+        if (tanggalAwalPenyesuaian || tanggalAkhirPenyesuaian) {
+
+            const awal = new Date(tanggalAwalPenyesuaian || tanggalAkhirPenyesuaian);
+            awal.setHours(0, 0, 0, 0);
+
+            const akhir = new Date(tanggalAkhirPenyesuaian || tanggalAwalPenyesuaian);
+            akhir.setHours(23, 59, 59, 999);
+
+            cocokTanggal =
+                tanggalOrder >= awal &&
+                tanggalOrder <= akhir;
+        }
+
+        // =====================
+        // Filter keyword
+        // =====================
+
+        const cocokKeyword =
             penyesuaian.namaPengguna.toLowerCase().includes(keyword) ||
             tanggal.includes(keyword) ||
             penyesuaian.namaBarang.toLowerCase().includes(keyword) ||
@@ -103,7 +149,8 @@ function getFilterDataPenyesuaian() {
             penyesuaian.stokFisik.toString().includes(keyword) ||
             penyesuaian.selisih.toString().includes(keyword) ||
             penyesuaian.alasan.toLowerCase().includes(keyword)
-        );
+
+        return cocokKeyword && cocokTanggal;
     });
 }
 function getsortedDataPenyesuaian(data) {

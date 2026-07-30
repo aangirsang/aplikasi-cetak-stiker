@@ -8,6 +8,13 @@
     background: var(--color-white);
 
     box-sizing: border-box;
+
+    transform: translateY(-60px);
+    transition: transform .25s ease;
+}
+
+.popup.show .popup-content-hapus{
+    transform: translateY(0);
 }
 
 .popup-content-hapus p {

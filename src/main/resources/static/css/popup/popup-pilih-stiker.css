@@ -5,6 +5,13 @@
 
     width: 90rem;
     height: 56rem;
+
+    transform: translateY(-60px);
+    transition: transform .25s ease;
+}
+
+.popup.show .popup-content-pilih-stiker{
+    transform: translateY(0);
 }
 
 .table-container-popup-stiker {

@@ -1,6 +1,8 @@
 let dataRiwayatStok = []
 
 let cariRiwayatStok = "";
+let tanggalAwalRiwayatStok = "";
+let tanggalAkhirRiwayatStok = "";
 let currentPageRiwayatStok = 1
 let rowsPerPageRiwayatStok = 15
 
@@ -17,6 +19,22 @@ async function initDataRiwayatStok() {
         currentPageRiwayatStok = 1;
         //openedDetailStiker = null;
         await loadTabelDataRiwayatStok();
+    });
+
+    const picker = flatpickr("#cari-range-tanggal-data-riwayat-stok", {
+        locale: "id",
+        mode: "range",
+        dateFormat: "d F Y",
+        async onClose(selectedDates) {
+
+            if (selectedDates.length === 2) {
+                tanggalAwalRiwayatStok = selectedDates[0];
+                tanggalAkhirRiwayatStok = selectedDates[1];
+
+                currentPageRiwayatStok = 1;
+                await loadTabelDataRiwayatStok();
+            }
+        }
     });
 }
 
@@ -64,18 +82,48 @@ async function fetchDataRiwayatStok() {
 }
 function getFilterDataRiwayatStok() {
     return dataRiwayatStok.filter(riwayatStok => {
-        const tanggal = formatTanggal(riwayatStok.tanggal).toLowerCase();
-        const semuaData = `
-            ${tanggal}
-            ${riwayatStok.namaPengguna}
-            ${riwayatStok.namaBarang}
-            ${riwayatStok.jenis}
-            ${riwayatStok.saldoAwal}
-            ${riwayatStok.perubahan}
-            ${riwayatStok.saldoAkhir}
-        `.toLowerCase();
 
-        return semuaData.includes(cariRiwayatStok);
+        const keyword = cariRiwayatStok;
+        const tanggal = formatTanggal(riwayatStok.tanggal).toLowerCase();
+
+        // =====================
+        // Filter tanggal
+        // =====================
+
+        const tanggalOrder = new Date(riwayatStok.tanggal);
+        tanggalOrder.setHours(0, 0, 0, 0);
+
+        let cocokTanggal = true;
+
+        if (tanggalAwalRiwayatStok || tanggalAkhirRiwayatStok) {
+
+            const awal = new Date(tanggalAwalRiwayatStok || tanggalAkhirRiwayatStok);
+            awal.setHours(0, 0, 0, 0);
+
+            const akhir = new Date(tanggalAkhirRiwayatStok || tanggalAwalRiwayatStok);
+            akhir.setHours(23, 59, 59, 999);
+
+            cocokTanggal =
+                tanggalOrder >= awal &&
+                tanggalOrder <= akhir;
+        }
+
+        // =====================
+        // Filter keyword
+        // =====================
+
+        const cocokKeyword =
+            riwayatStok.namaPengguna.toLowerCase().includes(keyword) ||
+            riwayatStok.namaBarang.toLowerCase().includes(keyword) ||
+            riwayatStok.jenis.toLowerCase().includes(keyword) ||
+            tanggal.includes(keyword) ||
+            riwayatStok.saldoAwal.toString().includes(keyword) ||
+            riwayatStok.perubahan.toString().includes(keyword) ||
+            riwayatStok.saldoAkhir.toString().includes(keyword)
+
+
+        return cocokKeyword && cocokTanggal;
+
     });
 }
 function getsortedDataRiwayatStok(data) {

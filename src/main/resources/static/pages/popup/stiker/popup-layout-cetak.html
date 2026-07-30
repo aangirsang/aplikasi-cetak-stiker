@@ -1,0 +1,58 @@
+<div class="popup" id="popup-layout-cetak">
+
+    <div class="popup-content-layout-cetak">
+
+        <div class="layout-toolbar">
+
+            <h2>Layout Cetak</h2>
+
+            <select id="paperSize" onchange="ubahKertas()">
+                <option value="A4">A4</option>
+                <option value="F4">F4</option>
+                <option value="A3">A3</option>
+            </select>
+
+            <select id="paperOrientation" onchange="ubahKertas()">
+                <option value="portrait">Portrait</option>
+                <option value="landscape">Landscape</option>
+            </select>
+
+            <div class="layout-toolbar-button">
+
+                <button onclick="resetLayout()">
+                    Reset
+                </button>
+
+                <button onclick="simpanLayout()">
+                    Simpan
+                </button>
+
+                <button onclick="closeLayout()">
+                    Tutup
+                </button>
+
+            </div>
+
+        </div>
+
+        <div class="layout-workspace">
+
+            <canvas id="layoutCanvas"></canvas>
+
+        </div>
+
+        <div class="layout-status">
+
+            Offset X :
+            <span id="offsetX">0 mm</span>
+
+            &nbsp;&nbsp;
+
+            Offset Y :
+            <span id="offsetY">0 mm</span>
+
+        </div>
+
+    </div>
+
+</div>

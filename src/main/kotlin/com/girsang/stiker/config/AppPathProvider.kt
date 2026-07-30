@@ -36,6 +36,16 @@ class AppPathProvider(
         "/uploads/cdr/$fileName"
 
     // ===========================
+    // TIF
+    // ===========================
+
+    fun uploadTifDir(): File =
+        File(uploadsDir(), "tif")
+
+    fun uploadTifUrl(fileName: String): String =
+        "/uploads/tif/$fileName"
+
+    // ===========================
     // DATABASE
     // ===========================
 

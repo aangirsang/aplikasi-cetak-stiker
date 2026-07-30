@@ -5,6 +5,13 @@
 
     width: 90rem;
     height: 50rem;
+
+    transform: translateY(-60px);
+    transition: transform .25s ease;
+}
+
+.popup.show .content-popup-data-stiker{
+    transform: translateY(0);
 }
 
 .form-stiker-grid {
@@ -283,6 +290,6 @@
 
 /* ----------------- BARANG ----------------- */
 #popup-data-stiker-barang,
-#popup-data-stiker-file-cdr{
+#popup-data-stiker-file-tif{
     cursor: pointer;
 }

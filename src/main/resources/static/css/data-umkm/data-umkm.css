@@ -5,6 +5,13 @@
 
     width: 90rem;
     height: 41rem;
+
+    transform: translateY(-60px);
+    transition: transform .25s ease;
+}
+
+.popup.show .content-popup-data-umkm{
+    transform: translateY(0);
 }
 
 .form-umkm-grid {

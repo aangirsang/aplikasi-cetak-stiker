@@ -63,4 +63,27 @@ class UploadService(
             path = pathProvider.uploadCdrUrl(fileName)
         )
     }
+
+    fun uploadTif(
+        file: MultipartFile,
+        fileName: String
+    ): UploadResponse {
+
+        val folder =
+            pathProvider.uploadTifDir().canonicalFile
+
+        if (!folder.exists()) {
+            folder.mkdirs()
+        }
+
+        val destination =
+            File(folder, fileName)
+
+        file.transferTo(destination)
+
+        return UploadResponse(
+            namaFile = fileName,
+            path = pathProvider.uploadTifUrl(fileName)
+        )
+    }
 }

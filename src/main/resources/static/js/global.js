@@ -3,6 +3,7 @@ const BASE_URL = "http://localhost:8080/api" // UNTUK CODING/PENGEMBANG
 //const BASE_URL = "/api" // UNTUK JARINGAN
 const BASE_URL_UPLOAD_GAMBAR = `${BASE_URL}/upload/gambar`
 const BASE_URL_UPLOAD_CDR = `${BASE_URL}/upload/cdr`
+const BASE_URL_UPLOAD_TIF = `${BASE_URL}/upload/tif`
 
 const BASE_URL_PENGGUNA = `${BASE_URL}/data-pengguna`;
 const BASE_URL_LEVEL = `${BASE_URL}/data-level`;
@@ -285,6 +286,32 @@ function formatTanggal(timestamp) {
     });
 
     return `${tanggal} • ${jam}`;
+}
+function formatTanggalDownload(timestamp) {
+    const date = new Date(timestamp);
+
+    const tanggal = date.toLocaleDateString("id-ID", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+    });
+
+    const jam = date.toLocaleTimeString("id-ID", {
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+
+    return `${tanggal} • ${jam}`;
+}
+function formatTanggalFile(timestamp) {
+
+    const d = new Date(timestamp);
+
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+
+    return `${yyyy}-${mm}-${dd}`;
 }
 
 async function gagalHapus(response) {

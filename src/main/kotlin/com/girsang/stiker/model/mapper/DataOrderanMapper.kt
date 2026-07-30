@@ -40,11 +40,18 @@ class DataOrderanMapper {
             lebar = entity.dataStiker.lebar,
             status = entity.dataStiker.status,
             catatan = entity.dataStiker.catatan,
-            ukuranStiker = "${entity.dataStiker.panjang} X ${entity.dataStiker.lebar}",
+            ukuranStiker = "${formatAngka(entity.dataStiker.panjang)} X ${formatAngka(entity.dataStiker.lebar)}",
             pathGambar1 = entity.dataStiker.pathGambar1,
             pathGambar2 = entity.dataStiker.pathGambar2,
             jumlah = entity.jumlah,
-            pathCDR = entity.dataStiker.pathCDR
+            pathTIF = entity.dataStiker.pathTIF
         )
+    }
+    private fun formatAngka(value: Double): String {
+        return if (value % 1.0 == 0.0) {
+            value.toInt().toString()
+        } else {
+            value.toString()
+        }
     }
 }

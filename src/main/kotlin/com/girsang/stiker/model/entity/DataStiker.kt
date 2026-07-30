@@ -30,11 +30,11 @@ class DataStiker(
 
     @field:Positive(message = "Panjang harus lebih besar dari 0")
     @Column(nullable = false)
-    var panjang: Int = 0,
+    var panjang: Double = 0.0,
 
     @field:Positive(message = "Lebar harus lebih besar dari 0")
     @Column(nullable = false)
-    var lebar: Int = 0,
+    var lebar: Double = 0.0,
 
     @Column(nullable = true, columnDefinition = "TEXT")
     var catatan: String? = "-",
@@ -49,7 +49,15 @@ class DataStiker(
     var pathGambar2: String = "",
 
     @Column(nullable = true)
-    var pathCDR: String = ""
+    var pathTIF: String = "",
+
+    @OneToOne(
+        mappedBy = "dataStiker",
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true,
+        fetch = FetchType.LAZY
+    )
+    var layoutCetak: DataLayoutCetak? = null
 //
 //    @OneToMany(mappedBy = "dataStiker", fetch = FetchType.LAZY, targetEntity = DataOrderanRinci::class)
 //    @JsonIgnore // supaya JSON tidak error lazy loading

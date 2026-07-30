@@ -4,8 +4,10 @@ package com.girsang.stiker.service.umkm
 import com.girsang.stiker.model.mapper.DataUmkmMapper
 import com.girsang.stiker.model.dto.request.DataStikerRequest
 import com.girsang.stiker.model.dto.response.DataStikerResponse
+import com.girsang.stiker.model.entity.DataLayoutCetak
 import com.girsang.stiker.model.entity.DataStiker
 import com.girsang.stiker.repository.DataBarangRepository
+import com.girsang.stiker.repository.DataLayoutCetakRepository
 import com.girsang.stiker.repository.DataStikerRepository
 import com.girsang.stiker.repository.DataUmkmRepository
 import com.girsang.stiker.service.EntityDeletionService
@@ -15,6 +17,7 @@ import java.time.LocalDate
 @Service
 class DataStikerService(
     private val repoStiker: DataStikerRepository,
+    private val repoLayout: DataLayoutCetakRepository,
     private val repoUmkm: DataUmkmRepository,
     private val repoBarang: DataBarangRepository,
     private val mapper: DataUmkmMapper,
@@ -41,7 +44,7 @@ fun cariByumkmDanStatus(umkmId: String): List<DataStikerResponse> {
 
     fun simpan(request: DataStikerRequest): DataStikerResponse {
         println(request)
-        println("pathCDR = ${request.pathCDR}")
+        println("pathCDR = ${request.pathTIF}")
 
 
         val barang = repoBarang.findById(request.barangId)
@@ -72,11 +75,27 @@ fun cariByumkmDanStatus(umkmId: String): List<DataStikerResponse> {
             pathGambar1 = request.pathGambar1,
             pathGambar2 = request.pathGambar2,
             dataBarang = barang,
-            pathCDR = request.pathCDR
+            pathTIF = request.pathTIF
         )
 
 
         val simpan = repoStiker.save(stiker)
+
+        if(request.tinggiKertas>0 &&
+            request.lebarKertas>0){
+            val layout = DataLayoutCetak(
+                dataStiker = stiker,
+                lebarKertas = request.lebarKertas,
+                tinggiKertas = request.tinggiKertas,
+                offsetX = request.offsetX,
+                offsetY = request.offsetY,
+                dibuatPada = System.currentTimeMillis(),
+                diubahPada = System.currentTimeMillis()
+            )
+            val simpanLayout = repoLayout.save(layout)
+        }
+
+
 
         // 🔹 Kembalikan DTO sebagai response
 
@@ -107,12 +126,12 @@ fun cariByumkmDanStatus(umkmId: String): List<DataStikerResponse> {
             stiker.pathGambar1 = request.pathGambar1
             stiker.pathGambar2 = request.pathGambar2
             stiker.dataBarang = barang
-            stiker.pathCDR = request.pathCDR
+            stiker.pathTIF = request.pathTIF
         }
 
 
-        println("request: ${request.pathCDR}")
-        println("data: ${stiker.pathCDR}")
+        println("request: ${request.pathTIF}")
+        println("data: ${stiker.pathTIF}")
 
         val updated = repoStiker.save(stiker)
         return mapper.toResponse(updated)
@@ -157,4 +176,5 @@ fun cariByumkmDanStatus(umkmId: String): List<DataStikerResponse> {
 
         return repoStiker.cariStiker(keyStiker, keyUmkm)
     }
+
 }

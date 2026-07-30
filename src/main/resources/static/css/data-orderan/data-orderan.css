@@ -5,6 +5,13 @@
 
     width: 80vw;
     height: 86.5vh;
+
+    transform: translateY(-60px);
+    transition: transform .25s ease;
+}
+
+.popup.show .content-popup-data-order{
+    transform: translateY(0);
 }
 
 .form-data-order-atas,

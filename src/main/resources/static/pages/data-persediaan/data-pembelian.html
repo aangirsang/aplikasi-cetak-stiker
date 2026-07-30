@@ -1,15 +1,30 @@
 <div class="data-pembelian">
-    <div class="search-bar">
+    <div class="search-bar-date">
         <div class="search-box">
             <span class="material-symbols-sharp">search</span>
             <label>
                 <input type="text" id="txt-cari-data-pembelian" placeholder="Cari Data Pembelian">
             </label>
         </div>
-        <button class="add-btn" id="btn-tambah-data-pembelian">
-            <span class="material-symbols-sharp">add</span>
-            Tambah Data Pembelian
-        </button>
+        <!-- RANGE TANGGAL -->
+        <div class="date-range-box">
+
+            <span class="material-symbols-sharp">calendar_month</span>
+
+            <input
+                    type="text"
+                    id="cari-range-tanggal-data-pembelian"
+                    placeholder="Pilih rentang tanggal">
+
+        </div>
+        <div class="search-bar-buttons">
+            <button class="add-btn" id="btn-tambah-data-pembelian">
+                <span class="material-symbols-sharp">add</span>
+            </button>
+            <button class="add-btn" id="btn-download-data-pembelian">
+                <span class="material-symbols-sharp">download</span>
+            </button>
+        </div>
     </div>
 
     <!-- TABLE -->
@@ -64,6 +79,26 @@
                 <div class="popup-actions">
                     <button type="button" id="btn-popup-data-pembelian-simpan">Simpan</button>
                     <button type="button" id="btn-popup-data-pembelian-batal">Batal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!--POPUP DOWNLOAD PEMBELIAN-->
+    <div class="popup" id="popup-download-data-pembelian">
+        <div class="content-popup-download-data-pembelian">
+            <form id="form-popup-download-data-pembelian">
+                <h2 id="popup-download-data-pembelian-title">Download Data Pembelian</h2>
+                <div class="date-range-box">
+                    <span class="material-symbols-sharp">calendar_month</span>
+                    <input
+                            type="text"
+                            id="cari-range-tanggal-download-data-pembelian"
+                            placeholder="Pilih rentang tanggal">
+                </div>
+                <div class="popup-actions">
+                    <button type="button" id="btn-popup-download-data-pembelian-download">Download</button>
+                    <button type="button" id="btn-popup-download-data-pembelian-batal">Batal</button>
                 </div>
             </form>
         </div>

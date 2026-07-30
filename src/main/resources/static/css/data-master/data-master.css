@@ -94,7 +94,15 @@
 
     width: 30rem;
     height: 15rem;
+
+    transform: translateY(-60px);
+    transition: transform .25s ease;
 }
+
+.popup.show .content-popup-master-data{
+    transform: translateY(0);
+}
+
 .content-popup-master-data .form-group {
     width: 100%;
     margin-top: 1rem;

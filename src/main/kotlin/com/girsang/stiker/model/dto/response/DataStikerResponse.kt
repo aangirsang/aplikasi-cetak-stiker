@@ -10,12 +10,18 @@ data class DataStikerResponse(
     var dataBarang: DataBarang,
     var kodeStiker: String = "",
     var namaStiker: String = "",
-    var panjang: Int = 0,
-    var lebar: Int = 0,
+    var panjang: Double = 0.0,
+    var lebar: Double = 0.0,
     var ukuran: String = "",
     var catatan: String? = "",
     var status: Boolean = true,
     var pathGambar1: String = "",
     var pathGambar2: String = "",
-    var pathCDR: String = ""
+    var pathTIF: String = "",
+    var lebarKertas: Double = 0.0,
+    var tinggiKertas: Double = 0.0,
+    var offsetX: Double = 0.0,
+    var offsetY: Double = 0.0,
+    var dibuatPada: Long,
+    var diubahPada: Long
 )
