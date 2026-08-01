@@ -4,6 +4,8 @@ import com.girsang.stiker.model.dto.request.DataOrderanRequest
 import com.girsang.stiker.model.dto.response.DataOrderanResponse
 import com.girsang.stiker.model.dto.response.DataOrderanRinciResponse
 import com.girsang.stiker.service.orderan.DataOrderanService
+import com.girsang.stiker.service.orderan.LaporanOrderanService
+import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -13,13 +15,16 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.time.LocalDate
 
 
 @RestController
 @RequestMapping("/api/data-orderan")
 class DataOrderanController(
-    private val serviceOrder: DataOrderanService
+    private val serviceOrder: DataOrderanService,
+    private val service: LaporanOrderanService
 ) {
     @GetMapping
     fun semuaData(): ResponseEntity<List<DataOrderanResponse>> =
@@ -62,5 +67,33 @@ class DataOrderanController(
         return mapOf(
             "faktur" to serviceOrder.generateFaktur()
         )
+    }
+
+    @GetMapping("/laporan")
+    fun getLaporan(
+
+        @RequestParam kategori: String,
+
+        @RequestParam(required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        tanggalAwal: LocalDate?,
+
+        @RequestParam(required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        tanggalAkhir: LocalDate?
+
+    ): Any {
+
+        return when (kategori.uppercase()) {
+
+            "UMKM" ->
+                service.getRekapUmkm(tanggalAwal, tanggalAkhir)
+
+            "STIKER" ->
+                service.getRekapStiker(tanggalAwal, tanggalAkhir)
+
+            else ->
+                service.getSemua(tanggalAwal, tanggalAkhir)
+        }
     }
 }

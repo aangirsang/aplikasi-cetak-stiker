@@ -19,6 +19,9 @@
 
         </div>
         <div class="search-bar-buttons">
+            <button class="add-btn" id="btn-refresh-data-orderan">
+                <span class="material-symbols-sharp">autorenew</span>
+            </button>
             <button class="add-btn" id="btn-tambah-data-orderan">
                 <span class="material-symbols-sharp">add</span>
             </button>
@@ -134,6 +137,37 @@
                 <div class="popup-actions">
                     <button type="button" id="btn-simpan-data-order">Simpan</button>
                     <button type="button" id="btn-batal-data-order">Batal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!--POPUP DOWNLOAD PENYESUAIAN-->
+    <div class="popup" id="popup-download-data-orderan">
+        <div class="content-popup-download-data-orderan">
+            <form id="form-popup-download-data-orderan">
+                <h2 id="popup-download-data-orderan-title">Download Data Orderan</h2>
+                <div class="isi-popup-download-data-orderan">
+                    <div class="date-range-box">
+                        <span class="material-symbols-sharp">calendar_month</span>
+                        <input
+                                type="text"
+                                id="cari-range-tanggal-download-data-orderan"
+                                placeholder="Pilih rentang tanggal">
+                    </div>
+                    <div class="custom-select" id="custom-select-data-rekap-orderan">
+                        <label class="select-label">Pilih Rekap</label>
+                        <div class="select-box">
+                            <span id="selected-text-data-rekap-orderan" class="empty"></span>
+                            <span class="arrow">▼</span>
+                        </div>
+                        <div class="options" id="options-data-rekap-orderan"></div>
+                    </div>
+                </div>
+
+                <div class="popup-actions">
+                    <button type="button" id="btn-popup-download-data-orderan-download">Download</button>
+                    <button type="button" id="btn-popup-download-data-orderan-batal">Batal</button>
                 </div>
             </form>
         </div>

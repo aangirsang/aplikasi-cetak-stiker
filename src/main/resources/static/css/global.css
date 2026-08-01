@@ -219,11 +219,9 @@ button:hover > span{
     background: var(--color-white);
     padding: 10px 15px;
     border-radius: var(--border-radius-2);
-
-    box-shadow: var(--box-shadow-button);
+    border: var(--border-button);
 
     width: 25rem;
-
 
     display: flex;
     align-items: center;

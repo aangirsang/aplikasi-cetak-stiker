@@ -6,6 +6,11 @@ let tanggalAwalOrderan = "";
 let tanggalAkhirOrderan = "";
 const rowsPerPageOrderan = 15;
 
+let pickerDownload = "";
+let tanggalAwalDownloadOrderan = "";
+let tanggalAkhirDownloadOrderan = "";
+let selectedRekap = "";
+
 let sortFieldDataOrderan = "tanggal";
 let sortDirectionOrderan = "desc";
 
@@ -27,11 +32,21 @@ async function initDataOrderan() {
     await initPopupPilihUmkm();
     await initPopupPilihStiker();
     await initPopupCetakOrderan();
+    await initCustomSelectRekap();
 
     await loadTabelDataOrderan(true);
 
+    getEl("btn-refresh-data-orderan")
+        .addEventListener("click",  async () => {
+            await loadTabelDataOrderan(true);
+            picker.clear();
+        });
+
     getEl("btn-tambah-data-orderan")
         .addEventListener("click",  () => showPopupOrderan());
+
+    getEl("btn-download-data-orderan")
+        .addEventListener("click",  () => showPopupDownloadOrderan());
 
     getEl("btn-batal-data-order")
         .addEventListener("click", closePopupOrderan);
@@ -45,9 +60,11 @@ async function initDataOrderan() {
     getEl("btn-simpan-data-order")
         .addEventListener("click",  () => simpanDataOrderan());
 
-    cariDataOrderan = "";
-    tanggalAwalOrderan = "";
-    tanggalAkhirOrderan = "";
+    getEl("btn-popup-download-data-orderan-download")
+        .addEventListener("click",  () => downloadDataOrderan());
+
+    getEl("btn-popup-download-data-orderan-batal")
+        .addEventListener("click",  () => closePopupDownloadOrderan());
 
     getEl("txt-cari-data-orderan")
         .addEventListener("input", async function() {
@@ -56,22 +73,6 @@ async function initDataOrderan() {
             openedDetailOrderanId = null;
             await loadTabelDataOrderan();
         })
-
-    /*getEl("cari-tanggal-awal")
-        .addEventListener("change", async function () {
-        tanggalAwalOrderan = this.value;
-        currentPageOrderan = 1;
-        await loadTabelDataOrderan();
-    });
-
-    getEl("cari-tanggal-akhir")
-        .addEventListener("change", async function () {
-        tanggalAkhirOrderan = this.value;
-        currentPageOrderan = 1;
-        await loadTabelDataOrderan();
-    });
-
-     */
 
     const picker = flatpickr("#cari-range-tanggal-data-orderan", {
         locale: "id",
@@ -85,6 +86,19 @@ async function initDataOrderan() {
 
                 currentPageOrderan = 1;
                 await loadTabelDataOrderan();
+            }
+        }
+    });
+
+    pickerDownload = flatpickr("#cari-range-tanggal-download-data-orderan", {
+        locale: "id",
+        mode: "range",
+        dateFormat: "d F Y",
+        async onClose(selectedDates) {
+
+            if (selectedDates.length === 2) {
+                tanggalAwalDownloadOrderan= selectedDates[0];
+                tanggalAkhirDownloadOrderan = selectedDates[1];
             }
         }
     });
@@ -411,6 +425,8 @@ async function loadTabelDataOrderan(reload = false) {
         if(reload){
             dataOrderan = await fetchDataOrderan();
             cariDataOrderan = "";
+            tanggalAwalOrderan = "";
+            tanggalAkhirOrderan = "";
         }
 
         const filtered = await getFilterDataOrderan();
@@ -713,6 +729,243 @@ function konfirmasiHapusDataOrderan(id) {
             await hapusDataOrderan(id);
         }
     });
+}
+
+//DOWNLOAD DATA
+function showPopupDownloadOrderan(){
+    const popup = getEl("popup-download-data-orderan");
+
+    pickerDownload.clear();
+    resetRekap();
+
+    popup.classList.add("show");
+}
+function closePopupDownloadOrderan(){
+    getEl("popup-download-data-orderan")
+        .classList.remove("show");
+}
+async function initCustomSelectRekap(){
+
+    try {
+        renderRekapOptions();
+    } catch(error){
+        console.error(error);
+        dataKategori = [];
+    }
+
+    const customSelect = getEl("custom-select-data-rekap-orderan");
+    const selectedBox = customSelect.querySelector(".select-box");
+
+    selectedBox.addEventListener("click", () => {
+        customSelect.classList.toggle("active");
+    })
+
+    document.addEventListener("click", (e) => {
+        if(!customSelect.contains(e.target)) {
+            customSelect.classList.remove("active");
+        }
+    })
+}
+function renderRekapOptions() {
+    const optionsContainer = getEl("options-data-rekap-orderan");
+
+    const options = [
+        { id: "Semua", nama: "Semua" },
+        { id: "UMKM", nama: "UMKM" },
+        { id: "STIKER", nama: "Stiker" }
+    ];
+
+    optionsContainer.innerHTML = options.map(option => `
+        <div
+            class="option"
+            data-id="${option.id}"
+        >
+            ${option.nama}
+        </div>
+    `).join("");
+
+    initOptionsRekap();
+}
+function initOptionsRekap() {
+    const customSelect = getEl("custom-select-data-rekap-orderan");
+    const selectedText = getEl("selected-text-data-rekap-orderan");
+
+    document.querySelectorAll("#options-data-rekap-orderan .option")
+        .forEach(option => {
+            option.addEventListener("click", function () {
+
+                selectedText.textContent = this.textContent;
+                selectedText.classList.remove("empty");
+
+                selectedRekap = this.dataset.id;
+
+                customSelect.classList.add("filled");
+                customSelect.classList.remove("active");
+            });
+        });
+}
+function resetRekap() {
+    const customSelect = getEl("custom-select-data-rekap-orderan");
+    const selectedText = getEl("selected-text-data-rekap-orderan");
+
+    // Pilih "Semua"
+    selectedRekap = "";
+
+    selectedText.textContent = "";
+    selectedText.classList.add("empty");
+
+    customSelect.classList
+        .remove(
+            "filled",
+            "active"
+        );
+}
+async function fetchDownloadOrderan(kategori, awal, akhir) {
+    const params = new URLSearchParams({
+        kategori: kategori,
+        tanggalAwal: awal,
+        tanggalAkhir: akhir
+    });
+
+    const response = await fetch(`${BASE_URL_ORDERAN}/laporan?${params}`);
+
+    if(!response.ok){
+        showToast("Gagal memuat data!!","error")
+    }
+
+    return await response.json();
+}
+function validasiDownload(){
+    let valid = true;
+    const kategori = getEl("selected-text-data-rekap-orderan").textContent.trim();
+
+    if(kategori === "") {
+        tandaiInvalid(getEl("custom-select-data-rekap-orderan"))
+        valid = false;
+        showToast("Pilh Kategori Download!!","warning")
+    }
+    return valid;
+}
+async function downloadDataOrderan() {
+    if (!validasiDownload()) return;
+    showLoading("Download Data Orderan..");
+
+    let namaFile = "";
+    let header = [];
+    let rows = [];
+
+    let awal = "";
+    let akhir = "";
+
+    if (tanggalAwalDownloadOrderan && tanggalAkhirDownloadOrderan) {
+        awal = formatTanggalFile(tanggalAwalDownloadOrderan);
+        akhir = formatTanggalFile(tanggalAkhirDownloadOrderan);
+    }
+
+    try {
+        const downloadData = await fetchDownloadOrderan(
+            selectedRekap,
+            awal,
+            akhir
+        );
+
+        if(selectedRekap === "Semua"){
+            header = [
+                "No",
+                "Tanggal",
+                "Nama Usaha",
+                "Kode Stiker",
+                "Nama Stiker",
+                "Ukuran Stiker",
+                "Jumlah"
+            ];
+
+            rows = downloadData.map((item, index) => [
+                index + 1,
+                formatTanggalTanpaJam(item.tanggal),
+                item.namaUmkm,
+                item.kodeStiker,
+                item.namaStiker,
+                item.ukuranStiker,
+                `${item.jumlah} Lembar`
+            ]);
+
+            namaFile = "Data_Orderan_Semua"
+
+        } else if(selectedRekap === "UMKM"){
+            header = [
+                "No",
+                "Nama Usaha",
+                "Total Cetak"
+            ];
+
+            rows = downloadData.map((item, index) => [
+                index + 1,
+                item.namaUmkm,
+                `${item.jumlah} Lembar`
+            ]);
+
+            namaFile = "Data_Orderan_UMKM"
+
+        } else if(selectedRekap === "STIKER"){
+            header = [
+                "No",
+                "Nama Usaha",
+                "Kode Stiker",
+                "Nama Stiker",
+                "Ukuran Stiker",
+                "Total Cetak"
+            ];
+
+            rows = downloadData.map((item, index) => [
+                index + 1,
+                item.namaUmkm,
+                item.kodeStiker,
+                item.namaStiker,
+                `${item.panjang} x ${item.lebar}`,
+                `${item.jumlah} Lembar`
+            ]);
+
+            namaFile = "Data_Orderan_Stiker"
+        }
+
+        const csv = [
+            header,
+            ...rows
+        ]
+            .map(row => row.join("|"))
+            .join("\n");
+
+        const blob = new Blob(
+            ["\uFEFF" + csv],
+            {type: "text/csv;charset=utf-8;"}
+        );
+
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+
+        // Nama file
+        if (tanggalAwalDownloadOrderan && tanggalAkhirDownloadOrderan) {
+            const awal = formatTanggalFile(tanggalAwalDownloadOrderan);
+            const akhir = formatTanggalFile(tanggalAkhirDownloadOrderan);
+            a.download = `${namaFile}_${awal}_${akhir}.csv`;
+        } else {
+            a.download = `${namaFile}.csv`;
+        }
+
+        a.click();
+
+        URL.revokeObjectURL(url);
+
+    } catch(error){
+        console.error(error);
+        showToast(error, "error")
+    } finally {
+        hideLoading();
+    }
+
 }
 
 window.initDataOrderan = initDataOrderan;

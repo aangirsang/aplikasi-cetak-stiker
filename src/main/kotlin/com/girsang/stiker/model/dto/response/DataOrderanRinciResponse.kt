@@ -3,6 +3,10 @@ package com.girsang.stiker.model.dto.response
 data class DataOrderanRinciResponse(
     val id: String,
     val dataOrderanId: String,
+    val namaPengguna: String,
+    val namaUmkm: String,
+    val faktur: String,
+    val tanggal: Long,
 
     //DATA STIKER
     val stikerId: String,
