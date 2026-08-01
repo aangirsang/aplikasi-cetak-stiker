@@ -1,13 +1,10 @@
 package com.girsang.stiker.repository
 
-import com.girsang.stiker.model.dto.response.DataOrderanRinciResponse
 import com.girsang.stiker.model.dto.response.download.orderan.RekapStikerResponse
 import com.girsang.stiker.model.dto.response.download.orderan.RekapUmkmResponse
 import com.girsang.stiker.model.entity.DataOrderanRinci
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
-import org.springframework.data.repository.query.Param
-import java.time.LocalDate
 
 interface DataOrderanRinciRepository: JpaRepository<DataOrderanRinci, String> {
     @Query("""

@@ -2,7 +2,6 @@ package com.girsang.stiker.model.mapper
 
 import com.girsang.stiker.model.dto.response.DataOrderanResponse
 import com.girsang.stiker.model.dto.response.DataOrderanRinciResponse
-import com.girsang.stiker.model.dto.response.download.orderan.RekapUmkmResponse
 import com.girsang.stiker.model.entity.DataOrderan
 import com.girsang.stiker.model.entity.DataOrderanRinci
 import org.springframework.stereotype.Component
