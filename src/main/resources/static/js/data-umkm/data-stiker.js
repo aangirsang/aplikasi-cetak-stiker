@@ -2,8 +2,8 @@ let currentPageStiker = 1;
 let cariDataStiker = "";
 const rowsPerPageStiker = 15;
 
-let sortFieldDataStiker = "kodeStiker";
-let sortDirectionStiker = "asc";
+let sortFieldDataStiker = "";
+let sortDirectionStiker = "";
 
 let dataStiker = [];
 let selectedStiker = null;
@@ -15,6 +15,7 @@ let openedDetailStikerId = null;
 
 let selectedTif = null;
 let pathTif = "";
+let urlTif = "";
 
 let selectedWebpFiles = {
     1: null,
@@ -44,6 +45,7 @@ async function initDataStiker() {
     await initPopupLayoutCetak();
 
 
+
     getEl("btn-refresh-data-stiker").addEventListener("" +
         "click", () => loadTabelDataStiker(true));
 
@@ -55,9 +57,6 @@ async function initDataStiker() {
 
     getEl("btn-popup-data-stiker-batal").addEventListener(
         "click", tutupPopupStiker);
-
-    getEl("btn-popup-data-stiker-cari-umkm").addEventListener(
-        "click", () => tampilPopupPilihUmkm());
 
     getEl("btn-popup-data-stiker-simpan").addEventListener(
         "click", () => simpanDataStiker());
@@ -85,7 +84,7 @@ async function initDataStiker() {
 
     // LAYOUT CETAK
     getEl("btn-popup-data-stiker-layout-cetak")
-        .addEventListener("click", showPopupLayoutCetak);
+        .addEventListener("click", () => showPopupLayoutCetak(urlTif));
 
     // CARI STIKER
     getEl("search-stiker").addEventListener("input", async function(){
@@ -108,8 +107,27 @@ async function loadTabelDataStiker(reload = false) {
     showLoading("Memuat Data Stiker..");
     try {
         if (reload) {
-            cariDataStiker = "";
             dataStiker = await fetchDataStiker();
+
+            dataStiker.sort((a, b) => {
+                // 1. Nama Usaha
+                const usaha = a.namaUsaha.localeCompare(b.namaUsaha, "id", {
+                    sensitivity: "base"
+                });
+                if (usaha !== 0) return usaha;
+
+                // 2. Status (true dulu, false terakhir dalam nama usaha yang sama)
+                if (a.status !== b.status) {
+                    return b.status - a.status;
+                }
+
+                // 3. Kode Stiker
+                return a.kodeStiker.localeCompare(b.kodeStiker, "id", {
+                    numeric: true,
+                    sensitivity: "base"
+                });
+            });
+            cariDataStiker = "";
 
             const cari = getEl("search-stiker");
             cari.value = "";
@@ -306,37 +324,40 @@ async function destroyDataStiker() {
 }
 
 // POPUP
-function showPopupStiker(id = null){
+async function showPopupStiker(id = null){
 
     const popup = getEl("popup-data-stiker");
-    const btnCari = getEl("btn-popup-data-stiker-cari-umkm");
     const popupTitle = getEl("popup-data-stiker-title");
 
     bersihPopupDataStiker();
 
     if(id === null){
+        await showPopupPilihUmkm(async (umkm) => {
+                selectedUmkm = umkm;
+
+                await loadKodeStiker(umkm.id);
+
+                popupTitle.textContent = `Tambah Data Stiker: ${selectedUmkm.namaPemilik} - ${selectedUmkm.namaUsaha}`;
+                popup.classList.add("show");
+
+            }, selectedUmkm
+        );
+
         isEditModeStiker = false;
-
-        btnCari.disabled = false;
-        btnCari.classList.remove("btn-disabled");
-
-        popupTitle.textContent = "Tambah Data Stiker";
-
-        popup.classList.add("show");
         return;
     } else {
 
         isEditModeStiker = true;
 
-        btnCari.disabled = true;
-        btnCari.classList.add("btn-disabled");
-
-        popupTitle.textContent = "Edit Data Stiker";
-
         selectedStiker = dataStiker.find(item => item.id === id);
 
         //isiDataUmkm(selectedCariUmkm);
+
         isiDataStiker(selectedStiker);
+
+        console.log(selectedUmkm);
+
+        popupTitle.textContent = `Edit Data Stiker: ${selectedUmkm.namaPemilik} - ${selectedUmkm.namaUsaha}`;
     }
 
 
@@ -345,31 +366,28 @@ function showPopupStiker(id = null){
 function isiDataStiker(stiker) {
     showLoading("Memuat Data Stiker...");
 
-    const barang = {
-        barangId: stiker.barangId,
+    selectedBarang = {
+        id: stiker.barangId,
         namaBarang: stiker.namaBarang,
         stokBarang: stiker.stokBarang
     };
 
     selectedUmkm = {
+        id: stiker.umkmId,
         namaUsaha: stiker.namaUsaha,
         namaPemilik: stiker.namaPemilik,
         noTelpon: stiker.noTelpon,
         alamat: stiker.alamat};
-    selectedBarang = barang;
+
     pathGambarLama[1] = stiker.pathGambar1 ?? "";
     pathGambarLama[2] = stiker.pathGambar2 ?? "";
 
-    getEl("popup-data-stiker-nama-usaha").value = stiker.namaUsaha;
-    getEl("popup-data-stiker-nama-pemilik").value = stiker.namaPemilik;
-    getEl("popup-data-stiker-telepon").value = stiker.noTelpon;
-    getEl("popup-data-stiker-alamat").value = stiker.alamat;
     getEl("popup-data-stiker-kode").value = stiker.kodeStiker;
     getEl("popup-data-stiker-nama").value = stiker.namaStiker;
     getEl("popup-data-stiker-panjang").value = stiker.panjang;
     getEl("popup-data-stiker-lebar").value = stiker.lebar;
     getEl("popup-data-stiker-catatan").value = stiker.catatan;
-    getEl("popup-data-stiker-barang").value = barang.namaBarang;
+    getEl("popup-data-stiker-barang").value = selectedBarang.namaBarang;
 
     setKodeStiker(stiker.kodeStiker);
 
@@ -425,6 +443,10 @@ function isiDataStiker(stiker) {
         stiker.pathTIF
             ? stiker.pathTIF.split("/").pop()
             : "";
+
+    urlTif = BASE_URL + encodeURI(pathTif);
+    console.log(urlTif);
+
 }
 function tutupPopupStiker() {
     getEl("popup-data-stiker").classList.remove("show");
@@ -452,25 +474,6 @@ document.addEventListener("click", e => {
         });
     }
 });
-async function tampilPopupPilihUmkm(){
-    await loadTabelDataStiker();
-
-    await showPopupPilihUmkm(async (umkm) => {
-            selectedUmkm = umkm;
-
-            getEl("popup-data-stiker-nama-usaha").value =
-                umkm.namaUsaha;
-            getEl("popup-data-stiker-nama-pemilik").value =
-                umkm.namaPemilik;
-            getEl("popup-data-stiker-telepon").value =
-                umkm.noTelpon;
-            getEl("popup-data-stiker-alamat").value =
-                umkm.alamat;
-
-            await loadKodeStiker(umkm.id);
-        }, selectedUmkm
-    );
-}
 async function loadKodeStiker(umkmId) {
 
     try {
@@ -498,6 +501,8 @@ async function loadKodeStiker(umkmId) {
 async function tampilPopupPilihBarang(){
     await showPopupPilihBarang(async (barang) =>{
         selectedBarang = barang;
+
+        console.log(selectedBarang);
 
         getEl("popup-data-stiker-barang").value = barang.namaBarang;
     });
@@ -536,10 +541,6 @@ function bersihPopupDataStiker() {
     setDefaultGambarStiker(2);
 
    [
-       "popup-data-stiker-nama-usaha",
-       "popup-data-stiker-nama-pemilik",
-       "popup-data-stiker-telepon",
-       "popup-data-stiker-alamat",
        "popup-data-stiker-kode",
        "popup-data-stiker-nama",
        "popup-data-stiker-panjang",
@@ -910,7 +911,7 @@ async function simpanDataStiker() {
             : "Menyimpan Data Stiker..."
     );
 
-    console.log({
+    const body = {
         umkmId: selectedUmkm.id,
         barangId: selectedBarang.id,
         kodeStiker,
@@ -922,27 +923,14 @@ async function simpanDataStiker() {
         pathGambar1: gambar1,
         pathGambar2: gambar2,
         pathTIF: pathFileTif
-    });
+    };
 
     try {
         if(isEditModeStiker) {
             const response = await fetch(`${BASE_URL_STIKER}/${selectedStiker.id}`, {
                 method: "PUT",
                 headers: {"Content-type": "application/json"},
-                body: JSON.stringify({
-                    umkmId: selectedUmkm.id,
-                    barangId: selectedBarang.id,
-                    kodeStiker: kodeStiker,
-                    namaStiker: namaStiker,
-                    panjang: panjangStiker,
-                    lebar: lebarStiker,
-                    catatan: catatanStiker,
-                    status: statusStiker,
-                    pathGambar1: gambar1,
-                    pathGambar2: gambar2,
-                    pathTIF: pathFileTif
-
-                })
+                body: JSON.stringify(body)
             });
 
             if(await gagalSimpan(response)) return;
@@ -952,19 +940,7 @@ async function simpanDataStiker() {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({
-                    umkmId: selectedUmkm.id,
-                    barangId: selectedBarang.id,
-                    kodeStiker: kodeStiker,
-                    namaStiker: namaStiker,
-                    panjang: panjangStiker,
-                    lebar: lebarStiker,
-                    catatan: catatanStiker,
-                    status: statusStiker,
-                    pathGambar1: gambar1,
-                    pathGambar2: gambar2,
-                    pathTIF: pathFileTif
-                })
+                body: JSON.stringify(body)
             });
 
 

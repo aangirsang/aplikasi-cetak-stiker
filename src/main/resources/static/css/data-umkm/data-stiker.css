@@ -3,7 +3,7 @@
     border-radius: 12px;
     background: var(--color-background);
 
-    width: 90rem;
+    width: 100rem;
     height: 50rem;
 
     transform: translateY(-60px);
@@ -16,7 +16,7 @@
 
 .form-stiker-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr 1.3fr;
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 1.6rem;
 
     height: 40rem;

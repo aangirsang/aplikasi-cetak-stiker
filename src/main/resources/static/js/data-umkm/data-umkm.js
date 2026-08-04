@@ -3,8 +3,8 @@ let currentPageUmkm = 1;
 let cariDataUmkm = "";
 const rowsPerPageUmkm = 15;
 
-let sortFieldDataUmkm = "namaUsaha";
-let sortDirectionUmkm = "asc";
+let sortFieldDataUmkm = "";
+let sortDirectionUmkm = "";
 
 let dataUmkm = [];
 let dataKategori = [];
@@ -50,6 +50,20 @@ async function loadTableDataUmkm(reload = false){
     try {
         if(reload){
             dataUmkm = await fetchDataUmkm();
+
+            dataUmkm.sort((a, b) => {
+                // Status true lebih dulu
+                if (a.status !== b.status) {
+                    return b.status - a.status;
+                }
+
+                // Nama pemilik A-Z
+                return a.namaPemilik.localeCompare(b.namaPemilik, "id", {
+                    sensitivity: "base"
+                });
+            });
+
+
             cariDataUmkm = "";
 
             const cari = getEl("txt-cari-data-umkm");
