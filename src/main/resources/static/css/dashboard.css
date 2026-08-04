@@ -1,0 +1,43 @@
+.dashboard {
+    display: grid;
+    grid-template-columns: 6.5fr 3.5fr;
+    gap: 1.6rem;
+}
+
+.dashboard .table-page-container{
+    box-shadow: none;
+}
+
+.dashboard-umkm-order-bulanan {
+    border-radius: var(--border-radius-1);
+    height: 47vh;
+}
+
+.dashboard-data-order-bulanan {
+    margin-top: 1.6rem;
+    border-radius: var(--border-radius-1);
+    height: 38vh;
+}
+
+.dashboard-kanan > div {
+    background: var(--color-white) ;
+    padding: var(--card-padding);
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--box-shadow-button);
+
+    transition: all 300ms ease;
+}
+
+.dashboard-kanan > div:hover,
+.dashboard-kiri:hover {
+    box-shadow: none;
+}
+
+.dashboard-kiri {
+    background: var(--color-white) ;
+    padding: var(--card-padding);
+    padding-bottom: 1rem;
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--box-shadow-button);
+    transition: all 300ms ease;
+}

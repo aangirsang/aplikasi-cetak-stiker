@@ -15,3 +15,9 @@ data class RekapStikerResponse(
     val lebar: Double = 0.0,
     val jumlah: Long
 )
+
+data class RekapOrderanBulananResponse(
+    val bulan: Int,
+    val tahun: Int,
+    val jumlah: Long
+)

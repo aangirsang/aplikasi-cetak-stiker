@@ -17,6 +17,7 @@ import com.girsang.stiker.service.persediaan.StokService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @Service
@@ -34,6 +35,18 @@ class DataOrderanService(
     @Transactional(readOnly = true)
     fun semuaOrderan(): List<DataOrderanResponse> =
         repoOrder.findAll().map { mapper.toResponse(it) }
+
+    @Transactional(readOnly = true)
+    fun cariOrderanByTanggal(
+        tanggalAwal: LocalDate?,
+        tanggalAkhir: LocalDate?,
+    ): List<DataOrderanResponse> {
+        val awal = toStartMillis(tanggalAwal)
+        val akhir = toEndMillis(tanggalAkhir)
+
+        return repoOrder.findByTanggal(awal, akhir)
+            .map {mapper.toResponse(it) }
+    }
 
     @Transactional(readOnly = true)
     fun semuaRinci(): List<DataOrderanRinciResponse> =
@@ -196,4 +209,16 @@ class DataOrderanService(
 
         return "$prefix${nomor.toString().padStart(4, '0')}"
     }
+
+    private fun toStartMillis(date: LocalDate?): Long? =
+        date?.atStartOfDay(ZoneId.systemDefault())
+            ?.toInstant()
+            ?.toEpochMilli()
+
+    private fun toEndMillis(date: LocalDate?): Long? =
+        date?.plusDays(1)
+            ?.atStartOfDay(ZoneId.systemDefault())
+            ?.minusNanos(1)
+            ?.toInstant()
+            ?.toEpochMilli()
 }

@@ -3,6 +3,7 @@ package com.girsang.stiker.controller
 import com.girsang.stiker.model.dto.request.DataOrderanRequest
 import com.girsang.stiker.model.dto.response.DataOrderanResponse
 import com.girsang.stiker.model.dto.response.DataOrderanRinciResponse
+import com.girsang.stiker.model.dto.response.download.orderan.RekapOrderanBulananResponse
 import com.girsang.stiker.service.orderan.DataOrderanService
 import com.girsang.stiker.service.orderan.LaporanOrderanService
 import org.springframework.format.annotation.DateTimeFormat
@@ -29,6 +30,21 @@ class DataOrderanController(
     @GetMapping
     fun semuaData(): ResponseEntity<List<DataOrderanResponse>> =
         ResponseEntity.ok(serviceOrder.semuaOrderan())
+
+    @GetMapping("/tanggal")
+    fun cariOrderanByTanggal(
+
+        @RequestParam(required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        tanggalAwal: LocalDate?,
+
+        @RequestParam(required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        tanggalAkhir: LocalDate?
+
+    ): List<DataOrderanResponse> {
+        return serviceOrder.cariOrderanByTanggal(tanggalAwal, tanggalAkhir)
+    }
 
     @GetMapping("/rincian")
     fun semuaRincian(): ResponseEntity<List<DataOrderanRinciResponse>> =
@@ -95,5 +111,19 @@ class DataOrderanController(
             else ->
                 service.getSemua(tanggalAwal, tanggalAkhir)
         }
+    }
+
+    @GetMapping("/rekap-bulanan")
+    fun getRekapBulanan(
+
+        @RequestParam(required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        tanggalAwal: LocalDate?,
+
+        @RequestParam(required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        tanggalAkhir: LocalDate?
+    ): List<RekapOrderanBulananResponse> {
+        return service.getRekapOrderanBulanan(tanggalAwal, tanggalAkhir)
     }
 }

@@ -51,6 +51,7 @@ async function loadPage(page) {
         document.title = title.textContent;
 
         const pageHandlers = {
+            "dashboard": initDashboard,
             "master-data/data-pengguna": initDataPengguna,
             "master-data/master-data": initMasterData,
             "data-persediaan/data-pembelian": initDataPembelian,
@@ -92,6 +93,9 @@ async function destroyCurrentPage() {
 
     if (typeof destroyDataOrderan === "function")
         await destroyDataOrderan();
+
+    if (typeof destroyTabelDashboard === "function")
+        await destroyTabelDashboard();
 }
 
 // SUBMENU

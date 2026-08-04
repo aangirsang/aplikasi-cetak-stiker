@@ -1,9 +1,11 @@
 package com.girsang.stiker.service.orderan
 
 import com.girsang.stiker.model.dto.response.DataOrderanRinciResponse
+import com.girsang.stiker.model.dto.response.download.orderan.RekapOrderanBulananResponse
 import com.girsang.stiker.model.dto.response.download.orderan.RekapStikerResponse
 import com.girsang.stiker.model.dto.response.download.orderan.RekapUmkmResponse
 import com.girsang.stiker.model.mapper.DataOrderanMapper
+import com.girsang.stiker.repository.DataOrderanRepository
 import com.girsang.stiker.repository.DataOrderanRinciRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -14,7 +16,8 @@ import java.time.ZoneId
 @Transactional(readOnly = true)
 class LaporanOrderanService(
 
-    private val repoOrderan: DataOrderanRinciRepository,
+    private val repoOrderan: DataOrderanRepository,
+    private val repoOrderanRinci: DataOrderanRinciRepository,
     private val mapper: DataOrderanMapper
 
 ) {
@@ -28,7 +31,7 @@ class LaporanOrderanService(
         val akhir = toEndMillis(tanggalAkhir)
 
 
-        return repoOrderan.findAllFilter(awal, akhir)
+        return repoOrderanRinci.findAllFilter(awal, akhir)
             .map { mapper.toResponse(it) }
     }
 
@@ -40,7 +43,7 @@ class LaporanOrderanService(
         val awal = toStartMillis(tanggalAwal)
         val akhir = toEndMillis(tanggalAkhir)
 
-        return repoOrderan.rekapUmkm(awal, akhir)
+        return repoOrderanRinci.rekapUmkm(awal, akhir)
     }
 
     fun getRekapStiker(
@@ -51,7 +54,17 @@ class LaporanOrderanService(
         val awal = toStartMillis(tanggalAwal)
         val akhir = toEndMillis(tanggalAkhir)
 
-        return repoOrderan.rekapStiker(awal, akhir)
+        return repoOrderanRinci.rekapStiker(awal, akhir)
+    }
+
+    fun getRekapOrderanBulanan(
+        tanggalAwal: LocalDate?,
+        tanggalAkhir: LocalDate?
+    ): List<RekapOrderanBulananResponse> {
+        val awal = toStartMillis(tanggalAwal)
+        val akhir = toEndMillis(tanggalAkhir)
+
+        return repoOrderan.getRekapOrderanBulanan(awal, akhir)
     }
 
     private fun toStartMillis(date: LocalDate?): Long? =
