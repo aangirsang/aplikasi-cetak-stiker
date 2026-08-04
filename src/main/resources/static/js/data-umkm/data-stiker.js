@@ -209,7 +209,6 @@ function renderTabelStiker(data) {
     const tbody = getEl("tbl-body-data-stiker");
 
     tbody.innerHTML = data.map(item => {
-        const umkm = item.dataUmkm
         const isOpened = openedDetailStikerId === item.id;
 
         return createTabelStiker(item, isOpened);
