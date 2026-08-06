@@ -1,18 +1,8 @@
-// ======================================================
-// LAYOUT CETAK - BAGIAN 1A-1
-// ======================================================
-
-// ======================================================
 // CANVAS
-// ======================================================
-
 let canvas = null;
 let ctx = null;
 
-// ======================================================
 // IMAGE
-// ======================================================
-
 let gambar = new Image();
 
 let dpiX = 300;
@@ -21,35 +11,31 @@ let dpiY = 300;
 let imageWidthMM = 0;
 let imageHeightMM = 0;
 
-// ======================================================
 // PAPER
-// ======================================================
-
-const PAPER = {
-
-    A4: {
+const KERTAS =[
+    {
+        namaKertas: "A4",
         width: 210,
         height: 297
     },
-
-    F4: {
+    {
+        namaKertas: "F4",
         width: 210,
         height: 330
     },
-
-    A3: {
+    {
+        namaKertas: "A3",
         width: 297,
         height: 420
     }
+]
 
-};
+let selectedKertas =null;
 
-// ======================================================
+
 // LAYOUT
-// ======================================================
-
-let paperWidth = PAPER.A4.width;
-let paperHeight = PAPER.A4.height;
+let paperWidth;
+let paperHeight;
 
 let orientation = "portrait";
 
@@ -70,19 +56,10 @@ let paperY = 0;
 // scale mm -> pixel
 let scale = 1;
 
-// ======================================================
 // DRAG
-// ======================================================
-
 let dragging = false;
 
-let lastMouseX = 0;
-let lastMouseY = 0;
-
-// ======================================================
 // CONFIG
-// ======================================================
-
 const MARGIN = 40;
 
 // TIFF AnyCut biasanya 96 DPI
@@ -90,10 +67,7 @@ const DPI = 96;
 
 const MM_PER_PIXEL = 25.4 / DPI;
 
-// ======================================================
 // VIEW
-// ======================================================
-
 let viewX = 0;
 let viewY = 0;
 
@@ -102,10 +76,7 @@ let panning = false;
 let panStartX = 0;
 let panStartY = 0;
 
-// ======================================================
 // INIT
-// ======================================================
-
 async function initPopupLayoutCetak() {
     await initPopupLoading();
 
@@ -123,6 +94,13 @@ async function initPopupLayoutCetak() {
         "beforeend",
         html
     );
+
+    initCustomSelectKertas();
+    selectedKertas = KERTAS[2];
+    document.getElementById("selected-text-ukuran-kertas").textContent =
+        selectedKertas.namaKertas;
+
+    updatePaper();
 
     canvas = document.getElementById("layoutCanvas");
 
@@ -167,10 +145,7 @@ async function initPopupLayoutCetak() {
     resizeCanvas();
 }
 
-// ======================================================
 // POPUP
-// ======================================================
-
 async function showPopupLayoutCetak(url) {
 
     document
@@ -182,68 +157,65 @@ async function showPopupLayoutCetak(url) {
 
     resizeCanvas();
 
-    await loadTiff(url);
+    showLoading("Menampilkan gambar...");
 
-    //resetLayout();
+    try {
+
+        await loadTiff(url);
+
+    } catch (e) {
+
+        console.error(e);
+        alert(e.message);
+
+    } finally {
+
+        hideLoading();
+
+    }
+
+
 
 }
 
-async function loadTiff(url){
+async function loadTiff(baseUrl) {
 
-    const response = await fetch(url);
+    // baseUrl contoh:
+    // /uploads/file-cetak/a-2601
 
-    if(!response.ok){
+    // -------------------------
+    // metadata
+    // -------------------------
+    const metadataResponse = await fetch(`${baseUrl}.json`);
 
-        throw new Error("Download TIFF gagal");
-
+    if (!metadataResponse.ok) {
+        throw new Error("Metadata tidak ditemukan");
     }
 
-    const buffer =
-        await response.arrayBuffer();
+    const metadata = await metadataResponse.json();
 
-    const ifds =
-        UTIF.decode(buffer);
+    dpiX = metadata.dpiX;
+    dpiY = metadata.dpiY;
 
-    console.log("XResolution", ifds[0].t282);
-    console.log("YResolution", ifds[0].t283);
-    console.log("ResolutionUnit", ifds[0].t296);
+    imageWidthMM = metadata.imageWidthMM;
+    imageHeightMM = metadata.imageHeightMM;
 
-    if(ifds.length===0){
+    // -------------------------
+    // preview webp
+    // -------------------------
+    await new Promise((resolve, reject) => {
 
-        throw new Error("TIFF kosong");
+        gambar = new Image();
 
-    }
+        gambar.onload = resolve;
 
-    UTIF.decodeImage(
-        buffer,
-        ifds[0]
-    );
+        gambar.onerror = reject;
 
-    const rgba =
-        UTIF.toRGBA8(ifds[0]);
+        gambar.src = `${baseUrl}.webp`;
 
-    const width =
-        ifds[0].width;
+    });
 
-    const height =
-        ifds[0].height;
-
-    dpiX = ifds[0].t282?.[0] ?? 300;
-    dpiY = ifds[0].t283?.[0] ?? 300;
-
-    imageWidthMM = width * 25.4 / dpiX;
-    imageHeightMM = height * 25.4 / dpiY;
-
-    console.log(imageWidthMM, imageHeightMM);
-
-    await convertRGBAtoImage(
-        rgba,
-        width,
-        height
-    );
-
-    drawLayout();
-
+    resetLayout();
 }
 
 async function convertRGBAtoImage(
@@ -317,10 +289,85 @@ function closeLayout() {
 
 }
 
-// ======================================================
-// RESIZE
-// ======================================================
+function setOrientation(mode) {
 
+    const portrait = document.getElementById("btnPortrait");
+    const landscape = document.getElementById("btnLandscape");
+
+    portrait.classList.remove("active");
+    landscape.classList.remove("active");
+
+    if (mode === "portrait") {
+
+        portrait.classList.add("active");
+
+    } else {
+
+        landscape.classList.add("active");
+
+    }
+
+    orientation = mode;
+
+    updatePaper();   // jika ingin langsung mengubah ukuran kertas
+}
+
+function initCustomSelectKertas(){
+
+    const optionsContainer = getEl("options-ukuran-kertas");
+    const customSelect = getEl("custom-select-ukuran-kertas");
+    const selectedText = getEl("selected-text-ukuran-kertas")
+    const selectedBox = customSelect.querySelector(".select-box");
+    try {
+        optionsContainer.innerHTML =
+            KERTAS.map(kertas => `
+            <div 
+                class="option"
+                data-id="${kertas.namaKertas}"
+            >
+                ${kertas.namaKertas}
+            </div>
+        `).join("");
+
+        document.querySelectorAll("#options-ukuran-kertas .option")
+            .forEach(option => {
+                option.addEventListener("click", function(){
+
+                    selectedText.textContent = this.textContent;
+                    selectedText.classList.remove("empty");
+
+                    const namaKertasDipilih = this.dataset.id;
+
+                    selectedKertas = KERTAS.find(
+                        kertas => kertas.namaKertas === namaKertasDipilih
+                    );
+
+                    paperWidth = selectedKertas.width;
+                    paperHeight = selectedKertas.height;
+
+                    updatePaper();
+
+                    customSelect.classList.add("filled");
+                    customSelect.classList.remove("active");
+                });
+            });
+    } catch(error){
+        console.error(error);
+        dataKategori = [];
+    }
+
+    selectedBox.addEventListener("click", () => {
+        customSelect.classList.toggle("active");
+    })
+
+    document.addEventListener("click", (e) => {
+        if(!customSelect.contains(e.target)) {
+            customSelect.classList.remove("active");
+        }
+    })
+}
+
+// RESIZE
 function resizeCanvas() {
 
     if (!canvas) {
@@ -346,67 +393,31 @@ window.addEventListener(
     resizeCanvas
 );
 
-// ======================================================
-// UTIL
-// ======================================================
-
-function mmToPixel(mm) {
-
-    return mm * scale;
-
-}
-
-function pixelToMM(px) {
-
-    return px / scale;
-
-}
-
-// ======================================================
 // PAPER
-// ======================================================
-
 function updatePaper() {
 
-    const ukuran =
-        document.getElementById("paperSize").value;
+    if (!selectedKertas) {
+        return;
+    }
 
-    orientation =
-        document.getElementById("paperOrientation").value;
-
-    paperWidth =
-        PAPER[ukuran].width;
-
-    paperHeight =
-        PAPER[ukuran].height;
+    paperWidth = selectedKertas.width;
+    paperHeight = selectedKertas.height;
 
     if (orientation === "landscape") {
 
-        [
-            paperWidth,
-            paperHeight
-        ] = [
-
+        [paperWidth, paperHeight] = [
             paperHeight,
             paperWidth
-
         ];
-
     }
+    getEl("ukuran-kertas-panjang").value = paperHeight;
+    getEl("ukuran-kertas-lebar").value = paperWidth;
 
-    drawLayout();
-
+    resetLayout();
 }
 
-// ======================================================
 // RESET
-// ======================================================
-
 function resetLayout() {
-
-    // Posisi gambar
-    offsetX = 0;
-    offsetY = 0;
 
     // Zoom
     zoom = 1;
@@ -414,20 +425,17 @@ function resetLayout() {
     // View / Camera
     viewX = 0;
     viewY = 0;
-
     panning = false;
 
+    // Posisi gambar di tengah kertas
+    offsetX = (paperWidth - imageWidthMM) / 2;
+    offsetY = (paperHeight - imageHeightMM) / 2;
+
     updateStatus();
-
     drawLayout();
-
-
 }
 
-// ======================================================
 // STATUS
-// ======================================================
-
 function updateStatus() {
 
     const elX =
@@ -475,10 +483,7 @@ function updateStatus() {
 
 }
 
-// ======================================================
 // DRAW
-// ======================================================
-
 function drawLayout() {
 
     if (!ctx) return;
@@ -503,7 +508,9 @@ function drawLayout() {
     // ===== Mulai viewport =====
     ctx.save();
 
-    ctx.translate(viewX, viewY);
+    if (zoom > 1) {
+        ctx.translate(viewX, viewY);
+    }
 
     // Shadow
     ctx.shadowColor = "rgba(0,0,0,.25)";
@@ -551,10 +558,7 @@ function drawLayout() {
 
     }
 
-// =========================
 // Garis paling atas
-// =========================
-
     const garisY = paperY + (paperHeight - 20) * scale;
 
     ctx.strokeStyle = "red";
@@ -572,6 +576,8 @@ function drawLayout() {
     updateStatus();
 }
 
+
+// MOUSE AND KEYBOARD
 function onKeyDown(e) {
 
     console.log(e.key);
@@ -618,20 +624,16 @@ function onKeyDown(e) {
     drawLayout();
 
 }
-
 function onMouseWheel(e) {
 
     e.preventDefault();
 
-    // Scroll atas = zoom in
+    const oldZoom = zoom;
+
     if (e.deltaY < 0) {
-
         zoom += ZOOM_STEP;
-
     } else {
-
         zoom -= ZOOM_STEP;
-
     }
 
     zoom = Math.max(
@@ -639,11 +641,22 @@ function onMouseWheel(e) {
         Math.min(MAX_ZOOM, zoom)
     );
 
+    // Ketika kembali ke Fit
+    if (zoom <= 1) {
+        viewX = 0;
+        viewY = 0;
+        panning = false;
+    }
+
+    // Baru keluar dari Fit -> reset juga
+    if (oldZoom <= 1 && zoom > 1) {
+        viewX = 0;
+        viewY = 0;
+    }
+
     updateStatus();
     drawLayout();
-
 }
-
 function onMouseDown(e) {
 
     if (zoom <= 1) {
@@ -682,10 +695,7 @@ function onMouseMove(e) {
     drawLayout();
 }
 
-// ======================================================
 // EXPORT
-// ======================================================
-
 window.initPopupLayoutCetak =
     initPopupLayoutCetak;
 
@@ -700,3 +710,6 @@ window.resetLayout =
 
 window.ubahKertas =
     updatePaper;
+
+window.setOrientation =
+    setOrientation;

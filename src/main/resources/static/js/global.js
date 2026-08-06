@@ -270,6 +270,93 @@ function convertToWebp(
     );
 }
 
+async function convertTifToWebp(file) {
+
+    const buffer = await file.arrayBuffer();
+
+    const ifds = UTIF.decode(buffer);
+
+    if (ifds.length === 0) {
+        throw new Error("TIFF kosong");
+    }
+
+    UTIF.decodeImage(buffer, ifds[0]);
+
+    const rgba = UTIF.toRGBA8(ifds[0]);
+
+    const width = ifds[0].width;
+    const height = ifds[0].height;
+
+    const dpiX = ifds[0].t282?.[0] ?? 300;
+    const dpiY = ifds[0].t283?.[0] ?? 300;
+
+    const imageWidthMM = width * 25.4 / dpiX;
+    const imageHeightMM = height * 25.4 / dpiY;
+
+    const canvas = document.createElement("canvas");
+
+    canvas.width = width;
+    canvas.height = height;
+
+    const ctx = canvas.getContext("2d");
+
+    const imageData = ctx.createImageData(width, height);
+
+    imageData.data.set(rgba);
+
+    ctx.putImageData(imageData, 0, 0);
+
+    const blob = await new Promise(resolve =>
+        canvas.toBlob(resolve, "image/webp", 0.8)
+    );
+
+    return {
+        webpFile: new File(
+            [blob],
+            file.name.replace(/\.tif$/i, ".webp"),
+            {
+                type: "image/webp"
+            }
+        ),
+        width,
+        height,
+        dpiX,
+        dpiY,
+        imageWidthMM,
+        imageHeightMM
+    };
+}
+function createMetadataFile(
+    kodeStiker,
+    width,
+    height,
+    dpiX,
+    dpiY,
+    imageWidthMM,
+    imageHeightMM
+) {
+
+    const metadata = {
+        width,
+        height,
+        dpiX,
+        dpiY,
+        imageWidthMM,
+        imageHeightMM
+    };
+
+    return new File(
+        [
+            JSON.stringify(metadata, null, 2)
+        ],
+        `${kodeStiker}.json`,
+        {
+            type: "application/json"
+        }
+    );
+
+}
+
 function formatTanggal(timestamp) {
     const date = new Date(timestamp);
 

@@ -65,25 +65,36 @@ class UploadService(
     }
 
     fun uploadTif(
-        file: MultipartFile,
-        fileName: String
-    ): UploadResponse {
+        files: List<MultipartFile>
+    ): List<UploadResponse> {
 
-        val folder =
-            pathProvider.uploadTifDir().canonicalFile
+        val tifFolder = pathProvider.uploadTifDir().canonicalFile
+        val previewFolder = pathProvider.uploadTifDir().canonicalFile
 
-        if (!folder.exists()) {
-            folder.mkdirs()
+        tifFolder.mkdirs()
+        previewFolder.mkdirs()
+
+        return files.map { file ->
+
+            val isWebp = file.originalFilename!!
+                .lowercase()
+                .endsWith(".webp")
+
+            val folder =
+                if (isWebp) previewFolder else tifFolder
+
+            val destination =
+                File(folder, file.originalFilename!!)
+
+            file.transferTo(destination)
+
+            UploadResponse(
+                namaFile = file.originalFilename!!,
+                path = if (isWebp)
+                    pathProvider.uploadTifUrl(file.originalFilename!!)
+                else
+                    pathProvider.uploadTifUrl(file.originalFilename!!)
+            )
         }
-
-        val destination =
-            File(folder, fileName)
-
-        file.transferTo(destination)
-
-        return UploadResponse(
-            namaFile = fileName,
-            path = pathProvider.uploadTifUrl(fileName)
-        )
     }
 }

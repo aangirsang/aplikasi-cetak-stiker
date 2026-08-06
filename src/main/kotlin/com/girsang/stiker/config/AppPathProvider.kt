@@ -40,10 +40,10 @@ class AppPathProvider(
     // ===========================
 
     fun uploadTifDir(): File =
-        File(uploadsDir(), "tif")
+        File(uploadsDir(), "file-cetak")
 
     fun uploadTifUrl(fileName: String): String =
-        "/uploads/tif/$fileName"
+        "/uploads/file-cetak/$fileName"
 
     // ===========================
     // DATABASE

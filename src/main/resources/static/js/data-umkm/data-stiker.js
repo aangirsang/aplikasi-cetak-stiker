@@ -14,6 +14,7 @@ let isEditModeStiker = false;
 let openedDetailStikerId = null;
 
 let selectedTif = null;
+let selectedTifConvert = null;
 let pathTif = "";
 let urlTif = "";
 
@@ -443,6 +444,8 @@ function isiDataStiker(stiker) {
             ? stiker.pathTIF.split("/").pop()
             : "";
 
+    console.log(pathTif);
+
     urlTif = BASE_URL + encodeURI(pathTif);
     console.log(urlTif);
 
@@ -751,13 +754,13 @@ function initDragDrop(index){
 }
 
 // CDR
-function handleUploadTif(event){
+async function handleUploadTif(event) {
 
     const file = event.target.files[0];
 
-    if(!file) return;
+    if (!file) return;
 
-    if(!file.name.toLowerCase().endsWith(".tif")){
+    if (!file.name.toLowerCase().endsWith(".tif")) {
 
         showToast(
             "File harus berekstensi .tif",
@@ -766,7 +769,6 @@ function handleUploadTif(event){
 
         return;
     }
-
     selectedTif = file;
 
     getEl("popup-data-stiker-file-tif").value =
@@ -781,16 +783,39 @@ async function uploadFileTif(kodeStiker){
 
     }
 
+    const result = await convertTifToWebp(selectedTif);
+
+    selectedTifConvert = result.webpFile;
+
+    const metadataFile = createMetadataFile(
+        kodeStiker,
+        result.width,
+        result.height,
+        result.dpiX,
+        result.dpiY,
+        result.imageWidthMM,
+        result.imageHeightMM
+    );
+
     const formData = new FormData();
 
     formData.append(
         "file",
-        selectedTif
+        selectedTif,
+        `${kodeStiker}.tif`
     );
 
     formData.append(
-        "fileName",
-        `${kodeStiker}.tif`
+        "file",
+        selectedTifConvert,
+        `${kodeStiker}.webp`
+    );
+
+
+    formData.append(
+        "file",
+        metadataFile,
+        `${kodeStiker}.json`
     );
 
     const response = await fetch(
@@ -809,7 +834,11 @@ async function uploadFileTif(kodeStiker){
 
     }
 
-    return await response.json();
+    const text = await response.json();
+
+    console.log(text[0]);
+
+    return text[0];
 
 }
 
@@ -859,7 +888,13 @@ function konfirmasiHapusDataStiker(id) {
     });
 }
 async function simpanDataStiker() {
-    if(!validasiSimpanDataStiker()) return;
+    showLoading(
+        isEditModeStiker
+            ? "Mengubah Data Stiker..."
+            : "Menyimpan Data Stiker..."
+    );
+
+    if(!validasiSimpanDataStiker()) return hideLoading();
 
     const kodeStiker = getValue("popup-data-stiker-kode")
     const namaStiker = getValue("popup-data-stiker-nama")
@@ -891,6 +926,7 @@ async function simpanDataStiker() {
     }
 
     let pathFileTif = pathTif;
+    let pathFile;
 
     if(selectedTif){
 
@@ -900,15 +936,11 @@ async function simpanDataStiker() {
         pathFileTif =
             hasil.path;
 
-        console.log(pathFileTif);
+        pathFile = pathFileTif.replace(/\.[^.]+$/, "");
+
+        console.log(pathFile);
 
     }
-
-    showLoading(
-        isEditModeStiker
-            ? "Mengubah Data Stiker..."
-            : "Menyimpan Data Stiker..."
-    );
 
     const body = {
         umkmId: selectedUmkm.id,
@@ -921,7 +953,7 @@ async function simpanDataStiker() {
         status: statusStiker,
         pathGambar1: gambar1,
         pathGambar2: gambar2,
-        pathTIF: pathFileTif
+        pathTIF: pathFile
     };
 
     try {

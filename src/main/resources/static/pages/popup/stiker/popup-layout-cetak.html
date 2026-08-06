@@ -3,19 +3,85 @@
     <div class="popup-content-layout-cetak">
 
         <div class="layout-toolbar">
+            <div class="toolbar-group">
+                <h2>Layout Cetak</h2>
+            </div>
+            <div class="toolbar-tengah">
+                <div class="toolbar-group">
+                    <div class="custom-select" id="custom-select-ukuran-kertas">
+                        <label class="select-label"></label>
+                        <div class="select-box">
+                            <span id="selected-text-ukuran-kertas" class="empty"></span>
+                            <span class="arrow">▼</span>
+                        </div>
+                        <div class="options" id="options-ukuran-kertas"></div>
+                    </div>
 
-            <h2>Layout Cetak</h2>
+                    <div class="input-ukuran">
+                        <div class="input-group input-satuan">
+                            <svg class="input-icon"
+                                 width="16"
+                                 height="30"
+                                 viewBox="0 0 16 38">
+                                <line x1="8" y1="7" x2="8" y2="31"
+                                      stroke="#555"
+                                      stroke-width="1.8"/>
+                                <polygon points="8,1 3,8 13,8" fill="#555"/>
+                                <polygon points="8,37 3,30 13,30" fill="#555"/>
+                            </svg>
 
-            <label for="paperSize"></label><select id="paperSize" onchange="ubahKertas()">
-                <option value="A4">A4</option>
-                <option value="F4">F4</option>
-                <option value="A3">A3</option>
-            </select>
+                            <input
+                                    type="number"
+                                    id="ukuran-kertas-panjang"
+                                    placeholder=" "
+                                    min="0"
+                                    step="1"
+                                    autocomplete="off">
 
-            <label for="paperOrientation"></label><select id="paperOrientation" onchange="ubahKertas()">
-                <option value="portrait">Portrait</option>
-                <option value="landscape">Landscape</option>
-            </select>
+                            <label for="ukuran-kertas-panjang"></label>
+
+                            <span>mm</span>
+
+                        </div>
+                        <div class="input-group input-satuan">
+                            <svg class="input-icon"
+                                 width="30"
+                                 height="16"
+                                 viewBox="0 0 38 16">
+                                <line x1="7" y1="8" x2="31" y2="8"
+                                      stroke="#555"
+                                      stroke-width="1.8"/>
+                                <polygon points="1,8 8,3 8,13" fill="#555"/>
+                                <polygon points="37,8 30,3 30,13" fill="#555"/>
+                            </svg>
+                            <input
+                                    type="number"
+                                    id="ukuran-kertas-lebar"
+                                    placeholder=" "
+                                    min="0"
+                                    step="1"
+                                    autocomplete="off">
+
+                            <label for="ukuran-kertas-lebar"></label>
+                            <span>mm</span>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="toolbar-group">
+                    <button
+                            id="btnPortrait"
+                            class="active"
+                            onclick="setOrientation('portrait')">
+                        <span class="material-symbols-sharp">crop_portrait</span>
+                    </button>
+
+                    <button id="btnLandscape"
+                            onclick="setOrientation('landscape')">
+                        <span class="material-symbols-sharp">crop_landscape</span>
+                    </button>
+                </div>
+            </div>
 
             <div class="layout-toolbar-button">
 

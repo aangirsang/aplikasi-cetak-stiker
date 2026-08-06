@@ -40,12 +40,11 @@ class UploadController(
 
     @PostMapping("/tif")
     fun uploadFileTif(
-        @RequestParam("file") file: MultipartFile,
-        @RequestParam("fileName") fileName: String
-    ): ResponseEntity<UploadResponse> {
+        @RequestParam("file") files: List<MultipartFile>
+    ): ResponseEntity<List<UploadResponse>> {
 
         return ResponseEntity.ok(
-            uploadService.uploadTif(file, fileName)
+            uploadService.uploadTif(files)
         )
     }
 }
