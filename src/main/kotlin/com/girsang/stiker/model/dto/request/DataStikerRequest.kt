@@ -10,11 +10,18 @@ data class DataStikerRequest(
     var status: Boolean = true,
     var pathGambar1: String = "",
     var pathGambar2: String = "",
-    var pathTIF: String = "",
 
     // DATA LAYOUT CETAK
+    var pathTIF: String = "",
     var lebarKertas: Double = 0.0,
     var tinggiKertas: Double = 0.0,
     var offsetX: Double = 0.0,
-    var offsetY: Double = 0.0
+    var offsetY: Double = 0.0,
+    var width: Double = 0.0,
+    var height: Double = 0.0,
+    var dpiX: Double = 0.0,
+    var dpiY: Double = 0.0,
+    var imageWidthMM: Double = 0.0,
+    var imageHeightMM: Double = 0.0,
+
 )

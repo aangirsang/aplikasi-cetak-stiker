@@ -49,7 +49,7 @@ class DataOrderanMapper {
             pathGambar1 = entity.dataStiker.pathGambar1,
             pathGambar2 = entity.dataStiker.pathGambar2,
             jumlah = entity.jumlah,
-            pathTIF = entity.dataStiker.pathTIF
+            pathTIF = entity.dataStiker.layoutCetak?.pathTIF ?: ""
         )
     }
     private fun formatAngka(value: Double): String {

@@ -13,11 +13,6 @@ let selectedBarang = null;
 let isEditModeStiker = false;
 let openedDetailStikerId = null;
 
-let selectedTif = null;
-let selectedTifConvert = null;
-let pathTif = "";
-let urlTif = "";
-
 let selectedWebpFiles = {
     1: null,
     2: null
@@ -72,20 +67,9 @@ async function initDataStiker() {
     getEl("popup-data-stiker-barang")
         .addEventListener("click", () => tampilPopupPilihBarang())
 
-    // TIF
-    getEl("popup-data-stiker-file-tif")
-        .addEventListener("click", () => {
-
-            getEl("file-tif").click();
-
-        });
-
-    getEl("file-tif")
-        .addEventListener("change", handleUploadTif);
-
-    // LAYOUT CETAK
+        // LAYOUT CETAK
     getEl("btn-popup-data-stiker-layout-cetak")
-        .addEventListener("click", () => showPopupLayoutCetak(urlTif));
+        .addEventListener("click", () => tampilPopupLayout());
 
     // CARI STIKER
     getEl("search-stiker").addEventListener("input", async function(){
@@ -435,20 +419,6 @@ function isiDataStiker(stiker) {
         stiker.pathGambar2
             ? `${BASE_URL}${stiker.pathGambar2}`
             : noImageStiker;
-
-    // TIF
-    pathTif = stiker.pathTIF ?? "";
-
-    getEl("popup-data-stiker-file-tif").value =
-        stiker.pathTIF
-            ? stiker.pathTIF.split("/").pop()
-            : "";
-
-    console.log(pathTif);
-
-    urlTif = BASE_URL + encodeURI(pathTif);
-    console.log(urlTif);
-
 }
 function tutupPopupStiker() {
     getEl("popup-data-stiker").classList.remove("show");
@@ -510,6 +480,17 @@ async function tampilPopupPilihBarang(){
     });
 }
 
+async function tampilPopupLayout(){
+
+    if(!selectedStiker){
+        if (!validasiSimpanDataStiker()) return;
+        selectedStiker = await stikerToBody();
+    }
+
+    console.log(selectedStiker);
+    await showPopupLayoutCetak(selectedStiker);
+}
+
 // FORM
 function bersihPopupDataStiker() {
     selectedStiker = null;
@@ -532,12 +513,6 @@ function bersihPopupDataStiker() {
         1: false,
         2: false
     };
-
-    selectedTif = null;
-    pathTif = "";
-
-    getEl("popup-data-stiker-file-tif").value = "";
-    getEl("file-tif").value = "";
 
     setDefaultGambarStiker(1);
     setDefaultGambarStiker(2);
@@ -753,94 +728,6 @@ function initDragDrop(index){
 
 }
 
-// CDR
-async function handleUploadTif(event) {
-
-    const file = event.target.files[0];
-
-    if (!file) return;
-
-    if (!file.name.toLowerCase().endsWith(".tif")) {
-
-        showToast(
-            "File harus berekstensi .tif",
-            "warning"
-        );
-
-        return;
-    }
-    selectedTif = file;
-
-    getEl("popup-data-stiker-file-tif").value =
-        file.name;
-
-}
-async function uploadFileTif(kodeStiker){
-
-    if(!selectedTif){
-
-        return pathTif;
-
-    }
-
-    const result = await convertTifToWebp(selectedTif);
-
-    selectedTifConvert = result.webpFile;
-
-    const metadataFile = createMetadataFile(
-        kodeStiker,
-        result.width,
-        result.height,
-        result.dpiX,
-        result.dpiY,
-        result.imageWidthMM,
-        result.imageHeightMM
-    );
-
-    const formData = new FormData();
-
-    formData.append(
-        "file",
-        selectedTif,
-        `${kodeStiker}.tif`
-    );
-
-    formData.append(
-        "file",
-        selectedTifConvert,
-        `${kodeStiker}.webp`
-    );
-
-
-    formData.append(
-        "file",
-        metadataFile,
-        `${kodeStiker}.json`
-    );
-
-    const response = await fetch(
-        BASE_URL_UPLOAD_TIF,
-        {
-            method:"POST",
-            body:formData
-        }
-    );
-
-    if(!response.ok){
-
-        throw new Error(
-            "Gagal upload file TIF"
-        );
-
-    }
-
-    const text = await response.json();
-
-    console.log(text[0]);
-
-    return text[0];
-
-}
 
 // CRUD
 function validasiSimpanDataStiker() {
@@ -878,23 +765,8 @@ function validasiSimpanDataStiker() {
 
     return valid;
 }
-function konfirmasiHapusDataStiker(id) {
-    showPopupHapus({
-        title: "Konfirmasi Hapus Data Stiker",
-        message: "Anda yakin ingin menghapus Data Stiker ini?",
-        onConfirm: async () => {
-            await hapusDataStiker(id);
-        }
-    });
-}
-async function simpanDataStiker() {
-    showLoading(
-        isEditModeStiker
-            ? "Mengubah Data Stiker..."
-            : "Menyimpan Data Stiker..."
-    );
-
-    if(!validasiSimpanDataStiker()) return hideLoading();
+async function stikerToBody() {
+    if (!validasiSimpanDataStiker()) return;
 
     const kodeStiker = getValue("popup-data-stiker-kode")
     const namaStiker = getValue("popup-data-stiker-nama")
@@ -909,26 +781,27 @@ async function simpanDataStiker() {
     let gambar1 = pathGambarLama[1];
     let gambar2 = pathGambarLama[2];
 
-    if(isGambarStikerBerubah()){
+    if (isGambarStikerBerubah()) {
 
         const hasil =
             await uploadGambarStiker();
 
         let index = 0;
 
-        if(selectedWebpFiles[1]){
+        if (selectedWebpFiles[1]) {
             gambar1 = hasil[index++].path;
         }
 
-        if(selectedWebpFiles[2]){
+        if (selectedWebpFiles[2]) {
             gambar2 = hasil[index++].path;
         }
     }
 
+    /*
     let pathFileTif = pathTif;
     let pathFile;
 
-    if(selectedTif){
+    if (selectedTif) {
 
         const hasil =
             await uploadFileTif(kodeStiker);
@@ -942,7 +815,9 @@ async function simpanDataStiker() {
 
     }
 
-    const body = {
+     */
+
+    return {
         umkmId: selectedUmkm.id,
         barangId: selectedBarang.id,
         kodeStiker,
@@ -952,9 +827,28 @@ async function simpanDataStiker() {
         catatan: catatanStiker,
         status: statusStiker,
         pathGambar1: gambar1,
-        pathGambar2: gambar2,
-        pathTIF: pathFile
+        pathGambar2: gambar2
     };
+}
+function konfirmasiHapusDataStiker(id) {
+    showPopupHapus({
+        title: "Konfirmasi Hapus Data Stiker",
+        message: "Anda yakin ingin menghapus Data Stiker ini?",
+        onConfirm: async () => {
+            await hapusDataStiker(id);
+        }
+    });
+}
+async function simpanDataStiker() {
+    const body = await stikerToBody();
+
+    showLoading(
+        isEditModeStiker
+            ? "Mengubah Data Stiker..."
+            : "Menyimpan Data Stiker..."
+    );
+
+    if (!validasiSimpanDataStiker()) return hideLoading();
 
     try {
         if(isEditModeStiker) {

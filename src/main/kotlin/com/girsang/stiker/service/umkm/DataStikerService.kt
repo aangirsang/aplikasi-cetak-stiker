@@ -74,27 +74,16 @@ fun cariByumkmDanStatus(umkmId: String): List<DataStikerResponse> {
             status = request.status,
             pathGambar1 = request.pathGambar1,
             pathGambar2 = request.pathGambar2,
-            dataBarang = barang,
-            pathTIF = request.pathTIF
+            dataBarang = barang
         )
+
+        if(request.imageWidthMM>0 &&
+            request.imageHeightMM>0){
+            simpanLayout(stiker, request)
+        }
 
 
         val simpan = repoStiker.save(stiker)
-
-        if(request.tinggiKertas>0 &&
-            request.lebarKertas>0){
-            val layout = DataLayoutCetak(
-                dataStiker = stiker,
-                lebarKertas = request.lebarKertas,
-                tinggiKertas = request.tinggiKertas,
-                offsetX = request.offsetX,
-                offsetY = request.offsetY,
-                dibuatPada = System.currentTimeMillis(),
-                diubahPada = System.currentTimeMillis()
-            )
-            val simpanLayout = repoLayout.save(layout)
-        }
-
 
 
         // 🔹 Kembalikan DTO sebagai response
@@ -103,7 +92,10 @@ fun cariByumkmDanStatus(umkmId: String): List<DataStikerResponse> {
     }
 
     fun ubah(id: String, request: DataStikerRequest): DataStikerResponse {
+        println("       Data Request: $request")
         val stiker = repoStiker.findById(id).orElseThrow { NoSuchElementException("Stiker tidak ditemukan") }
+
+        val layout = repoLayout.findByDataStikerId(stiker.id)
 
         val barang = repoBarang.findById(request.barangId)
             .orElseThrow { throw IllegalArgumentException("Data Barang dengan ID ${request.barangId} tidak ditemukan!!") }
@@ -126,14 +118,22 @@ fun cariByumkmDanStatus(umkmId: String): List<DataStikerResponse> {
             stiker.pathGambar1 = request.pathGambar1
             stiker.pathGambar2 = request.pathGambar2
             stiker.dataBarang = barang
-            stiker.pathTIF = request.pathTIF
         }
 
+        if(request.imageWidthMM>0 &&
+            request.imageHeightMM>0){
+            if(layout == null){
+                println("       SIMPAN BARU: ${stiker.namaStiker}")
+                simpanLayout(stiker, request)
+            } else {
 
-        println("request: ${request.pathTIF}")
-        println("data: ${stiker.pathTIF}")
+                println("       SIMPAN UBAHAN: ${stiker.namaStiker}")
+                ubahLayout(stiker, layout, request)
+            }
+        }
 
         val updated = repoStiker.save(stiker)
+
         return mapper.toResponse(updated)
     }
 
@@ -175,6 +175,46 @@ fun cariByumkmDanStatus(umkmId: String): List<DataStikerResponse> {
         val keyUmkm = namaUsaha?.trim()?.takeIf { it.isNotEmpty() }
 
         return repoStiker.cariStiker(keyStiker, keyUmkm)
+    }
+
+    fun simpanLayout(stiker: DataStiker, request: DataStikerRequest) {
+        println("           === MASUK SIMPAN LAYOUT ===")
+        val layout = DataLayoutCetak(
+            dataStiker = stiker,
+            pathTIF = request.pathTIF,
+            lebarKertas = request.lebarKertas,
+            tinggiKertas = request.tinggiKertas,
+            offsetX = request.offsetX,
+            offsetY = request.offsetY,
+            width = request.width,
+            height = request.height,
+            dpiX = request.dpiX,
+            dpiY = request.dpiY,
+            imageWidthMM = request.imageWidthMM,
+            imageHeightMM = request.imageHeightMM,
+            dibuatPada = System.currentTimeMillis(),
+            diubahPada = System.currentTimeMillis()
+        )
+        stiker.layoutCetak = layout
+        println("           === SELESAI SIMPAN LAYOUT ===")
+    }
+
+    fun ubahLayout(stiker: DataStiker, layout: DataLayoutCetak, request: DataStikerRequest) {
+        layout.apply {
+            layout.pathTIF = request.pathTIF
+            layout.lebarKertas = request.lebarKertas
+            layout.tinggiKertas = request.tinggiKertas
+            layout.offsetX = request.offsetX
+            layout.offsetY = request.offsetY
+            layout.width = request.width
+            layout.height = request.height
+            layout.dpiX = request.dpiX
+            layout.dpiY = request.dpiY
+            layout.imageWidthMM = request.imageWidthMM
+            layout.imageHeightMM = request.imageHeightMM
+            layout.diubahPada = System.currentTimeMillis()
+        }
+        stiker.layoutCetak = layout
     }
 
 }

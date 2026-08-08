@@ -48,9 +48,6 @@ class DataStiker(
     @Column(nullable = true)
     var pathGambar2: String = "",
 
-    @Column(nullable = true)
-    var pathTIF: String = "",
-
     @OneToOne(
         mappedBy = "dataStiker",
         cascade = [CascadeType.ALL],

@@ -89,9 +89,14 @@
                     Reset
                 </button>
 
-                <button onclick="simpanLayout()">
-                    Simpan
-                </button>
+                <button type="button" id="btn-layout-gambar">Pilih Gambar</button>
+                <input
+                        type="file"
+                        id="input-layout-tif"
+                        accept=".tif"
+                        hidden
+                >
+                <button type="button" id="btn-layout-simpan">Simpan</button>
 
                 <button onclick="closeLayout()">
                     Tutup

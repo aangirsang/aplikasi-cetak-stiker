@@ -55,11 +55,17 @@
                 barangId = stiker.dataBarang.id,
                 namaBarang = stiker.dataBarang.namaBarang,
                 stokBarang = stiker.dataBarang.stokBarang,
-                pathTIF = stiker.pathTIF,
+                pathTIF = stiker.layoutCetak?.pathTIF ?: "",
                 lebarKertas = stiker.layoutCetak?.lebarKertas ?: 0.0,
                 tinggiKertas = stiker.layoutCetak?.tinggiKertas ?: 0.0,
                 offsetX = stiker.layoutCetak?.offsetX ?: 0.0,
                 offsetY = stiker.layoutCetak?.offsetY ?: 0.0,
+                width = stiker.layoutCetak?.width ?: 0.0,
+                height = stiker.layoutCetak?.height ?: 0.0,
+                dpiX = stiker.layoutCetak?.dpiX ?: 0.0,
+                dpiY = stiker.layoutCetak?.dpiY ?: 0.0,
+                imageWidthMM = stiker.layoutCetak?.imageWidthMM ?: 0.0,
+                imageHeightMM = stiker.layoutCetak?.imageHeightMM ?: 0.0,
                 dibuatPada = stiker.layoutCetak?.dibuatPada ?: 0,
                 diubahPada = stiker.layoutCetak?.diubahPada ?: 0
             )

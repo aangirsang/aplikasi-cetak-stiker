@@ -27,6 +27,12 @@ data class DataStikerResponse(
     var tinggiKertas: Double = 0.0,
     var offsetX: Double = 0.0,
     var offsetY: Double = 0.0,
+    var width: Double = 0.0,
+    var height: Double = 0.0,
+    var dpiX: Double = 0.0,
+    var dpiY: Double = 0.0,
+    var imageWidthMM: Double = 0.0,
+    var imageHeightMM: Double = 0.0,
     var dibuatPada: Long,
     var diubahPada: Long
 )

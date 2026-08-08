@@ -12,6 +12,9 @@ class DataLayoutCetak(
     @JoinColumn(nullable = false, unique = true)
     var dataStiker: DataStiker,
 
+    @Column(nullable = true)
+    var pathTIF: String = "",
+
     @Column(nullable = false)
     var lebarKertas: Double,
 
@@ -23,6 +26,24 @@ class DataLayoutCetak(
 
     @Column(nullable = false)
     var offsetY: Double = 0.0,
+
+    @Column(nullable = false)
+    var width: Double = 0.0,
+
+    @Column(nullable = false)
+    var height: Double = 0.0,
+
+    @Column(nullable = false)
+    var dpiX: Double = 0.0,
+
+    @Column(nullable = false)
+    var dpiY: Double = 0.0,
+
+    @Column(nullable = false)
+    var imageWidthMM: Double = 0.0,
+
+    @Column(nullable = false)
+    var imageHeightMM: Double = 0.0,
 
     @Column(nullable = false)
     var dibuatPada: Long = System.currentTimeMillis(),
