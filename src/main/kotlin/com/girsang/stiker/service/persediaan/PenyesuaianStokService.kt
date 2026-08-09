@@ -5,7 +5,6 @@ import com.girsang.stiker.model.dto.request.PenyesuaianStokRequest
 import com.girsang.stiker.model.dto.response.PenyesuaianStokResponse
 import com.girsang.stiker.model.entity.DataPenyesuaianStok
 import com.girsang.stiker.model.mapper.DataBarangMapper
-import com.girsang.stiker.model.mapper.PembelianMapper
 import com.girsang.stiker.repository.DataBarangRepository
 import com.girsang.stiker.repository.DataPenggunaRepository
 import com.girsang.stiker.repository.PenyesuaianStokRepository
