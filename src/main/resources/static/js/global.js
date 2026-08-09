@@ -415,6 +415,16 @@ function formatAngkaDownload(nilai) {
     return Number(nilai).toLocaleString("id-ID");
 }
 
+function formatRupiah(angka){
+
+    return new Intl.NumberFormat("id-ID",{
+        style:"currency",
+        currency:"IDR",
+        minimumFractionDigits:0
+    }).format(angka);
+
+}
+
 async function gagalHapus(response) {
     if (response.ok) return false;
 

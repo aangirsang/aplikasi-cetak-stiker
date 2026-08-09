@@ -190,24 +190,25 @@ class DataOrderanService(
 
     fun generateFaktur(): String {
 
-        val periode = LocalDate.now()
-            .format(DateTimeFormatter.ofPattern("yyMM"))
+        val now = LocalDate.now()
 
-        val prefix = "RBBB-$periode"
+        val tahun = now.format(DateTimeFormatter.ofPattern("yy"))
+        val tahunBulan = now.format(DateTimeFormatter.ofPattern("yyMM"))
 
-        val last =
-            repoOrder
-                .findTopByFakturStartingWithOrderByFakturDesc(prefix)
+        // Dipakai untuk mencari nomor terakhir dalam tahun yang sama
+        val searchPrefix = "RBBB-$tahun"
+
+        val last = repoOrder
+            .findTopByFakturStartingWithOrderByFakturDesc(searchPrefix)
 
         val nomor = if (last == null) {
             1
         } else {
-            last.faktur
-                .removePrefix(prefix)
-                .toInt() + 1
+            // Ambil 4 digit terakhir sebagai nomor urut
+            last.faktur.takeLast(4).toInt() + 1
         }
 
-        return "$prefix${nomor.toString().padStart(4, '0')}"
+        return "RBBB-$tahunBulan${nomor.toString().padStart(4, '0')}"
     }
 
     private fun toStartMillis(date: LocalDate?): Long? =

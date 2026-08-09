@@ -15,6 +15,8 @@ import com.girsang.stiker.repository.DataPembelianRinciRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.ZoneId
 
 @Service
 @Transactional
@@ -173,4 +175,28 @@ class DataPembelianService(
         }
 
     }
+
+    //DOWNLOAD DATA
+    fun getSemua(
+        awal: LocalDate?,
+        akhir: LocalDate?
+    ): List<PembelianRinciResponse> {
+        val awal = toStartMillis(awal)
+        val akhir = toEndMillis(akhir)
+
+        return repoPembelianRinci.downloadPembelianRinci(awal, akhir)
+            .map{mapper.toResponse(it)}
+    }
+
+    private fun toStartMillis(date: LocalDate?): Long? =
+        date?.atStartOfDay(ZoneId.systemDefault())
+            ?.toInstant()
+            ?.toEpochMilli()
+
+    private fun toEndMillis(date: LocalDate?): Long? =
+        date?.plusDays(1)
+            ?.atStartOfDay(ZoneId.systemDefault())
+            ?.minusNanos(1)
+            ?.toInstant()
+            ?.toEpochMilli()
 }

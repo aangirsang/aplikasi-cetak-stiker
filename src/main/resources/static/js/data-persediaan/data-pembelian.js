@@ -7,9 +7,11 @@ let currentPagePembelian = 1;
 let cariDataPembelian = "";
 let tanggalAwalPembelian = "";
 let tanggalAkhirPembelian = "";
+const rowsPerPagePembelian = 15;
+
+let pickerDownload = "";
 let tanggalAwalDownloadPembelian = "";
 let tanggalAkhirDownloadPembelian = "";
-const rowsPerPagePembelian = 15;
 
 let sortFieldDataPembelian = "tanggal";
 let sortDirectionPembelian = "desc";
@@ -74,7 +76,7 @@ async function initDataPembelian(){
         }
     });
 
-    const pickerDownload = flatpickr("#cari-range-tanggal-download-data-pembelian", {
+    pickerDownload = flatpickr("#cari-range-tanggal-download-data-pembelian", {
         locale: "id",
         mode: "range",
         dateFormat: "d F Y",
@@ -275,7 +277,7 @@ function createTabelPembelian(item, isOpened) {
         >
             <td>${formatTanggal(item.tanggal)}</td>
             <td>${item.namaPengguna}</td>
-            <td>${item.subtotal}</td>
+            <td>${formatRupiah(item.subtotal)}</td>
             <td>
                 <div class="actions">
                     <button
@@ -437,15 +439,7 @@ function ubahJumlahPembelian(index, value){
 
     renderTablePembelianRinci();
 }
-function formatRupiah(angka){
 
-    return new Intl.NumberFormat("id-ID",{
-        style:"currency",
-        currency:"IDR",
-        minimumFractionDigits:0
-    }).format(angka);
-
-}
 async function sortTablePembelianRinci(field){
     if(sortFieldPopupPembelian === field){
         sortDirectionPopupPembelian = sortDirectionPopupPembelian === "asc" ? "desc" : "asc";
@@ -537,14 +531,22 @@ async function hapusDataPembelian(id) {
 function showPopupDownloadPembelian(){
     const popup = getEl("popup-download-data-pembelian");
 
+    tanggalAwalDownloadPembelian = "";
+    tanggalAkhirDownloadPembelian = "";
+    pickerDownload.clear();
+
     popup.classList.add("show");
 }
 function closePopupDownloadPembelian(){
     getEl("popup-download-data-pembelian")
         .classList.remove("show");
 }
-async function fetchDownloadPembelian() {
-    const response = await fetch(`${BASE_URL_PEMBELIAN}/rincian`);
+async function fetchDownloadPembelian(awal, akhir) {
+    const params = new URLSearchParams({
+        tanggalAwal: awal,
+        tanggalAkhir: akhir
+    });
+    const response = await fetch(`${BASE_URL_PEMBELIAN}/laporan?${params}`);
 
     if(!response.ok){
         showToast("Gagal memuat data!!","error")
@@ -552,67 +554,85 @@ async function fetchDownloadPembelian() {
 
     return await response.json();
 }
-function getDataPembelian(data, tanggalAwal, tanggalAkhir) {
+async function downloadDataPembelian(){
+    showLoading("Download Data Pembelian..");
 
-    let hasilFilter = data;
+    let awal = "";
+    let akhir = "";
 
-    // Jika kedua tanggal dipilih, baru lakukan filter
-    if (tanggalAwal && tanggalAkhir) {
-
-        const awal = new Date(tanggalAwal);
-        awal.setHours(0, 0, 0, 0);
-
-        const akhir = new Date(tanggalAkhir);
-        akhir.setHours(23, 59, 59, 999);
-
-        hasilFilter = data.filter(item => {
-            const tanggal = new Date(item.tanggal);
-            return tanggal >= awal && tanggal <= akhir;
-        });
+    if (tanggalAwalDownloadPembelian && tanggalAkhirDownloadPembelian) {
+        awal = formatTanggalFile(tanggalAwalDownloadPembelian);
+        akhir = formatTanggalFile(tanggalAkhirDownloadPembelian);
     }
 
-    let csv = "\uFEFF";
-    csv += "No,Tanggal,Nama Barang,Harga,Jumlah,Total\n";
+    console.log(awal);
+    console.log(akhir);
+    try {
+        const downloadData = await fetchDownloadPembelian(awal, akhir);
 
-    hasilFilter.forEach((item, index) => {
+        const header = [
+            "No",
+            "Tanggal",
+            "Nama Barang",
+            "Harga",
+            "Jumlah",
+            "Total"
+        ];
 
-        csv += [
+        console.log(downloadData);
+
+        const rows = downloadData.map((item, index) => [
             index + 1,
-            formatTanggalDownload(item.tanggal),
+            formatTanggalFile(item.tanggal),
             `"${item.namaBarang.replace(/"/g, '""')}"`,
             item.harga,
             item.jumlah,
             item.total
-        ].join("|");
+        ]);
 
-        csv += "\n";
-    });
+        console.log(rows);
 
-    const blob = new Blob(
-        [csv],
-        { type: "text/csv;charset=utf-8;" }
-    );
+        const tanggal = new Date()
 
-    const url = URL.createObjectURL(blob);
+        const csv = [
+            header,
+            ...rows,
+            [],
+            [`Didownload pada tanggal: ${formatTanggal(tanggal)}`]
+        ]
+            .map(row => row.join("|"))
+            .join("\n");
 
-    const a = document.createElement("a");
-    a.href = url;
+        const blob = new Blob(
+            ["\uFEFF" + csv],
+            {type: "text/csv;charset=utf-8;"}
+        );
 
-    // Nama file
-    if (tanggalAwal && tanggalAkhir) {
-        a.download = `Data_Pembelian_${formatTanggalFile(tanggalAwal)}_${formatTanggalFile(tanggalAkhir)}.csv`;
-    } else {
-        a.download = "Data_Pembelian_Semua.csv";
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+
+        // Nama file
+        if (tanggalAwalDownloadPembelian && tanggalAkhirDownloadPembelian) {
+            const awal = formatTanggalFile(tanggalAwalDownloadPembelian);
+            const akhir = formatTanggalFile(tanggalAkhirDownloadPembelian);
+            a.download = `Data_Pembelian_${awal}_${akhir}.csv`;
+        } else {
+            a.download = `Data_Pembelian.csv`;
+        }
+
+        a.click();
+
+        URL.revokeObjectURL(url);
+
+        closePopupDownloadPembelian();
+    } catch(error){
+        console.error(error);
+        showToast(error, "error")
+    } finally {
+        hideLoading();
     }
-
-    a.click();
-
-    URL.revokeObjectURL(url);
-}
-async function downloadDataPembelian(){
-    const dataPembelian = await fetchDownloadPembelian();
-
-    getDataPembelian(dataPembelian, tanggalAwalDownloadPembelian, tanggalAkhirDownloadPembelian);
 }
 
 window.initDataPembelian = initDataPembelian;

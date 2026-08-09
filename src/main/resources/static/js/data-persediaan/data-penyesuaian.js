@@ -277,7 +277,11 @@ function showPopupDataPenyesuaian(id = null) {
 
         selectedPenyesuaian = dataPenyesuaian.find(item => item.id === id);
 
-        selectedBarang = selectedPenyesuaian.dataBarang;
+        selectedBarang = {
+            id: selectedPenyesuaian.dataBarangId,
+            namaBarang: selectedPenyesuaian.namaBarang,
+            stokBarang: selectedPenyesuaian.stokBarang
+        }
 
         console.log(selectedBarang);
 
@@ -536,21 +540,22 @@ async function simpanDataPenyesuaian() {
     );
 
     try {
+        const body = {
+            dataBarangId: dataBarangId,
+            dataPenggunaId: penggunaId,
+            stokSistem: Number(stokSistem),
+            stokFisik: Number(stokFisik),
+            selisih: Number(selisih),
+            alasan: alasan,
+            pathGambar: pathGambar
+        }
         if(isEdit){
             const response = await fetch(`${BASE_URL_PENYESUAIAN}/${selectedPenyesuaian.id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({
-                    dataBarangId: dataBarangId,
-                    dataPenggunaId: penggunaId,
-                    stokSistem: Number(stokSistem),
-                    stokFisik: Number(stokFisik),
-                    selisih: Number(selisih),
-                    alasan: alasan,
-                    pathGambar: pathGambar
-                })
+                body: JSON.stringify(body)
             });
             if(await gagalSimpan(response)) return;
         }else{
@@ -559,15 +564,7 @@ async function simpanDataPenyesuaian() {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({
-                    dataBarangId: dataBarangId,
-                    dataPenggunaId: penggunaId,
-                    stokSistem: Number(stokSistem),
-                    stokFisik: Number(stokFisik),
-                    selisih: Number(selisih),
-                    alasan: alasan,
-                    pathGambar: pathGambar
-                })
+                body: JSON.stringify(body)
             });
 
             if(await gagalSimpan(response)) return
@@ -641,77 +638,98 @@ async function uploadGambarPenyesuaian() {
 function showPopupDownloadPenyesuaian(){
     const popup = getEl("popup-download-data-penyesuaian");
 
+    tanggalAwalDownloadPenyesuaian = "";
+    tanggalAkhirDownloadPenyesuaian = "";
     pickerDownload.clear();
+
     popup.classList.add("show");
 }
 function closePopupDownloadPenyesuaian(){
     getEl("popup-download-data-penyesuaian")
         .classList.remove("show");
 }
-function getDataPenyesuaian(data, tanggalAwal, tanggalAkhir) {
-
-    let hasilFilter = data;
-
-    // Jika kedua tanggal dipilih, baru lakukan filter
-    if (tanggalAwal && tanggalAkhir) {
-
-        const awal = new Date(tanggalAwal);
-        awal.setHours(0, 0, 0, 0);
-
-        const akhir = new Date(tanggalAkhir);
-        akhir.setHours(23, 59, 59, 999);
-
-        hasilFilter = data.filter(item => {
-            const tanggal = new Date(item.tanggal);
-            return tanggal >= awal && tanggal <= akhir;
-        });
-    }
-
-    let csv = "\uFEFF";
-    csv += "No,Tanggal,Nama Barang,Stok Sistem,Stok Fisik,Selisih,Keterangan\n";
-
-    hasilFilter.forEach((item, index) => {
-
-        csv += [
-            index + 1,
-            formatTanggalDownload(item.tanggal),
-            `"${item.namaBarang.replace(/"/g, '""')}"`,
-            item.stokSistem,
-            item.stokFisik,
-            item.selisih,
-            item.alasan
-        ].join("|");
-
-        csv += "\n";
+async function fetchDownloadPenyesuaian(awal, akhir){
+    const params = new URLSearchParams({
+        tanggalAwal: awal,
+        tanggalAkhir: akhir
     });
+    const response = await fetch(`${BASE_URL_PENYESUAIAN}/laporan?${params}`);
 
-    const blob = new Blob(
-        [csv],
-        { type: "text/csv;charset=utf-8;" }
-    );
-
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-
-    // Nama file
-    if (tanggalAwal && tanggalAkhir) {
-        a.download = `Data_Penyesuaian_${formatTanggalFile(tanggalAwal)}_${formatTanggalFile(tanggalAkhir)}.csv`;
-    } else {
-        a.download = "Data_Penyesuaian_Semua.csv";
+    if(!response.ok){
+        showToast("Gagal memuat data!!","error")
     }
 
-    a.click();
-
-    URL.revokeObjectURL(url);
+    return await response.json();
 }
 async function downloadDataPenyesuaian(){
     showLoading("Download Data Penyesuaian Stok...");
-    try {
-        const data = await fetchDataPenyesuaian()
 
-        getDataPenyesuaian(data, tanggalAwalDownloadPenyesuaian, tanggalAkhirDownloadPenyesuaian)
+    let awal = "";
+    let akhir = "";
+
+    if (tanggalAwalDownloadPenyesuaian && tanggalAkhirDownloadPenyesuaian) {
+        awal = formatTanggalFile(tanggalAwalDownloadPenyesuaian);
+        akhir = formatTanggalFile(tanggalAkhirDownloadPenyesuaian);
+    }
+    try {
+        const data = await fetchDownloadPenyesuaian(awal, akhir);
+
+        const header = [
+            "No",
+            "Tanggal",
+            "Nama User",
+            "Nama Barang",
+            "Stok Sistem",
+            "Stok Fisik",
+            "Selisih",
+            "Keterangan"
+        ]
+
+        const rows = data.map((item, index) => [
+                index + 1,
+                formatTanggalFile(item.tanggal),
+                item.namaPengguna,
+                `"${item.namaBarang.replace(/"/g, '""')}"`,
+                item.stokSistem,
+                item.stokFisik,
+                item.selisih,
+                item.alasan
+            ]);
+
+        const tanggal = new Date()
+
+        const csv = [
+            header,
+            ...rows,
+            [],
+            [`Didownload pada tanggal: ${formatTanggal(tanggal)}`]
+        ]
+            .map(row => row.join("|"))
+            .join("\n");
+
+        const blob = new Blob(
+            ["\uFEFF" + csv],
+            {type: "text/csv;charset=utf-8;"}
+        );
+
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+
+        // Nama file
+        if (tanggalAwalDownloadPenyesuaian && tanggalAkhirDownloadPenyesuaian) {
+            const awal = formatTanggalFile(tanggalAwalDownloadPenyesuaian);
+            const akhir = formatTanggalFile(tanggalAkhirDownloadPenyesuaian);
+            a.download = `Data_Penyesuaian_${awal}_${akhir}.csv`;
+        } else {
+            a.download = `Data_Penyesuaian.csv`;
+        }
+
+        a.click();
+
+        URL.revokeObjectURL(url);
+
         closePopupDownloadPenyesuaian();
     } catch (e){
         showToast(e.message, "error");

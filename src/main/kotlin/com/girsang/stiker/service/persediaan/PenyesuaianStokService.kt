@@ -5,11 +5,14 @@ import com.girsang.stiker.model.dto.request.PenyesuaianStokRequest
 import com.girsang.stiker.model.dto.response.PenyesuaianStokResponse
 import com.girsang.stiker.model.entity.DataPenyesuaianStok
 import com.girsang.stiker.model.mapper.DataBarangMapper
+import com.girsang.stiker.model.mapper.PembelianMapper
 import com.girsang.stiker.repository.DataBarangRepository
 import com.girsang.stiker.repository.DataPenggunaRepository
 import com.girsang.stiker.repository.PenyesuaianStokRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
+import java.time.ZoneId
 
 @Service
 @Transactional
@@ -109,4 +112,28 @@ class PenyesuaianStokService(
 
         repoPenyesuaian.deleteById(id)
     }
+
+    //DOWNLOAD DATA
+    fun getSemua(
+        awal: LocalDate?,
+        akhir: LocalDate?
+    ): List<PenyesuaianStokResponse> {
+        val awal = toStartMillis(awal)
+        val akhir = toEndMillis(akhir)
+
+        return repoPenyesuaian.downloadPenyesuaianStok(awal, akhir)
+            .map { mapper.toResponse(it) }
+    }
+
+    private fun toStartMillis(date: LocalDate?): Long? =
+        date?.atStartOfDay(ZoneId.systemDefault())
+            ?.toInstant()
+            ?.toEpochMilli()
+
+    private fun toEndMillis(date: LocalDate?): Long? =
+        date?.plusDays(1)
+            ?.atStartOfDay(ZoneId.systemDefault())
+            ?.minusNanos(1)
+            ?.toInstant()
+            ?.toEpochMilli()
 }

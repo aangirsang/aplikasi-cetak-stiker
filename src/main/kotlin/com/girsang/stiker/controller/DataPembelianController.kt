@@ -4,6 +4,7 @@ import com.girsang.stiker.model.dto.request.PembelianRequest
 import com.girsang.stiker.model.dto.response.PembelianResponse
 import com.girsang.stiker.model.dto.response.PembelianRinciResponse
 import com.girsang.stiker.service.persediaan.DataPembelianService
+import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -13,7 +14,9 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.time.LocalDate
 
 @RestController
 @RequestMapping("/api/data-pembelian")
@@ -56,5 +59,19 @@ class DataPembelianController (
     ): ResponseEntity<Void> {
         pembelianService.hapus(id)
         return ResponseEntity.noContent().build()
+    }
+
+    //DOWNLOAD DATA
+    @GetMapping("/laporan")
+    fun getData(
+        @RequestParam(required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        tanggalAwal: LocalDate?,
+
+        @RequestParam(required = false)
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        tanggalAkhir: LocalDate?
+    ): Any {
+        return pembelianService.getSemua(tanggalAwal, tanggalAkhir)
     }
 }

@@ -30,7 +30,7 @@ class DataBarangMapper {
             id = entity.id,
             dataBarangId = entity.dataBarang.id,
             namaBarang = entity.dataBarang.namaBarang,
-            dataBarang = entity.dataBarang,
+            stokBarang = entity.dataBarang.stokBarang,
             dataPenggunaId = entity.dataPengguna.id,
             namaPengguna = entity.dataPengguna.namaPengguna,
             tanggal = entity.tanggal,

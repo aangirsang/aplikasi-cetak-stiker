@@ -1,12 +1,10 @@
 package com.girsang.stiker.model.dto.response
 
-import com.girsang.stiker.model.entity.DataBarang
-
 data class PenyesuaianStokResponse(
     val id: String,
     var dataBarangId: String,
     var namaBarang: String,
-    var dataBarang: DataBarang,
+    var stokBarang: Long,
     var dataPenggunaId: String,
     var namaPengguna: String,
     var tanggal: Long,
