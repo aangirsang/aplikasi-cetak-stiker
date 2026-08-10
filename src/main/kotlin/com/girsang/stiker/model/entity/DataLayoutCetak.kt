@@ -15,6 +15,9 @@ class DataLayoutCetak(
     @Column(nullable = true)
     var pathTIF: String = "",
 
+    @Column(nullable = true)
+    var kertas: String = "",
+
     @Column(nullable = false)
     var lebarKertas: Double,
 

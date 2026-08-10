@@ -1,134 +1,155 @@
-<div class="popup" id="popup-layout-cetak">
+    <div class="popup" id="popup-layout-cetak">
 
-    <div class="popup-content-layout-cetak">
+        <div class="popup-content-layout-cetak">
 
-        <div class="layout-toolbar">
-            <div class="toolbar-group">
-                <h2>Layout Cetak</h2>
-            </div>
-            <div class="toolbar-tengah">
+            <div class="layout-toolbar">
                 <div class="toolbar-group">
-                    <div class="custom-select" id="custom-select-ukuran-kertas">
-                        <label class="select-label"></label>
-                        <div class="select-box">
-                            <span id="selected-text-ukuran-kertas" class="empty"></span>
-                            <span class="arrow">▼</span>
+                    <h2 id="popup-layout-title">Layout Cetak</h2>
+                </div>
+                <div class="toolbar-tengah">
+                    <div class="toolbar-group">
+                        <div class="custom-select" id="custom-select-ukuran-kertas">
+                            <label class="select-label"></label>
+                            <div class="select-box">
+                                <span id="selected-text-ukuran-kertas" class="empty"></span>
+                                <span class="arrow">▼</span>
+                            </div>
+                            <div class="options" id="options-ukuran-kertas"></div>
                         </div>
-                        <div class="options" id="options-ukuran-kertas"></div>
+
+                        <div class="input-ukuran">
+                            <div class="input-group input-satuan">
+                                <svg class="input-icon"
+                                     width="16"
+                                     height="30"
+                                     viewBox="0 0 16 38">
+                                    <line x1="8" y1="7" x2="8" y2="31"
+                                          stroke="#555"
+                                          stroke-width="1.8"/>
+                                    <polygon points="8,1 3,8 13,8" fill="#555"/>
+                                    <polygon points="8,37 3,30 13,30" fill="#555"/>
+                                </svg>
+
+                                <input
+                                        type="number"
+                                        id="ukuran-kertas-panjang"
+                                        placeholder=" "
+                                        min="0"
+                                        step="1"
+                                        autocomplete="off">
+
+                                <label for="ukuran-kertas-panjang"></label>
+
+                                <span>mm</span>
+
+                            </div>
+                            <div class="input-group input-satuan">
+                                <svg class="input-icon"
+                                     width="30"
+                                     height="16"
+                                     viewBox="0 0 38 16">
+                                    <line x1="7" y1="8" x2="31" y2="8"
+                                          stroke="#555"
+                                          stroke-width="1.8"/>
+                                    <polygon points="1,8 8,3 8,13" fill="#555"/>
+                                    <polygon points="37,8 30,3 30,13" fill="#555"/>
+                                </svg>
+                                <input
+                                        type="number"
+                                        id="ukuran-kertas-lebar"
+                                        placeholder=" "
+                                        min="0"
+                                        step="1"
+                                        autocomplete="off">
+
+                                <label for="ukuran-kertas-lebar"></label>
+                                <span>mm</span>
+
+                            </div>
+                        </div>
                     </div>
+                    <div class="toolbar-group">
+                        <button
+                                id="btnPortrait"
+                                class="active"
+                                onclick="setOrientation('portrait')">
+                            <span class="material-symbols-sharp">crop_portrait</span>
+                        </button>
 
-                    <div class="input-ukuran">
-                        <div class="input-group input-satuan">
-                            <svg class="input-icon"
-                                 width="16"
-                                 height="30"
-                                 viewBox="0 0 16 38">
-                                <line x1="8" y1="7" x2="8" y2="31"
-                                      stroke="#555"
-                                      stroke-width="1.8"/>
-                                <polygon points="8,1 3,8 13,8" fill="#555"/>
-                                <polygon points="8,37 3,30 13,30" fill="#555"/>
-                            </svg>
-
-                            <input
-                                    type="number"
-                                    id="ukuran-kertas-panjang"
-                                    placeholder=" "
-                                    min="0"
-                                    step="1"
-                                    autocomplete="off">
-
-                            <label for="ukuran-kertas-panjang"></label>
-
-                            <span>mm</span>
-
-                        </div>
-                        <div class="input-group input-satuan">
-                            <svg class="input-icon"
-                                 width="30"
-                                 height="16"
-                                 viewBox="0 0 38 16">
-                                <line x1="7" y1="8" x2="31" y2="8"
-                                      stroke="#555"
-                                      stroke-width="1.8"/>
-                                <polygon points="1,8 8,3 8,13" fill="#555"/>
-                                <polygon points="37,8 30,3 30,13" fill="#555"/>
-                            </svg>
-                            <input
-                                    type="number"
-                                    id="ukuran-kertas-lebar"
-                                    placeholder=" "
-                                    min="0"
-                                    step="1"
-                                    autocomplete="off">
-
-                            <label for="ukuran-kertas-lebar"></label>
-                            <span>mm</span>
-
-                        </div>
+                        <button id="btnLandscape"
+                                onclick="setOrientation('landscape')">
+                            <span class="material-symbols-sharp">crop_landscape</span>
+                        </button>
                     </div>
                 </div>
-                <div class="toolbar-group">
-                    <button
-                            id="btnPortrait"
-                            class="active"
-                            onclick="setOrientation('portrait')">
-                        <span class="material-symbols-sharp">crop_portrait</span>
+
+                <div class="layout-toolbar-button">
+
+
+                    <button type="button" id="btn-layout-gambar">Pilih Gambar</button>
+                    <input
+                            type="file"
+                            id="input-layout-tif"
+                            accept=".tif"
+                            hidden
+                    >
+                    <button onclick="resetLayout()">
+                        <span class="material-symbols-sharp">reset_focus</span>
+                    </button>
+                    <button type="button" id="btn-layout-simpan">
+                        <span class="material-symbols-sharp">file_save</span>
                     </button>
 
-                    <button id="btnLandscape"
-                            onclick="setOrientation('landscape')">
-                        <span class="material-symbols-sharp">crop_landscape</span>
+                    <button onclick="closeLayout()">
+                        <span class="material-symbols-sharp">close</span>
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div class="layout-workspace">
+
+                <canvas id="layoutCanvas"></canvas>
+
+            </div>
+
+            <div class="layout-status">
+
+                <div class="offset-tool">
+
+                    Offset X :
+                    <span id="offsetX">0 mm</span>
+
+                    &nbsp;&nbsp;
+
+                    Offset Y :
+                    <span id="offsetY">0 mm</span>
+                </div>
+                <div class="tanggal-tool">
+                    <span id="dibuat">0 mm</span>
+
+                    &nbsp;&nbsp;
+
+                    <span id="diubah">0 mm</span>
+                </div>
+                <div class="zoom-tool">
+                    Zoom :
+                    <span id="zoomValue">100%</span>
+
+                    <button onclick="zoom100()">
+                        <span class="material-symbols-sharp">fit_screen</span>
+                    </button>
+                    <button onclick="fitPageWidth()">
+                        <span class="material-symbols-sharp">fit_page_width</span>
+                    </button>
+                    <button onclick="fitPageHeight()">
+                        <span class="material-symbols-sharp">fit_page_height</span>
                     </button>
                 </div>
-            </div>
-
-            <div class="layout-toolbar-button">
-
-                <button onclick="resetLayout()">
-                    Reset
-                </button>
-
-                <button type="button" id="btn-layout-gambar">Pilih Gambar</button>
-                <input
-                        type="file"
-                        id="input-layout-tif"
-                        accept=".tif"
-                        hidden
-                >
-                <button type="button" id="btn-layout-simpan">Simpan</button>
-
-                <button onclick="closeLayout()">
-                    Tutup
-                </button>
 
             </div>
-
-        </div>
-
-        <div class="layout-workspace">
-
-            <canvas id="layoutCanvas"></canvas>
-
-        </div>
-
-        <div class="layout-status">
-
-            Offset X :
-            <span id="offsetX">0 mm</span>
-
-            &nbsp;&nbsp;
-
-            Offset Y :
-            <span id="offsetY">0 mm</span>
-
-            &nbsp;&nbsp;
-
-            Zoom :
-            <span id="zoomValue">100%</span>
 
         </div>
 
     </div>
-
-</div>

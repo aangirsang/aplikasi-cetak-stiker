@@ -1,5 +1,6 @@
 package com.girsang.stiker.model.entity
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import jakarta.persistence.*
 import jakarta.validation.constraints.*
@@ -54,11 +55,11 @@ class DataStiker(
         orphanRemoval = true,
         fetch = FetchType.LAZY
     )
-    var layoutCetak: DataLayoutCetak? = null
-//
-//    @OneToMany(mappedBy = "dataStiker", fetch = FetchType.LAZY, targetEntity = DataOrderanRinci::class)
-//    @JsonIgnore // supaya JSON tidak error lazy loading
-//    var daftarDataOrderanRinci: List<DataOrderanRinci> = mutableListOf()
+    var layoutCetak: DataLayoutCetak? = null,
+
+    @OneToMany(mappedBy = "dataStiker", fetch = FetchType.LAZY, targetEntity = DataOrderanRinci::class)
+    @JsonIgnore // supaya JSON tidak error lazy loading
+    var daftarDataOrderanRinci: List<DataOrderanRinci> = mutableListOf()
 ){
     @PrePersist
     fun generateId() {

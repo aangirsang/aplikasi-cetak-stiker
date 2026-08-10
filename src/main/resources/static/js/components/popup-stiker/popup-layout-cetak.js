@@ -1,30 +1,18 @@
-// ======================================================
 // DATA
-// ======================================================
-
 let selectedStiker = null;
 
-
-// ======================================================
 // CANVAS
-// ======================================================
-
 let canvas = null;
 let ctx = null;
 
-
-// ======================================================
 // IMAGE
-// ======================================================
-
 let gambar = new Image();
 let metadataFile = null;
 
-
-let pathTif = "";
-let urlTif = "";
 let selectedTif = null;
 let selectedTifConvert = null;
+
+let pathFile = ""
 
 let dpiX = 300;
 let dpiY = 300;
@@ -32,11 +20,7 @@ let dpiY = 300;
 let imageWidthMM = 0;
 let imageHeightMM = 0;
 
-
-// ======================================================
 // PAPER
-// ======================================================
-
 const KERTAS = [
     {
         namaKertas: "A4",
@@ -70,48 +54,27 @@ let orientation = "portrait";
 let customPaperWidth = 210;
 let customPaperHeight = 297;
 
-
-// ======================================================
 // IMAGE POSITION
-// Posisi gambar dalam mm
-// ======================================================
-
 let offsetX = 0;
 let offsetY = 0;
 
-
-// ======================================================
 // ZOOM
-// ======================================================
-
 let zoom = 1;
 
 const MIN_ZOOM = 0.2;
 const MAX_ZOOM = 5;
 const ZOOM_STEP = 0.1;
 
-
-// ======================================================
 // PAPER POSITION
 // Posisi kertas pada canvas
-// ======================================================
-
 let paperX = 0;
 let paperY = 0;
 
-
-// ======================================================
 // SCALE
 // mm -> pixel
-// ======================================================
-
 let scale = 1;
 
-
-// ======================================================
 // VIEW
-// ======================================================
-
 let viewX = 0;
 let viewY = 0;
 
@@ -120,21 +83,13 @@ let panning = false;
 let panStartX = 0;
 let panStartY = 0;
 
-
-// ======================================================
 // CONFIG
-// ======================================================
-
 const MARGIN = 40;
 
 const DPI = 96;
 const MM_PER_PIXEL = 25.4 / DPI;
 
-
-// ======================================================
 // INIT
-// ======================================================
-
 async function initPopupLayoutCetak() {
 
     await initPopupLoading();
@@ -287,12 +242,8 @@ async function initPopupLayoutCetak() {
     resizeCanvas();
 }
 
-
-// ======================================================
 // CANVAS
 // Membuat / mengambil canvas
-// ======================================================
-
 function createCanvas() {
 
     canvas = document.getElementById(
@@ -318,13 +269,9 @@ function createCanvas() {
     return true;
 }
 
-
-// ======================================================
 // PAPER
 // Membuat ukuran kertas
 // berdasarkan jenis + orientasi
-// ======================================================
-
 function createPaper() {
 
     if (!selectedKertas) {
@@ -395,7 +342,6 @@ function createPaper() {
                 : paperWidth;
     }
 }
-
 function updateInputUkuranKertas() {
 
     const panjang = getEl("ukuran-kertas-panjang");
@@ -411,7 +357,6 @@ function updateInputUkuranKertas() {
     panjang.readOnly = !isCustom;
     lebar.readOnly = !isCustom;
 }
-
 function onUkuranKertasChange() {
 
     if (
@@ -456,11 +401,8 @@ function onUkuranKertasChange() {
     drawLayout();
 }
 
-// ======================================================
 // IMAGE METADATA
 // Memuat metadata gambar
-// ======================================================
-
 function loadImageMetadata(stiker) {
 
     metadataFile = {
@@ -485,12 +427,8 @@ function loadImageMetadata(stiker) {
         metadataFile.imageHeightMM;
 }
 
-
-// ======================================================
 // IMAGE
 // Memuat gambar WEBP
-// ======================================================
-
 async function loadImage(stiker) {
 
     const url =
@@ -512,12 +450,8 @@ async function loadImage(stiker) {
     );
 }
 
-
-// ======================================================
 // OFFSET
 // Posisi gambar di tengah kertas
-// ======================================================
-
 function resetOffset() {
 
     offsetX =
@@ -527,12 +461,8 @@ function resetOffset() {
         (paperHeight - imageHeightMM) / 2;
 }
 
-
-// ======================================================
 // VIEW
 // Reset zoom dan posisi viewport
-// ======================================================
-
 function resetView() {
 
     zoom = 1;
@@ -543,12 +473,8 @@ function resetView() {
     panning = false;
 }
 
-
-// ======================================================
 // STATE
 // Reset data gambar
-// ======================================================
-
 function clearLayout() {
 
     gambar = new Image();
@@ -567,12 +493,8 @@ function clearLayout() {
     resetView();
 }
 
-
-// ======================================================
 // RESET LAYOUT
 // Reset tampilan layout
-// ======================================================
-
 function resetLayout() {
 
     createCanvas();
@@ -593,15 +515,18 @@ function resetLayout() {
     drawLayout();
 }
 
-
-// ======================================================
 // LOAD LAYOUT
 // Membuka data stiker
-// ======================================================
-
 async function loadTiff(stiker) {
 
     const pathGambar = stiker.pathTIF;
+
+
+    const portrait = getEl("btnPortrait");
+    const landscape =getEl("btnLandscape");
+
+    const dibuat = getEl("dibuat");
+    const diubah = getEl("diubah");
 
 
     // ==================================================
@@ -612,18 +537,31 @@ async function loadTiff(stiker) {
         stiker.lebarKertas > 0 &&
         stiker.tinggiKertas > 0
     ) {
+        paperWidth = stiker.lebarKertas;
+        paperHeight = stiker.tinggiKertas;
 
-        paperWidth =
-            stiker.lebarKertas;
+        portrait.classList.remove("active");
+        landscape.classList.remove("active");
 
-        paperHeight =
-            stiker.tinggiKertas;
+        if (paperWidth <= paperHeight) {
+            portrait.classList.add("active");
+        } else {
+            landscape.classList.add("active");
+        }
 
+        dibuat.textContent = `Dibuat: ${formatTanggal(stiker.dibuatPada)}`
+        diubah.textContent = `Diubah: ${formatTanggal(stiker.diubahPada)}`
+
+
+        getEl("selected-text-ukuran-kertas").textContent = stiker.kertas;
+
+        pathFile = stiker.pathTIF;
     } else {
 
         createPaper();
+        dibuat.textContent = `Dibuat: ${formatTanggal(new Date())}`
+        diubah.textContent = `Diubah: ${formatTanggal(new Date())}`
     }
-
 
     // ==================================================
     // TANPA GAMBAR
@@ -671,18 +609,37 @@ async function loadTiff(stiker) {
         encodeURI(pathGambar);
 
 
-    await new Promise(
-        (resolve, reject) => {
+    try {
+
+        // load gambar
+        await new Promise((resolve, reject) => {
 
             gambar = new Image();
 
             gambar.onload = resolve;
 
-            gambar.onerror = reject;
+            gambar.onerror = () => {
+                reject(
+                    new Error(
+                        `Gambar tidak ditemukan: ${gambar.src}`
+                    )
+                );
+            };
 
             gambar.src = `${url}.webp`;
-        }
-    );
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        showToast(
+            `Gambar ${stiker.kodeStiker} Tidak Ditemukan!!`,
+            "error"
+        );
+
+        return;
+    }
 
 
     // ==================================================
@@ -714,21 +671,18 @@ async function loadTiff(stiker) {
     drawLayout();
 }
 
-
-// ======================================================
 // POPUP
-// ======================================================
-
 async function showPopupLayoutCetak(stiker) {
 
     document
         .getElementById("popup-layout-cetak")
         .classList.add("show");
 
+    getEl("popup-layout-title")
+        .textContent = `Layout Cetak: ${stiker.kodeStiker}`
 
     // Reset data lama
     clearLayout();
-
 
     await new Promise(
         resolve => requestAnimationFrame(resolve)
@@ -766,12 +720,6 @@ async function showPopupLayoutCetak(stiker) {
         hideLoading();
     }
 }
-
-
-// ======================================================
-// CLOSE POPUP
-// ======================================================
-
 function closeLayout() {
 
     document
@@ -779,11 +727,7 @@ function closeLayout() {
         .classList.remove("show");
 }
 
-
-// ======================================================
 // ORIENTATION
-// ======================================================
-
 function setOrientation(mode) {
 
     const portrait =
@@ -818,11 +762,7 @@ function setOrientation(mode) {
     updatePaper();
 }
 
-
-// ======================================================
 // CUSTOM SELECT KERTAS
-// ======================================================
-
 function initCustomSelectKertas() {
 
     const optionsContainer =
@@ -933,12 +873,8 @@ function initCustomSelectKertas() {
     );
 }
 
-
-// ======================================================
 // UPDATE PAPER
 // Mengubah ukuran kertas
-// ======================================================
-
 function updatePaper() {
 
     if (!selectedKertas) {
@@ -957,11 +893,7 @@ function updatePaper() {
     drawLayout();
 }
 
-
-// ======================================================
 // SIMPAN
-// ======================================================
-
 async function simpanLayout() {
 
     showLoading(
@@ -971,7 +903,10 @@ async function simpanLayout() {
     try {
 
         let pathFileTif;
-        let pathFile;
+
+        const kertas = selectedKertas.namaKertas;
+
+        console.log(kertas);
 
         if (selectedTif) {
 
@@ -994,6 +929,7 @@ async function simpanLayout() {
         selectedStiker.lebarKertas = paperWidth;
         selectedStiker.tinggiKertas = paperHeight;
         selectedStiker.pathTIF = pathFile
+        selectedStiker.kertas = kertas
         selectedStiker.width = metadataFile.width
         selectedStiker.height = metadataFile.height
         selectedStiker.dpiX = metadataFile.dpiX
@@ -1064,11 +1000,7 @@ async function simpanLayout() {
     }
 }
 
-
-// ======================================================
 // RESIZE CANVAS
-// ======================================================
-
 function resizeCanvas() {
 
     if (!canvas) {
@@ -1096,18 +1028,12 @@ function resizeCanvas() {
 
     drawLayout();
 }
-
-
 window.addEventListener(
     "resize",
     resizeCanvas
 );
 
-
-// ======================================================
 // STATUS
-// ======================================================
-
 function updateStatus() {
 
     const elX =
@@ -1152,11 +1078,7 @@ function updateStatus() {
     }
 }
 
-
-// ======================================================
 // DRAW
-// ======================================================
-
 function drawLayout() {
 
     if (!ctx || !canvas) {
@@ -1317,32 +1239,92 @@ function drawLayout() {
 
 
     // ----------------------------------------------
-    // Garis 20 mm dari bawah
+    // Batas area cetak
+    // Epson L1800
+    //
+    // Atas  : 3 mm
+    // Kiri  : 3 mm
+    // Kanan : 3 mm
+    // Bawah : 20 mm
     // ----------------------------------------------
 
-    const garisY =
-        paperY +
-        (paperHeight - 20) * scale;
+        const marginAtas = 3;
+        const marginKiri = 3;
+        const marginKanan = 3;
+        const marginBawah = 20;
 
 
-    ctx.strokeStyle = "red";
-    ctx.lineWidth = 2;
+    // ----------------------------------------------
+    // Posisi batas area cetak
+    // ----------------------------------------------
+
+        const batasKiri =
+            paperX + marginKiri * scale;
+
+        const batasKanan =
+            paperX + (paperWidth - marginKanan) * scale;
+
+        const batasAtas =
+            paperY + marginAtas * scale;
+
+        const batasBawah =
+            paperY + (paperHeight - marginBawah) * scale;
 
 
-    ctx.beginPath();
+    // ----------------------------------------------
+    // Gambar garis batas
+    // ----------------------------------------------
 
-    ctx.moveTo(
-        paperX,
-        garisY
-    );
+        ctx.strokeStyle = "red";
+        ctx.lineWidth = 2;
 
-    ctx.lineTo(
-        paperX + paperPixelWidth,
-        garisY
-    );
+        ctx.beginPath();
 
-    ctx.stroke();
+    // Garis ATAS
+        ctx.moveTo(
+            batasKiri,
+            batasAtas
+        );
 
+        ctx.lineTo(
+            batasKanan,
+            batasAtas
+        );
+
+    // Garis KANAN
+        ctx.moveTo(
+            batasKanan,
+            batasAtas
+        );
+
+        ctx.lineTo(
+            batasKanan,
+            batasBawah
+        );
+
+    // Garis BAWAH — 20 mm dari bawah
+        ctx.moveTo(
+            batasKanan,
+            batasBawah
+        );
+
+        ctx.lineTo(
+            batasKiri,
+            batasBawah
+        );
+
+    // Garis KIRI
+        ctx.moveTo(
+            batasKiri,
+            batasBawah
+        );
+
+        ctx.lineTo(
+            batasKiri,
+            batasAtas
+        );
+
+        ctx.stroke();
 
     // ----------------------------------------------
     // Restore viewport
@@ -1354,11 +1336,7 @@ function drawLayout() {
     updateStatus();
 }
 
-
-// ======================================================
 // KEYBOARD
-// ======================================================
-
 function onKeyDown(e) {
 
     let step = 1;
@@ -1406,11 +1384,13 @@ function onKeyDown(e) {
     drawLayout();
 }
 
-
-// ======================================================
 // ZOOM
-// ======================================================
+function resetViewPosition() {
 
+    viewX = 0;
+    viewY = 0;
+    panning = false;
+}
 function onMouseWheel(e) {
 
     e.preventDefault();
@@ -1464,12 +1444,71 @@ function onMouseWheel(e) {
 
     drawLayout();
 }
+function zoom100() {
 
+    zoom = 1;
 
-// ======================================================
+    resetViewPosition();
+
+    updateStatus();
+    drawLayout();
+}
+function fitPageWidth() {
+
+    if (
+        !canvas ||
+        paperWidth <= 0 ||
+        paperHeight <= 0
+    ) {
+        return;
+    }
+
+    const baseScale =
+        Math.min(
+            (canvas.width - MARGIN * 2) / paperWidth,
+            (canvas.height - MARGIN * 2) / paperHeight
+        );
+
+    const widthScale =
+        (canvas.width - MARGIN * 2) / paperWidth;
+
+    zoom =
+        widthScale / baseScale;
+
+    resetViewPosition();
+
+    updateStatus();
+    drawLayout();
+}
+function fitPageHeight() {
+
+    if (
+        !canvas ||
+        paperWidth <= 0 ||
+        paperHeight <= 0
+    ) {
+        return;
+    }
+
+    const baseScale =
+        Math.min(
+            (canvas.width - MARGIN * 2) / paperWidth,
+            (canvas.height - MARGIN * 2) / paperHeight
+        );
+
+    const heightScale =
+        (canvas.height - MARGIN * 2) / paperHeight;
+
+    zoom =
+        heightScale / baseScale;
+
+    resetViewPosition();
+
+    updateStatus();
+    drawLayout();
+}
+
 // PAN
-// ======================================================
-
 function onMouseDown(e) {
 
     if (zoom <= 1) {
@@ -1495,8 +1534,6 @@ function onMouseDown(e) {
     canvas.style.cursor =
         "grabbing";
 }
-
-
 function onMouseUp() {
 
     panning = false;
@@ -1508,8 +1545,6 @@ function onMouseUp() {
             "grab";
     }
 }
-
-
 function onMouseMove(e) {
 
     if (!panning) {
@@ -1535,7 +1570,6 @@ function onMouseMove(e) {
 
     drawLayout();
 }
-
 
 // TIF
 async function handleUploadTif(event) {
@@ -1726,27 +1760,16 @@ async function uploadFileTif(kodeStiker){
 
 }
 
-// ======================================================
+
+
 // EXPORT
-// ======================================================
-
-window.initPopupLayoutCetak =
-    initPopupLayoutCetak;
-
-window.showPopupLayoutCetak =
-    showPopupLayoutCetak;
-
-window.closeLayout =
-    closeLayout;
-
-window.resetLayout =
-    resetLayout;
-
-window.ubahKertas =
-    updatePaper;
-
-window.setOrientation =
-    setOrientation;
-
-window.handleUploadTif =
-    handleUploadTif;
+window.initPopupLayoutCetak = initPopupLayoutCetak;
+window.showPopupLayoutCetak = showPopupLayoutCetak;
+window.closeLayout = closeLayout;
+window.resetLayout = resetLayout;
+window.ubahKertas = updatePaper;
+window.setOrientation = setOrientation;
+window.handleUploadTif = handleUploadTif;
+window.zoom100 = zoom100;
+window.fitPageWidth = fitPageWidth;
+window.fitPageHeight = fitPageHeight;

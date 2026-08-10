@@ -13,6 +13,7 @@ data class DataStikerRequest(
 
     // DATA LAYOUT CETAK
     var pathTIF: String = "",
+    var kertas: String = "",
     var lebarKertas: Double = 0.0,
     var tinggiKertas: Double = 0.0,
     var offsetX: Double = 0.0,

@@ -23,6 +23,7 @@ data class DataStikerResponse(
     var pathGambar1: String = "",
     var pathGambar2: String = "",
     var pathTIF: String = "",
+    var kertas: String = "",
     var lebarKertas: Double = 0.0,
     var tinggiKertas: Double = 0.0,
     var offsetX: Double = 0.0,
