@@ -1,8 +1,7 @@
-const BASE_URL = "http://localhost:8080/api" // UNTUK CODING/PENGEMBANG
+//const BASE_URL = "http://localhost:8080/api" // UNTUK CODING/PENGEMBANG
 
-//const BASE_URL = "/api" // UNTUK JARINGAN
+const BASE_URL = "/api" // UNTUK JARINGAN
 const BASE_URL_UPLOAD_GAMBAR = `${BASE_URL}/upload/gambar`
-const BASE_URL_UPLOAD_CDR = `${BASE_URL}/upload/cdr`
 const BASE_URL_UPLOAD_TIF = `${BASE_URL}/upload/tif`
 
 const BASE_URL_PENGGUNA = `${BASE_URL}/data-pengguna`;
@@ -378,7 +377,9 @@ async function buatPDF(id) {
                 `${BASE_URL_STIKER}/${id}`
             );
 
+
         if (!response.ok) {
+
             throw new Error(
                 "Gagal Memuat Data Stiker!"
             );
@@ -400,32 +401,30 @@ async function buatPDF(id) {
         // ==================================================
 
         if (!stiker) {
+
             throw new Error(
                 "Data stiker tidak tersedia"
             );
         }
 
+
         if (!stiker.pathTIF) {
+
             throw new Error(
                 "File TIFF tidak tersedia"
             );
         }
 
+
         if (
             stiker.lebarKertas <= 0 ||
             stiker.tinggiKertas <= 0
         ) {
+
             throw new Error(
                 "Ukuran kertas tidak valid"
             );
         }
-
-
-        // ==================================================
-        // UPDATE LOADING
-        // ==================================================
-
-        showLoading("Memuat file TIFF...");
 
 
         // ==================================================
@@ -437,10 +436,19 @@ async function buatPDF(id) {
                 ? stiker.dpiX
                 : 300;
 
+
         const dpiY =
             stiker.dpiY > 0
                 ? stiker.dpiY
                 : 300;
+
+
+        console.log(
+            "DPI:",
+            dpiX,
+            "x",
+            dpiY
+        );
 
 
         // ==================================================
@@ -464,6 +472,11 @@ async function buatPDF(id) {
         // ==================================================
         // DOWNLOAD TIFF
         // ==================================================
+
+        showLoading(
+            "Memuat file TIFF..."
+        );
+
 
         const responseTiff =
             await fetch(url);
@@ -491,7 +504,9 @@ async function buatPDF(id) {
 
 
         const ifds =
-            UTIF.decode(buffer);
+            UTIF.decode(
+                buffer
+            );
 
 
         if (
@@ -505,43 +520,121 @@ async function buatPDF(id) {
         }
 
 
+        // ==================================================
+        // TIFF PERTAMA
+        // ==================================================
+
+        const ifd =
+            ifds[0];
+
+
         UTIF.decodeImage(
             buffer,
-            ifds[0]
+            ifd
+        );
+
+        console.log(
+            "TIFF WIDTH:",
+            ifd.width
+        );
+
+        console.log(
+            "TIFF HEIGHT:",
+            ifd.height
+        );
+
+        console.log(
+            "BITS:",
+            JSON.stringify(ifd.t258)
+        );
+
+        console.log(
+            "SAMPLES:",
+            JSON.stringify(ifd.t277)
+        );
+
+        console.log(
+            "COMPRESSION:",
+            JSON.stringify(ifd.t259)
+        );
+
+        console.log(
+            "PHOTOMETRIC:",
+            JSON.stringify(ifd.t262)
+        );
+
+        console.log(
+            "XRESOLUTION:",
+            JSON.stringify(ifd.t282)
+        );
+
+        console.log(
+            "YRESOLUTION:",
+            JSON.stringify(ifd.t283)
         );
 
 
-        const rgba =
-            UTIF.toRGBA8(
-                ifds[0]
-            );
-
-
         const tifWidth =
-            ifds[0].width;
+            ifd.width;
+
 
         const tifHeight =
-            ifds[0].height;
+            ifd.height;
 
 
         console.log(
-            "TIFF:",
+            "Ukuran TIFF:",
             tifWidth,
             "x",
             tifHeight
         );
 
 
+        // ==================================================
+        // INFORMASI TIFF
+        // ==================================================
+
         console.log(
-            "DPI:",
-            dpiX,
-            "x",
-            dpiY
+            "Bits per Sample:",
+            ifd.t258
+        );
+
+
+        console.log(
+            "Samples per Pixel:",
+            ifd.t277
+        );
+
+
+        console.log(
+            "Compression:",
+            ifd.t259
         );
 
 
         // ==================================================
-        // UKURAN KERTAS PIXEL
+        // RGBA
+        // ==================================================
+
+        const rgba =
+            UTIF.toRGBA8(
+                ifd
+            );
+
+
+        if (
+            !rgba ||
+            rgba.length === 0
+        ) {
+
+            throw new Error(
+                "Gagal mengambil data pixel TIFF"
+            );
+        }
+
+
+        // ==================================================
+        // UKURAN KERTAS DALAM PIXEL
         // ==================================================
 
         const paperWidthPx =
@@ -560,8 +653,17 @@ async function buatPDF(id) {
             );
 
 
+        console.log(
+            "Kertas:",
+            paperWidthPx,
+            "x",
+            paperHeightPx,
+            "pixel"
+        );
+
+
         // ==================================================
-        // OFFSET
+        // OFFSET DALAM PIXEL
         // ==================================================
 
         const offsetXPx =
@@ -576,19 +678,29 @@ async function buatPDF(id) {
             25.4;
 
 
+        console.log(
+            "Offset:",
+            offsetXPx,
+            offsetYPx
+        );
+
+
         // ==================================================
-        // BATAS TIFF
+        // BATAS GAMBAR TIFF
         // ==================================================
 
         const tifLeft =
             offsetXPx;
 
+
         const tifTop =
             offsetYPx;
+
 
         const tifRight =
             offsetXPx +
             tifWidth;
+
 
         const tifBottom =
             offsetYPx +
@@ -628,7 +740,7 @@ async function buatPDF(id) {
 
 
         // ==================================================
-        // CEK
+        // VALIDASI
         // ==================================================
 
         if (
@@ -661,7 +773,7 @@ async function buatPDF(id) {
 
 
         // ==================================================
-        // SOURCE CROP
+        // SOURCE POSITION
         // ==================================================
 
         const sourceX =
@@ -679,20 +791,25 @@ async function buatPDF(id) {
 
 
         console.log(
-            "Crop:",
+            "Source:",
             sourceX,
-            sourceY,
+            sourceY
+        );
+
+
+        console.log(
+            "Crop:",
             cropWidth,
             cropHeight
         );
 
 
         // ==================================================
-        // CANVAS CROP
+        // CANVAS
         // ==================================================
 
         showLoading(
-            "Memotong gambar sesuai ukuran kertas..."
+            "Menyiapkan pixel TIFF..."
         );
 
 
@@ -705,14 +822,27 @@ async function buatPDF(id) {
         cropCanvas.width =
             cropWidth;
 
+
         cropCanvas.height =
             cropHeight;
 
 
         const cropCtx =
             cropCanvas.getContext(
-                "2d"
+                "2d",
+                {
+                    alpha: true,
+                    willReadFrequently: false
+                }
             );
+
+
+        // ==================================================
+        // MATIKAN INTERPOLASI
+        // ==================================================
+
+        cropCtx.imageSmoothingEnabled =
+            false;
 
 
         // ==================================================
@@ -721,11 +851,17 @@ async function buatPDF(id) {
 
         const sourceImageData =
             new ImageData(
-                new Uint8ClampedArray(rgba),
+                new Uint8ClampedArray(
+                    rgba
+                ),
                 tifWidth,
                 tifHeight
             );
 
+
+        // ==================================================
+        // COPY PIXEL
+        // ==================================================
 
         cropCtx.putImageData(
             sourceImageData,
@@ -762,6 +898,15 @@ async function buatPDF(id) {
             dpiY;
 
 
+        console.log(
+            "PDF:",
+            pdfX,
+            pdfY,
+            pdfWidth,
+            pdfHeight
+        );
+
+
         // ==================================================
         // BUAT PDF
         // ==================================================
@@ -786,16 +931,24 @@ async function buatPDF(id) {
         const pdf =
             new jsPDF({
 
+                orientation:
+
                 orientation,
 
-                unit: "mm",
+                unit:
+                    "mm",
 
                 format: [
+
                     stiker.lebarKertas,
+
                     stiker.tinggiKertas
+
                 ],
 
-                compress: false
+                compress:
+                    false
+
             });
 
 
@@ -803,26 +956,68 @@ async function buatPDF(id) {
         // PNG LOSSLESS
         // ==================================================
 
+        showLoading(
+            "Memasukkan gambar asli ke PDF..."
+        );
+
+
         const pngData =
             cropCanvas.toDataURL(
                 "image/png"
             );
 
 
-        pdf.addImage(
-            pngData,
-            "PNG",
-            pdfX,
-            pdfY,
-            pdfWidth,
-            pdfHeight,
-            undefined,
-            "NONE"
+        // ==================================================
+        // TEST PNG
+        // ==================================================
+
+        const testPngUrl =
+            pngData;
+
+
+        const testLink =
+            document.createElement("a");
+
+        testLink.href =
+            testPngUrl;
+
+        testLink.download =
+            "TEST-TIFF-CROP.png";
+
+        testLink.click();
+
+        console.log(
+            "PNG berhasil dibuat"
         );
 
 
         // ==================================================
-        // BUAT BLOB
+        // MASUKKAN KE PDF
+        // ==================================================
+
+        pdf.addImage(
+
+            pngData,
+
+            "PNG",
+
+            pdfX,
+
+            pdfY,
+
+            pdfWidth,
+
+            pdfHeight,
+
+            undefined,
+
+            "NONE"
+
+        );
+
+
+        // ==================================================
+        // OUTPUT PDF
         // ==================================================
 
         showLoading(
@@ -835,6 +1030,10 @@ async function buatPDF(id) {
                 "blob"
             );
 
+
+        // ==================================================
+        // BLOB URL
+        // ==================================================
 
         const blobUrl =
             URL.createObjectURL(
@@ -850,13 +1049,22 @@ async function buatPDF(id) {
 
 
         // ==================================================
-        // BARU BUKA TAB
+        // BUKA PDF
         // ==================================================
 
-        window.open(
-            blobUrl,
-            "_blank"
-        );
+        const pdfWindow =
+            window.open(
+                blobUrl,
+                "_blank"
+            );
+
+
+        if (!pdfWindow) {
+
+            throw new Error(
+                "Popup diblokir oleh browser"
+            );
+        }
 
 
         // ==================================================
@@ -875,7 +1083,16 @@ async function buatPDF(id) {
         );
 
 
-        showToast("Berhasil membuat file PDF", "success");
+        // ==================================================
+        // TOAST
+        // ==================================================
+
+        showToast(
+            "Berhasil membuat file PDF",
+            "success"
+        );
+
+
     } catch (error) {
 
         console.error(
@@ -890,6 +1107,719 @@ async function buatPDF(id) {
         showToast(
             error.message ||
             "Gagal membuat PDF",
+            "error"
+        );
+    }
+}
+async function cetakTIFF(id) {
+
+    // ==================================================
+    // SHOW LOADING
+    // ==================================================
+
+    showLoading("Menyiapkan cetakan...");
+
+
+    try {
+
+        // ==================================================
+        // LOAD DATA STIKER
+        // ==================================================
+
+        const response =
+            await fetch(
+                `${BASE_URL_STIKER}/${id}`
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Gagal Memuat Data Stiker!"
+            );
+        }
+
+
+        const stiker =
+            await response.json();
+
+
+        console.log(
+            "Data Stiker:",
+            stiker
+        );
+
+
+        // ==================================================
+        // VALIDASI
+        // ==================================================
+
+        if (!stiker) {
+
+            throw new Error(
+                "Data stiker tidak tersedia"
+            );
+        }
+
+
+        if (!stiker.pathTIF) {
+
+            throw new Error(
+                "File TIFF tidak tersedia"
+            );
+        }
+
+
+        if (
+            stiker.lebarKertas <= 0 ||
+            stiker.tinggiKertas <= 0
+        ) {
+
+            throw new Error(
+                "Ukuran kertas tidak valid"
+            );
+        }
+
+
+        // ==================================================
+        // DPI
+        // ==================================================
+
+        const dpiX =
+            stiker.dpiX > 0
+                ? stiker.dpiX
+                : 300;
+
+
+        const dpiY =
+            stiker.dpiY > 0
+                ? stiker.dpiY
+                : 300;
+
+
+        console.log(
+            "DPI:",
+            dpiX,
+            "x",
+            dpiY
+        );
+
+
+        // ==================================================
+        // URL TIFF
+        // ==================================================
+
+        const url =
+            BASE_URL +
+            encodeURI(
+                stiker.pathTIF
+            ) +
+            ".tif";
+
+
+        console.log(
+            "Memuat TIFF:",
+            url
+        );
+
+
+        // ==================================================
+        // DOWNLOAD TIFF
+        // ==================================================
+
+        showLoading(
+            "Memuat file TIFF..."
+        );
+
+
+        const responseTiff =
+            await fetch(url);
+
+
+        if (!responseTiff.ok) {
+
+            throw new Error(
+                "File TIFF tidak ditemukan"
+            );
+        }
+
+
+        const buffer =
+            await responseTiff.arrayBuffer();
+
+
+        // ==================================================
+        // DECODE TIFF
+        // ==================================================
+
+        showLoading(
+            "Memproses gambar TIFF..."
+        );
+
+
+        const ifds =
+            UTIF.decode(
+                buffer
+            );
+
+
+        if (
+            !ifds ||
+            ifds.length === 0
+        ) {
+
+            throw new Error(
+                "TIFF tidak dapat dibaca"
+            );
+        }
+
+
+        const ifd =
+            ifds[0];
+
+
+        // ==================================================
+        // DECODE IMAGE
+        // ==================================================
+
+        UTIF.decodeImage(
+            buffer,
+            ifd
+        );
+
+
+        const tifWidth =
+            ifd.width;
+
+
+        const tifHeight =
+            ifd.height;
+
+
+        console.log(
+            "TIFF:",
+            tifWidth,
+            "x",
+            tifHeight
+        );
+
+
+        console.log(
+            "BITS:",
+            JSON.stringify(ifd.t258)
+        );
+
+
+        console.log(
+            "SAMPLES:",
+            JSON.stringify(ifd.t277)
+        );
+
+
+        console.log(
+            "COMPRESSION:",
+            JSON.stringify(ifd.t259)
+        );
+
+
+        console.log(
+            "PHOTOMETRIC:",
+            JSON.stringify(ifd.t262)
+        );
+
+
+        // ==================================================
+        // RGBA
+        // ==================================================
+
+        const rgba =
+            UTIF.toRGBA8(
+                ifd
+            );
+
+
+        if (
+            !rgba ||
+            rgba.length === 0
+        ) {
+
+            throw new Error(
+                "Gagal membaca pixel TIFF"
+            );
+        }
+
+
+        // ==================================================
+        // UKURAN KERTAS PIXEL
+        // ==================================================
+
+        const paperWidthPx =
+            Math.round(
+                stiker.lebarKertas *
+                dpiX /
+                25.4
+            );
+
+
+        const paperHeightPx =
+            Math.round(
+                stiker.tinggiKertas *
+                dpiY /
+                25.4
+            );
+
+
+        console.log(
+            "Kertas:",
+            paperWidthPx,
+            "x",
+            paperHeightPx
+        );
+
+
+        // ==================================================
+        // OFFSET PIXEL
+        // ==================================================
+
+        const offsetXPx =
+            stiker.offsetX *
+            dpiX /
+            25.4;
+
+
+        const offsetYPx =
+            stiker.offsetY *
+            dpiY /
+            25.4;
+
+
+        console.log(
+            "Offset:",
+            offsetXPx,
+            offsetYPx
+        );
+
+
+        // ==================================================
+        // BATAS TIFF
+        // ==================================================
+
+        const tifLeft =
+            offsetXPx;
+
+
+        const tifTop =
+            offsetYPx;
+
+
+        const tifRight =
+            offsetXPx +
+            tifWidth;
+
+
+        const tifBottom =
+            offsetYPx +
+            tifHeight;
+
+
+        // ==================================================
+        // INTERSECTION
+        // ==================================================
+
+        const cropLeft =
+            Math.max(
+                0,
+                tifLeft
+            );
+
+
+        const cropTop =
+            Math.max(
+                0,
+                tifTop
+            );
+
+
+        const cropRight =
+            Math.min(
+                paperWidthPx,
+                tifRight
+            );
+
+
+        const cropBottom =
+            Math.min(
+                paperHeightPx,
+                tifBottom
+            );
+
+
+        // ==================================================
+        // VALIDASI
+        // ==================================================
+
+        if (
+            cropRight <= cropLeft ||
+            cropBottom <= cropTop
+        ) {
+
+            throw new Error(
+                "Gambar TIFF berada di luar area kertas"
+            );
+        }
+
+
+        // ==================================================
+        // CROP SIZE
+        // ==================================================
+
+        const cropWidth =
+            Math.round(
+                cropRight -
+                cropLeft
+            );
+
+
+        const cropHeight =
+            Math.round(
+                cropBottom -
+                cropTop
+            );
+
+
+        // ==================================================
+        // SOURCE POSITION
+        // ==================================================
+
+        const sourceX =
+            Math.round(
+                cropLeft -
+                tifLeft
+            );
+
+
+        const sourceY =
+            Math.round(
+                cropTop -
+                tifTop
+            );
+
+
+        console.log(
+            "Source:",
+            sourceX,
+            sourceY
+        );
+
+
+        console.log(
+            "Crop:",
+            cropWidth,
+            cropHeight
+        );
+
+
+        // ==================================================
+        // CANVAS
+        // ==================================================
+
+        showLoading(
+            "Menyiapkan gambar cetak..."
+        );
+
+
+        const printCanvas =
+            document.createElement(
+                "canvas"
+            );
+
+
+        printCanvas.width =
+            cropWidth;
+
+
+        printCanvas.height =
+            cropHeight;
+
+
+        const printCtx =
+            printCanvas.getContext(
+                "2d"
+            );
+
+
+        // ==================================================
+        // MATIKAN SMOOTHING
+        // ==================================================
+
+        printCtx.imageSmoothingEnabled =
+            false;
+
+
+        // ==================================================
+        // IMAGE DATA
+        // ==================================================
+
+        const imageData =
+            new ImageData(
+                new Uint8ClampedArray(
+                    rgba
+                ),
+                tifWidth,
+                tifHeight
+            );
+
+
+        // ==================================================
+        // COPY PIXEL
+        // ==================================================
+
+        printCtx.putImageData(
+            imageData,
+            -sourceX,
+            -sourceY
+        );
+
+
+        // ==================================================
+        // UKURAN FISIK GAMBAR
+        // ==================================================
+
+        const imageWidthMM =
+            cropWidth *
+            25.4 /
+            dpiX;
+
+
+        const imageHeightMM =
+            cropHeight *
+            25.4 /
+            dpiY;
+
+
+        console.log(
+            "Image MM:",
+            imageWidthMM,
+            "x",
+            imageHeightMM
+        );
+
+
+        // ==================================================
+        // CONVERT PNG
+        // ==================================================
+
+        showLoading(
+            "Menyiapkan halaman cetak..."
+        );
+
+
+        const pngData =
+            printCanvas.toDataURL(
+                "image/png"
+            );
+
+
+        // ==================================================
+        // OPEN PRINT WINDOW
+        // ==================================================
+
+        const printWindow =
+            window.open(
+                "",
+                "_blank"
+            );
+
+
+        if (!printWindow) {
+
+            throw new Error(
+                "Popup diblokir oleh browser"
+            );
+        }
+
+
+        // ==================================================
+        // HTML PRINT
+        // ==================================================
+
+        printWindow.document.open();
+
+
+        printWindow.document.write(`
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Cetak TIFF</title>
+
+
+<style>
+
+@page {
+
+    size:
+        ${stiker.lebarKertas}mm
+        ${stiker.tinggiKertas}mm;
+
+    margin: 0;
+
+}
+
+
+html,
+body {
+
+    margin: 0;
+    padding: 0;
+
+    width:
+        ${stiker.lebarKertas}mm;
+
+    height:
+        ${stiker.tinggiKertas}mm;
+
+    overflow: hidden;
+
+}
+
+
+.print-page {
+
+    position: relative;
+
+    width:
+        ${stiker.lebarKertas}mm;
+
+    height:
+        ${stiker.tinggiKertas}mm;
+
+    margin: 0;
+
+    padding: 0;
+
+}
+
+
+.print-image {
+
+    position: absolute;
+
+    left:
+        ${cropLeft * 25.4 / dpiX}mm;
+
+    top:
+        ${cropTop * 25.4 / dpiY}mm;
+
+    width:
+        ${imageWidthMM}mm;
+
+    height:
+        ${imageHeightMM}mm;
+
+    display: block;
+
+    margin: 0;
+
+    padding: 0;
+
+    image-rendering: auto;
+
+}
+
+
+@media print {
+
+    html,
+    body {
+
+        margin: 0;
+        padding: 0;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="print-page">
+
+    <img
+        class="print-image"
+        src="${pngData}"
+    >
+
+</div>
+
+
+<script>
+
+window.onload = function() {
+
+    setTimeout(
+        function() {
+
+            window.focus();
+
+            window.print();
+
+        },
+        500
+    );
+
+};
+
+
+
+<\/script>
+
+
+</body>
+
+</html>
+        `);
+
+
+        printWindow.document.close();
+
+
+        // ==================================================
+        // SELESAI
+        // ==================================================
+
+        hideLoading();
+
+
+        showToast(
+            "Halaman cetak siap",
+            "success"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Gagal mencetak TIFF:",
+            error
+        );
+
+
+        hideLoading();
+
+
+        showToast(
+            error.message ||
+            "Gagal mencetak TIFF",
             "error"
         );
     }

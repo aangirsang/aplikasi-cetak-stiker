@@ -107,16 +107,16 @@ function renderListStikerCetakOrder(rincian){
             
                     <span class="input-satuan-lembar">Lembar</span>
                 </div>
-                ${rinci.pathCDR && rinci.pathCDR.trim() !== "" ? `
-                    <button
-                        type="button"
-                        onclick="
-                            event.stopPropagation();
-                            cetakStiker('${rinci.stikerId}');
-                        ">
-                        Cetak Stiker
-                    </button>
-                ` : ""}
+                
+                <button
+                    type="button"
+                    onclick="
+                    event.stopPropagation();
+                    cetakTIFF('${rinci.stikerId}')
+                    ">
+                    Cetak
+                </button>
+                            
             </div>
 
 

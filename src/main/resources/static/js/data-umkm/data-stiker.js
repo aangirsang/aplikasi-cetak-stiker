@@ -213,7 +213,7 @@ function createTabelStiker(item, isOpened) {
             <td>
                 <div class="actions">
                     <button
-                        onclick="event.stopPropagation(); buatPDF('${item.id}')">
+                        onclick="event.stopPropagation(); cetakTIFF('${item.id}')">
                         <span class="material-symbols-sharp">picture_as_pdf</span>
                     </button>
 
