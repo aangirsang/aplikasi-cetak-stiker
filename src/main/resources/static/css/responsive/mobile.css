@@ -181,8 +181,7 @@
 
     /* Overlay aktif */
 
-    body.mobile-menu-open
-    .mobile-menu-overlay {
+    body.mobile-menu-open .mobile-menu-overlay {
 
         opacity: 1;
 
