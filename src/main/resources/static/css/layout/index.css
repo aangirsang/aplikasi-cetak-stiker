@@ -1,0 +1,79 @@
+/* =========================================================
+   MAIN LAYOUT
+   ========================================================= */
+
+/*index.css*/
+.container {
+    display: grid;
+    width: 98%;
+    margin: 0 auto;
+    grid-template-columns: 16rem auto;
+
+    height: 100dvh;
+}
+
+aside {
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1.4rem;
+}
+
+aside .top {
+    flex-shrink: 0;
+}
+
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+/*---------------- LOGO ----------------*/
+.logo {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+}
+
+.logo img {
+    height: 4rem;
+}
+
+.logo h1 {
+    margin: 0 0 -4px;
+    line-height: 1;
+    transform: translateY(3px);
+}
+
+.logo h2 {
+    font-size: 1.5rem;
+    margin: 0 0 -4px;
+    transform: translateY(3px);
+}
+
+.logo h3 {
+    font-size: 1.1rem;
+    margin: 0;
+    line-height: 1;
+    transform: translateY(6px);
+}
+
+.rb-1 {
+    color: var(--color-rb-1);
+}
+
+.rb-2 {
+    color: var(--color-rb-2);
+}
+
+.rb-3 {
+    color: var(--color-rb-3);
+}

@@ -1,0 +1,42 @@
+/* =========================================================
+   NAVBAR
+   ========================================================= */
+
+/*---------------- NAVBAR ----------------*/
+.navbar {
+    position: relative;
+    height: 5rem;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.navbar .kanan {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    gap: 2rem;
+}
+
+.navbar .profile {
+    display: flex;
+    gap: 2rem;
+    text-align: right;
+}
+
+.navbar .profile-photo {
+    width: 2.8rem;
+    height: 2.8rem;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+/*---------------- STATUS SERVER ----------------*/
+.status.online {
+    color: #16a34a;
+}
+
+.status.offline {
+    color: #dc2626;
+}

@@ -1,0 +1,29 @@
+/* =========================================================
+   PILIH BARANG
+   ========================================================= */
+
+/*popup-pilih-barang.css*/
+.content-popup-pilih-barang {
+    padding: var(--card-padding);
+    border-radius: 12px;
+    background: var(--color-background);
+
+    width: 50vw;
+    height: 77vh;
+
+    transform: translateY(-60px);
+    transition: transform .25s ease;
+}
+
+.popup.show .content-popup-pilih-barang{
+    transform: translateY(0);
+}
+
+.tabel-card-popup-pilih-barang {
+    height: 51vh;
+}
+
+.pilih-barang-row:hover td {
+    color: var(--color-primary);
+    transform: translateX(6px);
+}

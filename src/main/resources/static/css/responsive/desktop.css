@@ -1,0 +1,73 @@
+/* =========================================================
+   DESKTOP RESPONSIVE LAYER
+   1201px ke atas
+   ========================================================= */
+
+:root {
+    --page-padding: clamp(0.75rem, 1.5vw, 1.8rem);
+    --content-gap: clamp(0.75rem, 1.5vw, 1.6rem);
+    --sidebar-width: clamp(13rem, 16vw, 16rem);
+    --responsive-card-padding: clamp(1rem, 1.5vw, 1.8rem);
+}
+
+html {
+    font-size: clamp(14px, 0.78vw, 16px);
+}
+
+body {
+    width: 100%;
+    min-width: 0;
+    min-height: 100vh;
+}
+
+.container {
+    width: min(98%, 1800px);
+    grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+    gap: var(--content-gap);
+}
+
+.main,
+.dashboard,
+.dashboard-kiri,
+.dashboard-kanan,
+.table-page-container,
+.form-grid,
+.form-stiker-grid,
+.form-umkm-grid,
+.content-data-penyesuaian-bawah {
+    min-width: 0;
+}
+
+.table-page-container,
+.table-popup-pilih,
+.tabel-page-card,
+.tabel-page-card-pembelian,
+.tabel-card-popup-pilih-umkm,
+.tabel-card-popup-pilih-barang,
+.table-container-popup-stiker,
+.popup-stiker-list,
+.data-order-stiker-list,
+.popup-cetak-oreran-list {
+    min-height: 0;
+}
+
+.search-box,
+.date-range-box {
+    max-width: 100%;
+}
+
+.search-box input,
+.date-range-box input {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.popup {
+    padding: clamp(0.5rem, 1.5vw, 1.5rem);
+}
+
+.popup > * {
+    max-width: 100%;
+    max-height: 100%;
+    box-sizing: border-box;
+}

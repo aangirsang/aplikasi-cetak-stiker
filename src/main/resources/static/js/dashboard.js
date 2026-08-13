@@ -1,6 +1,8 @@
 let dataOrderanDashboard = [];
 let dataRincian = [];
 
+let currentPageDashboard = 1;
+
 let sortFieldTabelDashboard = "tanggal";
 let sortDirectionDashboard = "desc";
 
@@ -38,15 +40,15 @@ async function loadTabelDashboard(){
         dataOrderanDashboard = await fetchTabelDashboard();
 
         const sorted = await getsortedDataOrderan(dataOrderanDashboard);
-        const paginated = getPaginatedData(sorted, 1, 15)
+        const paginated = getPaginatedData(sorted, currentPageDashboard, 15)
 
         renderTabelOrderan(paginated);
         loadPagination(
             "pagination",
             sorted.length,
-            1,
-            5,
-            ""
+            currentPageDashboard,
+            15,
+            changePageDashboard
         );
 
 
@@ -55,6 +57,10 @@ async function loadTabelDashboard(){
         showToast(error, "error")
         dataOrderanDashboard = [];
     }
+}
+async function changePageDashboard(page){
+    currentPageDashboard = page;
+    await loadTabelDashboard();
 }
 async function fetchTabelDashboard(){
     const sekarang = new Date();

@@ -1,0 +1,40 @@
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+/* ----------- BUTTON ----------- */
+button{
+    color: var(--color-dark-variant);
+    background: var(--color-white);
+    border: var(--border-button);
+    padding: 12px 18px;
+    border-radius: var(--border-radius-2);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 1rem;
+    box-shadow: var(--box-shadow-button);;
+    transition: all 300ms ease;
+}
+
+button > span{
+    color: var(--color-dark-variant);
+}
+
+button:hover{
+    background: var(--color-primary);
+    color: var(--color-white);
+    box-shadow: none;
+}
+
+button:hover > span{
+    background: transparent;
+    color: var(--color-white);
+}
+
+.btn-disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}

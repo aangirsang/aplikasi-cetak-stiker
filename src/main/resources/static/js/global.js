@@ -1,6 +1,6 @@
-//const BASE_URL = "http://localhost:8080/api" // UNTUK CODING/PENGEMBANG
+const BASE_URL = "http://localhost:8080/api" // UNTUK CODING/PENGEMBANG
 
-const BASE_URL = "/api" // UNTUK JARINGAN
+//const BASE_URL = "/api" // UNTUK JARINGAN
 const BASE_URL_UPLOAD_GAMBAR = `${BASE_URL}/upload/gambar`
 const BASE_URL_UPLOAD_TIF = `${BASE_URL}/upload/tif`
 
@@ -45,38 +45,84 @@ function getPaginatedData(data, page, rows){
     return data.slice(start, start + rows);
 }
 
-function loadPagination(id, totalData, currentPage, rowsPerPage, callback){
-
+function loadPagination(
+    id,
+    totalData,
+    currentPage,
+    rowsPerPage,
+    callback
+) {
     const pagination = getEl(id);
 
     pagination.innerHTML = "";
 
     const totalPages =
-        Math.max(1, Math.ceil(totalData / rowsPerPage));
+        Math.max(
+            1,
+            Math.ceil(totalData / rowsPerPage)
+        );
 
     const maxVisible = 3;
 
-    pagination.innerHTML += `
-        <button
-            type="button"
-            onclick="${callback.name}(${currentPage - 1})"
-            ${currentPage === 1 ? "disabled" : ""}
-        >
-            Prev
-        </button>
-    `;
+    // ==========================================
+    // CREATE BUTTON
+    // ==========================================
+
+    function createButton(
+        text,
+        page,
+        disabled = false,
+        active = false
+    ) {
+        const button =
+            document.createElement("button");
+
+        button.type = "button";
+        button.textContent = text;
+
+        if (active) {
+            button.classList.add("active");
+        }
+
+        button.disabled = disabled;
+
+        button.addEventListener("click", () => {
+            callback(page);
+        });
+
+        return button;
+    }
+
+    // ==========================================
+    // PREV
+    // ==========================================
+
+    pagination.appendChild(
+        createButton(
+            "Prev",
+            currentPage - 1,
+            currentPage === 1
+        )
+    );
+
+    // ==========================================
+    // PAGE RANGE
+    // ==========================================
 
     let startPage =
         Math.max(
             1,
-            currentPage - Math.floor(maxVisible / 2)
+            currentPage -
+            Math.floor(maxVisible / 2)
         );
 
     let endPage =
         startPage + maxVisible - 1;
 
-    if(endPage > totalPages){
+    if (endPage > totalPages) {
+
         endPage = totalPages;
+
         startPage =
             Math.max(
                 1,
@@ -84,62 +130,88 @@ function loadPagination(id, totalData, currentPage, rowsPerPage, callback){
             );
     }
 
-    if(startPage > 1){
+    // ==========================================
+    // FIRST PAGE
+    // ==========================================
 
-        pagination.innerHTML += `
-            <button
-                type="button"
-                onclick="${callback.name}(1)">
-                1
-            </button>
-        `;
+    if (startPage > 1) {
 
-        if(startPage > 2){
-            pagination.innerHTML += `
-                <span class="pagination-dots">...</span>
-            `;
+        pagination.appendChild(
+            createButton("1", 1)
+        );
+
+        if (startPage > 2) {
+
+            const dots =
+                document.createElement("span");
+
+            dots.className =
+                "pagination-dots";
+
+            dots.textContent = "...";
+
+            pagination.appendChild(dots);
         }
     }
 
-    for(let i = startPage; i <= endPage; i++){
+    // ==========================================
+    // NUMBER
+    // ==========================================
 
-        pagination.innerHTML += `
-            <button
-                type="button"
-                class="${i === currentPage ? "active" : ""}"
-                onclick="${callback.name}(${i})"
-            >
-                ${i}
-            </button>
-        `;
+    for (
+        let i = startPage;
+        i <= endPage;
+        i++
+    ) {
+
+        pagination.appendChild(
+            createButton(
+                i,
+                i,
+                false,
+                i === currentPage
+            )
+        );
     }
 
-    if(endPage < totalPages){
+    // ==========================================
+    // LAST PAGE
+    // ==========================================
 
-        if(endPage < totalPages - 1){
-            pagination.innerHTML += `
-                <span class="pagination-dots">...</span>
-            `;
+    if (endPage < totalPages) {
+
+        if (endPage < totalPages - 1) {
+
+            const dots =
+                document.createElement("span");
+
+            dots.className =
+                "pagination-dots";
+
+            dots.textContent = "...";
+
+            pagination.appendChild(dots);
         }
 
-        pagination.innerHTML += `
-            <button
-                type="button"
-                onclick="${callback.name}(${totalPages})">
-                ${totalPages}
-            </button>
-        `;
+        pagination.appendChild(
+            createButton(
+                totalPages,
+                totalPages
+            )
+        );
     }
 
-    pagination.innerHTML += `
-        <button
-            type="button"
-            onclick="${callback.name}(${currentPage + 1})"
-            ${currentPage === totalPages ? "disabled" : ""}
-        >
-            Next
-        </button>
-    `;
+    // ==========================================
+    // NEXT
+    // ==========================================
+
+    pagination.appendChild(
+        createButton(
+            "Next",
+            currentPage + 1,
+            currentPage === totalPages
+        )
+    );
 }
 
 function togglePassword(inputId, button) {
