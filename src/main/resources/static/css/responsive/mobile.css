@@ -316,7 +316,8 @@
         min-width: 0;
     }
 
-
+    .search-bar-pilih,
+    .search-bar-non-date,
     .search-bar-date {
 
         width: 100%;
@@ -329,8 +330,8 @@
     }
 
 
-    .search-bar-date .search-box,
-    .search-bar-date .date-range-box {
+    .search-box,
+    .date-range-box {
 
         width: 100%;
 
@@ -338,7 +339,7 @@
     }
 
 
-    .search-bar-date .search-bar-buttons {
+    .search-bar-buttons {
 
         width: 100%;
 
@@ -614,50 +615,6 @@
     }
 
 
-    /* =====================================================
-       DATA STIKER
-       ===================================================== */
-
-    .content-popup-data-stiker {
-
-        width: 95vw;
-        max-width: 95vw;
-
-        height: 90vh;
-        max-height: 94vh;
-
-        overflow-y: auto;
-    }
-
-
-    .form-stiker-grid {
-
-        width: 100%;
-
-        grid-template-columns: 1fr;
-
-        gap: 1rem;
-    }
-
-
-    .form-stiker-kiri,
-    .form-stiker-tengah,
-    .form-stiker-kanan {
-
-        width: 100%;
-
-        height: auto;
-
-        min-height: 0;
-
-        margin-top: 0;
-    }
-
-
-    .input-ukuran {
-
-        grid-template-columns: 1fr;
-    }
 
 
     /* =====================================================
@@ -670,7 +627,7 @@
         max-width: 95vw;
 
         height: 90vh;
-        max-height: 94vh;
+        max-height: 90vh;
 
         overflow-y: auto;
     }
@@ -829,7 +786,6 @@
         height:
                 clamp(16rem, 35vh, 23rem);
     }
-
 
     /* =====================================================
        POPUP DOWNLOAD
@@ -1171,7 +1127,7 @@
         max-width: 97vw;
 
         height: 96vh;
-        max-height: 96vh;
+        max-height: 90vh;
 
         padding: 0.75rem;
     }

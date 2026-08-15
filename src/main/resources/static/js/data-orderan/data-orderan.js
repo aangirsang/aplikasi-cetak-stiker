@@ -139,7 +139,7 @@ function tampilPopupCetakOrderan(id) {
 function isiPopupOrderan() {
     selectUmkm = {
         id: selectOrderan.dataUmkmId,
-        namaUmkm: selectOrderan.namaUmkm,
+        namaUsaha: selectOrderan.namaUmkm,
         namaPemilik: selectOrderan.namaPemilik,
         alamat: selectOrderan.alamat,
         instagram: selectOrderan.instagram,
@@ -255,7 +255,7 @@ function renderListStikerDataOrder(){
         rincian.map(rinci => `
         <div class="item-card"
         id="item-card-${rinci.stikerId}"
-        onclick="lihatStiker(${rinci.stikerId})">
+        onclick="lihatStikerOrderan('${rinci.stikerId}')">
 
             <div class="stiker-image">
                 <img
@@ -416,6 +416,18 @@ function updateTotalJumlahDataOrder(){
 
     getEl("data-order-jumlah").textContent =
         `${total} Lembar`;
+}
+async function lihatStikerOrderan(id){
+
+    const response = await fetch(`${BASE_URL_STIKER}/${id}`);
+
+    if(!response.ok){
+        return showToast("Gagal memuat data stiker!!","error");
+    }
+
+    const stiker = await response.json();
+
+    showPopupLihatStiker(stiker);
 }
 
 //TABEL
@@ -977,3 +989,4 @@ window.toggleDetailOrderan = toggleDetailOrderan;
 window.showPopupOrderan = showPopupOrderan;
 window.tampilPopupCetakOrderan = tampilPopupCetakOrderan;
 window.konfirmasiHapusDataOrderan = konfirmasiHapusDataOrderan;
+window.lihatStikerOrderan = lihatStikerOrderan;

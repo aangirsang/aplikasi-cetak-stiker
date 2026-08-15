@@ -8,8 +8,14 @@
     border-radius: 12px;
     background: var(--color-background);
 
-    width: 60vw;
-    height: 76vh;
+    width: 60rem;
+
+    height: 50rem;
+
+    max-height: 90vh;
+
+    box-sizing: border-box;
+    overflow-y: auto;
 
     transform: translateY(-60px);
     transition: transform .25s ease;

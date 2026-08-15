@@ -12,33 +12,78 @@
 
     flex-wrap: wrap;
 }
+.search-bar-pilih {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 20px;
+
+    flex-wrap: wrap;
+}
+
+/* =========================================================
+   SEARCH BOX
+   ========================================================= */
 
 .search-box {
     background: var(--color-white-input);
+
     width: 300px;
 
     display: flex;
     align-items: center;
 
-
     padding: 10px 15px;
+
     border-radius: var(--border-radius-2);
 
     box-shadow: var(--box-shadow-button);
+
     transition: all 300ms ease;
+
+    box-sizing: border-box;
 }
+
 .search-box:hover,
 .date-range-box:hover {
     box-shadow: none;
 }
 
-.search-box input{
-    border: none;
-    outline: none;
-    background: transparent;
+
+/* ICON */
+.search-box > span {
+    flex-shrink: 0;
+}
+
+
+/* LABEL mengambil seluruh sisa ruang */
+.search-box > label {
+    flex: 1 1 auto;
+
+    min-width: 0;
 
     margin-left: 10px;
-    width: 15rem;
+}
+
+
+/* INPUT memenuhi LABEL */
+.search-box > label > input {
+    display: block;
+
+    width: 100%;
+    min-width: 0;
+
+    margin: 0;
+
+    padding: 0;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    box-sizing: border-box;
 }
 
 .search-bar-date {
@@ -51,19 +96,29 @@
     margin-bottom: 20px;
 }
 
-.search-bar-date .search-box{
+.search-bar-non-date {
+    display: grid;
+    grid-template-columns: 300px auto;
+    align-items: center;
+
+    gap: 1rem;
+
+    margin-bottom: 20px;
+}
+
+.search-box{
     justify-self: start;
 }
 
-.date-range-box input{
-    width: 25rem;
+.date-range-box > input {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
 
-    display: flex;
     text-align: center;
-
 }
 
-.search-bar-date .date-range-box{
+.date-range-box{
     justify-self: center;
 }
 
@@ -80,7 +135,7 @@
     align-items: center;
 }
 
-.search-bar-date .search-bar-buttons {
+.search-bar-buttons {
     margin-left: auto;
     display: flex;
     gap: 1rem;

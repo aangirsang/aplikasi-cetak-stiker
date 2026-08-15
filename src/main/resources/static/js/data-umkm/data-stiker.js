@@ -424,6 +424,8 @@ function isiDataStiker(stiker) {
         stiker.pathGambar2
             ? `${BASE_URL}${stiker.pathGambar2}`
             : noImageStiker;
+
+    tampilkanPreviewLayoutCetak(selectedStiker);
 }
 function tutupPopupStiker() {
     getEl("popup-data-stiker").classList.remove("show");
@@ -908,6 +910,153 @@ async function hapusDataStiker(id) {
     }
 }
 
+// PREVIEW LAYOUT CETAK
+function tampilkanPreviewLayoutCetak(data) {
+
+    const container =
+        document.getElementById(
+            "preview-layout-container"
+        );
+
+    const paper =
+        container.querySelector(
+            ".preview-paper"
+        );
+
+    const gambar =
+        document.getElementById(
+            "preview-layout-gambar"
+        );
+
+    const garis =
+        document.getElementById(
+            "preview-garis-bawah"
+        );
+
+
+    if (!container || !paper || !gambar) {
+        console.error(
+            "Element preview layout tidak ditemukan!"
+        );
+
+        return;
+    }
+
+
+    // =====================================================
+    // DATA KERTAS
+    // =====================================================
+
+    const paperWidth =
+        Number(data.lebarKertas);
+
+    const paperHeight =
+        Number(data.tinggiKertas);
+
+
+    // =====================================================
+    // DATA GAMBAR
+    // =====================================================
+
+    const imageWidth =
+        Number(data.imageWidthMM);
+
+    const imageHeight =
+        Number(data.imageHeightMM);
+
+
+    // =====================================================
+    // OFFSET
+    // =====================================================
+
+    const offsetX =
+        Number(data.offsetX);
+
+    const offsetY =
+        Number(data.offsetY);
+
+
+    // =====================================================
+    // ASPECT RATIO KERTAS
+    // =====================================================
+
+    paper.style.aspectRatio =
+        `${paperWidth} / ${paperHeight}`;
+
+
+    // =====================================================
+    // SOURCE GAMBAR
+    // =====================================================
+
+    gambar.src =
+        `${BASE_URL}${data.pathTIF}.webp`;
+
+
+    gambar.onload = function () {
+
+        // =================================================
+        // UKURAN ACTUAL PAPER
+        // =================================================
+
+        const paperPixelWidth =
+            paper.clientWidth;
+
+        const paperPixelHeight =
+            paper.clientHeight;
+
+
+        // =================================================
+        // KONVERSI MM → PX
+        // =================================================
+
+        const scaleX =
+            paperPixelWidth /
+            paperWidth;
+
+        const scaleY =
+            paperPixelHeight /
+            paperHeight;
+
+
+        // =================================================
+        // POSISI GAMBAR
+        // =================================================
+
+        const imageX =
+            offsetX * scaleX;
+
+        const imageY =
+            offsetY * scaleY;
+
+
+        // =================================================
+        // UKURAN GAMBAR
+        // =================================================
+
+        const imagePixelWidth =
+            imageWidth * scaleX;
+
+        const imagePixelHeight =
+            imageHeight * scaleY;
+
+
+        // =================================================
+        // APPLY
+        // =================================================
+
+        gambar.style.width =
+            `${imagePixelWidth}px`;
+
+        gambar.style.height =
+            `${imagePixelHeight}px`;
+
+        gambar.style.left =
+            `${imageX}px`;
+
+        gambar.style.top =
+            `${imageY}px`;
+    };
+}
 // DOWNLOAD DATA
 async function downloadDataStiker() {
     const data = await fetchDataStiker();

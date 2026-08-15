@@ -2,6 +2,7 @@
 let selectedPopupLihatStiker = null;
 
 async function initPopupLihatStiker() {
+    await initPopupLihatGambar();
 
     // cek agar tidak dimuat dua kali
     if(document.getElementById("popup-lihat-stiker")){
@@ -27,6 +28,12 @@ async function initPopupLihatStiker() {
             tutupPopupLihatStiker();
         }
     });
+
+    getEl("lihat-stiker-preview-gambar-1")
+        .addEventListener("click", () => lihatGambarStiker(1));
+
+    getEl("lihat-stiker-preview-gambar-2")
+        .addEventListener("click", () => lihatGambarStiker(2));
 }
 
 function showPopupLihatStiker(selectedStiker) {
@@ -54,7 +61,7 @@ function tutupPopupLihatStiker() {
 }
 
 function setPreviewGambarPopupLihatStiker(index, path) {
-    const img = document.getElementById(`preview-gambar-${index}`);
+    const img = document.getElementById(`lihat-stiker-preview-gambar-${index}`);
 
     if (path) {
         img.src = `${BASE_URL}${path}`;
@@ -68,13 +75,24 @@ function setPreviewGambarPopupLihatStiker(index, path) {
 //GAMBAR
 function setDefaultGambarStiker(index){
 
-    const img = getEl(`preview-gambar-${index}`);
+    const img = getEl(`lihat-stiker-preview-gambar-${index}`);
 
     if(img.src.startsWith("blob:")){
         URL.revokeObjectURL(img.src);
     }
 
     img.src = noImageStiker;
+}
+function lihatGambarStiker(index){
+    const img = document.getElementById(
+        `lihat-stiker-preview-gambar-${index}`
+    );
+
+    if(!img.src || img.src === noImageStiker) return;
+
+    document.getElementById("img-fullscreen").src = img.src;
+
+    showPopupLihatGambar();
 }
 
 window.showPopupLihatStiker = showPopupLihatStiker;

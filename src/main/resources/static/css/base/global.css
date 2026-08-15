@@ -121,3 +121,16 @@ input, text, textarea, button, select {
         transform: rotate(360deg);
     }
 }
+
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c5c9d6;
+    border-radius: 10px;
+}

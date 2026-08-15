@@ -61,7 +61,7 @@ async function showPopupPilihStiker(onSelect, selectedUmkm, selectedStiker = [])
 
     getEl("cari-popup-pilih-stiker").value = "";
 
-    getEl("popup-pilih-stiker-title").textContent = `Data Stiker ${selectUmkm.namaUsaha}`
+    getEl("popup-pilih-stiker-title").textContent = `Data Stiker: ${selectUmkm.namaUsaha}`
 
     await loadTablePopupStiker(true);
 

@@ -109,3 +109,8 @@
     height: 30rem;
     object-fit: contain;
 }
+
+#lihat-stiker-preview-gambar-1,
+#lihat-stiker-preview-gambar-2{
+    cursor: pointer;
+}

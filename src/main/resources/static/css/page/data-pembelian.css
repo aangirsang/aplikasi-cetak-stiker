@@ -2,15 +2,19 @@
    DATA PEMBELIAN
    ========================================================= */
 
-/*data-barang.css*/
-/*data-pembelian.css*/
 .content-popup-data-pembelian {
     padding: var(--card-padding);
     border-radius: 12px;
     background: var(--color-background);
 
-    width: 70vw;
-    height: 88vh;
+    width: 70rem;
+    max-width: 90vw;
+
+    height: 45rem;
+    max-height: 90vh;
+
+    box-sizing: border-box;
+    overflow-y: auto;
 
     transform: translateY(-60px);
     transition: transform .25s ease;
@@ -82,7 +86,7 @@
 }
 
 .tabel-page-popup {
-    height: 59vh;
+    height: 25rem;
     background: var(--color-white);
     padding: var(--card-padding);
     padding-bottom: 1rem;
@@ -94,7 +98,7 @@
 }
 
 .tabel-page-card-pembelian {
-    height: 55vh;
+    height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
 }

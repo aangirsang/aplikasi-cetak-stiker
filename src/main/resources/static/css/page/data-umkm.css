@@ -9,7 +9,13 @@
     background: var(--color-background);
 
     width: 90rem;
-    height: 41rem;
+    max-width: 90vw;
+
+    height: 31rem;
+    max-height: 95vh;
+
+    box-sizing: border-box;
+    overflow-y: auto;
 
     transform: translateY(-60px);
     transition: transform .25s ease;
