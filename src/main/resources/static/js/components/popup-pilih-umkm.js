@@ -85,15 +85,12 @@ async function showPopupPilihUmkm(onSelect, selectedUmkm = null) {
         .getElementById("popup-pilih-umkm")
         .classList.add("show");
 }
-
 function tutupPopupPilihUmkm() {
 
     document
         .getElementById("popup-pilih-umkm")
         .classList.remove("show");
 }
-
-
 function pilihPopupUmkm(id){
     const umkm = dataUmkm.find(item => item.id === id);
     if(!umkm) return;

@@ -540,6 +540,8 @@ function bersihPopupDataStiker() {
             input.checked = false;
         });
     setKodeStiker("")
+
+    getEl("preview-layout-gambar").src = noImageStiker;
 }
 function setKodeStiker(kode){
     const inputKode = document.getElementById("popup-data-stiker-kode");
@@ -911,12 +913,24 @@ async function hapusDataStiker(id) {
 }
 
 // PREVIEW LAYOUT CETAK
+// =========================================================
+// PREVIEW LAYOUT CETAK
+// =========================================================
 function tampilkanPreviewLayoutCetak(data) {
 
     const container =
         document.getElementById(
             "preview-layout-container"
         );
+
+    if (!container) {
+        console.error(
+            "Element preview-layout-container tidak ditemukan!"
+        );
+
+        return;
+    }
+
 
     const paper =
         container.querySelector(
@@ -934,7 +948,8 @@ function tampilkanPreviewLayoutCetak(data) {
         );
 
 
-    if (!container || !paper || !gambar) {
+    if (!paper || !gambar) {
+
         console.error(
             "Element preview layout tidak ditemukan!"
         );
@@ -955,7 +970,28 @@ function tampilkanPreviewLayoutCetak(data) {
 
 
     // =====================================================
-    // DATA GAMBAR
+    // VALIDASI DATA KERTAS
+    // =====================================================
+
+    if (
+        !Number.isFinite(paperWidth) ||
+        !Number.isFinite(paperHeight) ||
+        paperWidth <= 0 ||
+        paperHeight <= 0
+    ) {
+
+        console.warn(
+            "Ukuran kertas tidak valid:",
+            paperWidth,
+            paperHeight
+        );
+
+        return;
+    }
+
+
+    // =====================================================
+    // DATA GAMBAR ASLI
     // =====================================================
 
     const imageWidth =
@@ -966,14 +1002,14 @@ function tampilkanPreviewLayoutCetak(data) {
 
 
     // =====================================================
-    // OFFSET
+    // OFFSET GAMBAR
     // =====================================================
 
     const offsetX =
-        Number(data.offsetX);
+        Number(data.offsetX) || 0;
 
     const offsetY =
-        Number(data.offsetY);
+        Number(data.offsetY) || 0;
 
 
     // =====================================================
@@ -985,28 +1021,101 @@ function tampilkanPreviewLayoutCetak(data) {
 
 
     // =====================================================
-    // SOURCE GAMBAR
+    // RESET STYLE GAMBAR
     // =====================================================
 
-    gambar.src =
-        `${BASE_URL}${data.pathTIF}.webp`;
+    gambar.style.position = "absolute";
+    gambar.style.maxWidth = "none";
+    gambar.style.maxHeight = "none";
+    gambar.style.display = "block";
 
 
-    gambar.onload = function () {
+    // =====================================================
+    // FUNGSI MENDAPATKAN UKURAN PIXEL KERTAS
+    // =====================================================
 
-        // =================================================
-        // UKURAN ACTUAL PAPER
-        // =================================================
+    function getPaperPixelSize() {
 
-        const paperPixelWidth =
+        let width =
             paper.clientWidth;
 
-        const paperPixelHeight =
+        let height =
             paper.clientHeight;
 
 
+        // -------------------------------------------------
+        // Jika tinggi belum tersedia
+        // hitung berdasarkan aspect ratio
+        // -------------------------------------------------
+
+        if (
+            width > 0 &&
+            height <= 0
+        ) {
+
+            height =
+                width *
+                paperHeight /
+                paperWidth;
+        }
+
+
+        // -------------------------------------------------
+        // Jika width belum tersedia
+        // hitung berdasarkan aspect ratio
+        // -------------------------------------------------
+
+        if (
+            height > 0 &&
+            width <= 0
+        ) {
+
+            width =
+                height *
+                paperWidth /
+                paperHeight;
+        }
+
+
+        return {
+            width,
+            height
+        };
+    }
+
+
+    // =====================================================
+    // APPLY POSISI GAMBAR ASLI
+    // =====================================================
+
+    function applyImagePosition() {
+
+        const paperSize =
+            getPaperPixelSize();
+
+        const paperPixelWidth =
+            paperSize.width;
+
+        const paperPixelHeight =
+            paperSize.height;
+
+
+        if (
+            paperPixelWidth <= 0 ||
+            paperPixelHeight <= 0
+        ) {
+
+            console.warn(
+                "Ukuran paper belum tersedia:",
+                paperSize
+            );
+
+            return;
+        }
+
+
         // =================================================
-        // KONVERSI MM → PX
+        // SCALE MM → PX
         // =================================================
 
         const scaleX =
@@ -1019,7 +1128,7 @@ function tampilkanPreviewLayoutCetak(data) {
 
 
         // =================================================
-        // POSISI GAMBAR
+        // POSISI
         // =================================================
 
         const imageX =
@@ -1030,7 +1139,7 @@ function tampilkanPreviewLayoutCetak(data) {
 
 
         // =================================================
-        // UKURAN GAMBAR
+        // UKURAN
         // =================================================
 
         const imagePixelWidth =
@@ -1055,8 +1164,406 @@ function tampilkanPreviewLayoutCetak(data) {
 
         gambar.style.top =
             `${imageY}px`;
+
+
+        console.log(
+            "Posisi gambar asli:",
+            {
+                paperPixelWidth,
+                paperPixelHeight,
+                imagePixelWidth,
+                imagePixelHeight,
+                imageX,
+                imageY
+            }
+        );
+    }
+
+
+    // =====================================================
+    // APPLY POSISI FALLBACK
+    // =====================================================
+
+    function applyFallbackPosition() {
+
+        const paperSize =
+            getPaperPixelSize();
+
+        const paperPixelWidth =
+            paperSize.width;
+
+        const paperPixelHeight =
+            paperSize.height;
+
+
+        if (
+            paperPixelWidth <= 0 ||
+            paperPixelHeight <= 0
+        ) {
+
+            console.warn(
+                "Paper belum memiliki ukuran pixel."
+            );
+
+            return;
+        }
+
+
+        // =================================================
+        // UKURAN MAKSIMUM FALLBACK
+        // =================================================
+
+        const maxWidth =
+            paperPixelWidth * 0.5;
+
+        const maxHeight =
+            paperPixelHeight * 0.5;
+
+
+        // =================================================
+        // UKURAN NATURAL SVG
+        // =================================================
+
+        const naturalWidth =
+            gambar.naturalWidth;
+
+        const naturalHeight =
+            gambar.naturalHeight;
+
+
+        if (
+            naturalWidth <= 0 ||
+            naturalHeight <= 0
+        ) {
+
+            console.warn(
+                "Ukuran natural fallback tidak valid:",
+                naturalWidth,
+                naturalHeight
+            );
+
+            return;
+        }
+
+
+        // =================================================
+        // SCALE PROPORSIONAL
+        // =================================================
+
+        const scale =
+            Math.min(
+                maxWidth / naturalWidth,
+                maxHeight / naturalHeight
+            );
+
+
+        const width =
+            naturalWidth * scale;
+
+        const height =
+            naturalHeight * scale;
+
+
+        // =================================================
+        // POSISI TENGAH
+        // =================================================
+
+        const left =
+            (paperPixelWidth - width) / 2;
+
+        const top =
+            (paperPixelHeight - height) / 2;
+
+
+        // =================================================
+        // APPLY
+        // =================================================
+
+        gambar.style.width =
+            `${width}px`;
+
+        gambar.style.height =
+            `${height}px`;
+
+        gambar.style.left =
+            `${left}px`;
+
+        gambar.style.top =
+            `${top}px`;
+
+
+        console.log(
+            "Menampilkan noImageStiker"
+        );
+
+        console.log(
+            "Paper:",
+            paperPixelWidth,
+            paperPixelHeight
+        );
+
+        console.log(
+            "Fallback width:",
+            width
+        );
+
+        console.log(
+            "Fallback height:",
+            height
+        );
+
+        console.log(
+            "Fallback left:",
+            left
+        );
+
+        console.log(
+            "Fallback top:",
+            top
+        );
+    }
+
+
+    // =====================================================
+    // SOURCE GAMBAR
+    // =====================================================
+
+    const pathTIF =
+        typeof data.pathTIF === "string"
+            ? data.pathTIF.trim()
+            : "";
+
+
+    const urlGambar =
+        pathTIF
+            ? `${BASE_URL}${pathTIF}.webp`
+            : null;
+
+
+    console.log(
+        "pathTIF:",
+        pathTIF
+    );
+
+    console.log(
+        "urlGambar:",
+        urlGambar
+    );
+
+    console.log(
+        "noImageStiker:",
+        noImageStiker
+    );
+
+
+    // =====================================================
+    // FLAG FALLBACK
+    // =====================================================
+
+    let menggunakanNoImage =
+        false;
+
+
+    // =====================================================
+    // ON LOAD
+    // =====================================================
+
+    gambar.onload = function () {
+
+        console.log(
+            menggunakanNoImage
+                ? "noImageStiker berhasil dimuat:"
+                : "Gambar stiker berhasil dimuat:",
+            gambar.src
+        );
+
+
+        console.log(
+            "naturalWidth:",
+            gambar.naturalWidth
+        );
+
+        console.log(
+            "naturalHeight:",
+            gambar.naturalHeight
+        );
+
+
+        // =================================================
+        // FALLBACK
+        // =================================================
+
+        if (menggunakanNoImage) {
+
+            applyFallbackPosition();
+
+            return;
+        }
+
+
+        // =================================================
+        // GAMBAR ASLI
+        // =================================================
+
+        // Jika data ukuran gambar tidak valid,
+        // jangan gunakan ukuran 0 x 0.
+
+        if (
+            !Number.isFinite(imageWidth) ||
+            !Number.isFinite(imageHeight) ||
+            imageWidth <= 0 ||
+            imageHeight <= 0
+        ) {
+
+            console.warn(
+                "Ukuran gambar asli tidak valid:",
+                imageWidth,
+                imageHeight
+            );
+
+
+            // Gunakan ukuran natural gambar
+            // dengan batas maksimal 80% paper.
+
+            const paperSize =
+                getPaperPixelSize();
+
+            const maxWidth =
+                paperSize.width * 0.8;
+
+            const maxHeight =
+                paperSize.height * 0.8;
+
+
+            const naturalWidth =
+                gambar.naturalWidth;
+
+            const naturalHeight =
+                gambar.naturalHeight;
+
+
+            if (
+                naturalWidth > 0 &&
+                naturalHeight > 0
+            ) {
+
+                const scale =
+                    Math.min(
+                        maxWidth / naturalWidth,
+                        maxHeight / naturalHeight
+                    );
+
+
+                const width =
+                    naturalWidth * scale;
+
+                const height =
+                    naturalHeight * scale;
+
+
+                const left =
+                    (paperSize.width - width) / 2;
+
+                const top =
+                    (paperSize.height - height) / 2;
+
+
+                gambar.style.width =
+                    `${width}px`;
+
+                gambar.style.height =
+                    `${height}px`;
+
+                gambar.style.left =
+                    `${left}px`;
+
+                gambar.style.top =
+                    `${top}px`;
+            }
+
+
+            return;
+        }
+
+
+        applyImagePosition();
     };
+
+
+    // =====================================================
+    // ON ERROR
+    // =====================================================
+
+    gambar.onerror = function () {
+
+        console.warn(
+            "Gambar gagal dimuat:",
+            gambar.src
+        );
+
+
+        // -------------------------------------------------
+        // Jika fallback juga gagal
+        // -------------------------------------------------
+
+        if (menggunakanNoImage) {
+
+            console.error(
+                "noImageStiker juga gagal dimuat:",
+                noImageStiker
+            );
+
+            return;
+        }
+
+
+        // -------------------------------------------------
+        // Aktifkan fallback
+        // -------------------------------------------------
+
+        menggunakanNoImage =
+            true;
+
+
+        console.log(
+            "Menggunakan noImageStiker:",
+            noImageStiker
+        );
+
+
+        gambar.src =
+            noImageStiker;
+    };
+
+
+    // =====================================================
+    // MULAI LOAD
+    // =====================================================
+
+    if (urlGambar) {
+
+        console.log(
+            "Memuat gambar asli:",
+            urlGambar
+        );
+
+        gambar.src =
+            urlGambar;
+
+    } else {
+
+        console.log(
+            "pathTIF kosong → menggunakan noImageStiker"
+        );
+
+        menggunakanNoImage =
+            true;
+
+        gambar.src =
+            noImageStiker;
+    }
 }
+
 // DOWNLOAD DATA
 async function downloadDataStiker() {
     const data = await fetchDataStiker();

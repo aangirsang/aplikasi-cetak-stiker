@@ -130,3 +130,11 @@
 .image-box .input-file{
     display: none;
 }
+
+/*TABEL*/
+.penyesuaian-row:hover td,
+.data-riwayat-row:hover td,
+.barang-row:hover td {
+    color: var(--color-primary);
+    transform: translateX(6px);
+}

@@ -9,8 +9,9 @@
 
 .content-popup-data-pengguna{
     width: 60rem;
+    max-width: 90vw;
 
-    height: 65vh;
+    height: 44rem;
     max-height: 90vh;
 
     padding: var(--card-padding);

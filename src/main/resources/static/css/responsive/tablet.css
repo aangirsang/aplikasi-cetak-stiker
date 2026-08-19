@@ -11,7 +11,20 @@
     }
 
     .dashboard {
-        grid-template-columns: minmax(0, 1fr) minmax(240px, 0.45fr);
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-kanan {
+        width: auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .dashboard-umkm-order-bulanan,
+    .dashboard-data-order-bulanan{
+        margin-top: 0;
+        height: 30rem;
     }
 
     .content-popup-data-stiker {
@@ -160,8 +173,7 @@
     }
 
     .dashboard-kanan {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr;
         gap: 1rem;
     }
 

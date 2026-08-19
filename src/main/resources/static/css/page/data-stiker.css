@@ -352,6 +352,8 @@
     width: min(100%, 500px);
     aspect-ratio: 297 / 420;
 
+    flex-shrink: 0;
+
     background: white;
 
     border: 1px solid #cfcfcf;
@@ -359,6 +361,8 @@
     box-shadow: 0 4px 15px rgba(0, 0, 0, .15);
 
     overflow: hidden;
+
+    box-sizing: border-box;
 }
 
 
@@ -376,6 +380,8 @@
 
     user-select: none;
     pointer-events: none;
+
+    z-index: 2;
 }
 
 
@@ -394,4 +400,6 @@
     border-top: 1px dashed red;
 
     pointer-events: none;
+
+    z-index: 3;
 }

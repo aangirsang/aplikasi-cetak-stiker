@@ -34,20 +34,8 @@ function showPopupCetakOrderan(orderan) {
     getEl("popup-cetak-orderan-jumlah")
         .textContent = `${orderan.totalStiker} Lembar`;
 
-    getEl("cetak-order-nama-usaha")
-        .value = orderan.namaUmkm;
-
-    getEl("cetak-order-nama-pemilik")
-        .value = orderan.namaPemilik;
-
-    getEl("cetak-order-instagram")
-        .value = orderan.instagram;
-
-    getEl("cetak-order-kontak")
-        .value = orderan.noTelpon;
-
-    getEl("cetak-order-alamat")
-        .value = orderan.alamat;
+    getEl("popup-cetak-orderan-umkm").textContent =
+        `${orderan.namaPemilik} - ${orderan.namaUmkm}`;
 
     renderListStikerCetakOrder(orderan.rincian)
 

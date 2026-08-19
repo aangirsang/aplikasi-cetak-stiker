@@ -30,11 +30,12 @@ async function loadPage(page) {
         "master-data/data-pengguna": "Data Pengguna",
         "master-data/master-data": "Master Data",
         "data-persediaan/data-pembelian": "Data Pembelian",
+        "data-persediaan/data-penyesuaian": "Data Penyesuaian",
         "data-persediaan/data-barang": "Data Barang",
         "data-persediaan/data-riwayat-stok": "Riwayat Stok",
         "data-umkm/data-umkm": "Data UMKM",
         "data-umkm/data-stiker": "Data Stiker",
-        orderan: "Data Orderan"
+        "data-orderan": "Data Orderan"
     };
 
     try {
@@ -47,7 +48,7 @@ async function loadPage(page) {
 
         content.innerHTML = await response.text();
 
-        title.textContent = pageTitles[page] ?? "Aplikasi";
+        title.textContent = pageTitles[page] ?? "Aplikasi Rumah BUMN Batubara";
         document.title = title.textContent;
 
         const pageHandlers = {
