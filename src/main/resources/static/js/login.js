@@ -1,5 +1,5 @@
 const loginOverlay = getEl("login-overlay");
-let currentUser = null;
+let currentUser;
 
 try {
 

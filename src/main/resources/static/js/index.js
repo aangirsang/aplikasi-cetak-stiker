@@ -107,9 +107,20 @@ async function loadPage(page) {
             await fetch(`pages/${page}.html`);
 
         if (!response.ok) {
-            throw new Error(
-                `HTTP ${response.status}`
+
+            content.innerHTML = `
+            <div class="card">
+                <h2>Error</h2>
+                <p>Halaman gagal dimuat</p>
+                <p>${e.message}</p>
+            </div>
+            `;
+
+            return showToast(
+                `HTTP ${response.status}`,
+                "error"
             );
+
         }
 
         content.innerHTML =
@@ -150,21 +161,7 @@ async function loadPage(page) {
         pageHandlers[page]?.();
 
     } catch (e) {
-
         console.error(e);
-
-        content.innerHTML = `
-            <div class="card">
-                <h2>Error</h2>
-                <p>Halaman gagal dimuat</p>
-                <p>${e.message}</p>
-            </div>
-        `;
-
-        showToast(
-            e.message,
-            "error"
-        );
     }
 }
 

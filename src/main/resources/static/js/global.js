@@ -422,8 +422,11 @@ async function cetakTIFF(id) {
 
         if (!response.ok) {
 
-            throw new Error(
-                "Gagal Memuat Data Stiker!"
+            hideLoading();
+
+            return showToast(
+                "Gagal mencetak TIFF",
+                "error"
             );
         }
 
@@ -443,17 +446,21 @@ async function cetakTIFF(id) {
         // ==================================================
 
         if (!stiker) {
+            hideLoading();
 
-            throw new Error(
-                "Data stiker tidak tersedia"
+            return showToast(
+                "Data stiker tidak tersedia",
+                "error"
             );
         }
 
 
         if (!stiker.pathTIF) {
+            hideLoading();
 
-            throw new Error(
-                "File TIFF tidak tersedia"
+            return showToast(
+                "File TIFF tidak tersedia",
+                "error"
             );
         }
 
@@ -462,10 +469,13 @@ async function cetakTIFF(id) {
             stiker.lebarKertas <= 0 ||
             stiker.tinggiKertas <= 0
         ) {
+            hideLoading();
 
-            throw new Error(
-                "Ukuran kertas tidak valid"
+            return showToast(
+                "Ukuran kertas tidak valid",
+                "error"
             );
+
         }
 
 
@@ -525,9 +535,11 @@ async function cetakTIFF(id) {
 
 
         if (!responseTiff.ok) {
+            hideLoading();
 
-            throw new Error(
-                "File TIFF tidak ditemukan"
+            return showToast(
+                "File TIFF tidak ditemukan",
+                "error"
             );
         }
 
@@ -555,9 +567,11 @@ async function cetakTIFF(id) {
             !ifds ||
             ifds.length === 0
         ) {
+            hideLoading();
 
-            throw new Error(
-                "TIFF tidak dapat dibaca"
+            return showToast(
+                "TIFF tidak dapat dibaca",
+                "error"
             );
         }
 
@@ -630,9 +644,11 @@ async function cetakTIFF(id) {
             !rgba ||
             rgba.length === 0
         ) {
+            hideLoading();
 
-            throw new Error(
-                "Gagal membaca pixel TIFF"
+            return showToast(
+                "Gagal membaca pixel TIFF",
+                "error"
             );
         }
 
@@ -750,9 +766,11 @@ async function cetakTIFF(id) {
             cropRight <= cropLeft ||
             cropBottom <= cropTop
         ) {
+            hideLoading();
 
-            throw new Error(
-                "Gambar TIFF berada di luar area kertas"
+            return showToast(
+                "Gambar TIFF berada di luar area kertas",
+                "error"
             );
         }
 
@@ -982,15 +1000,6 @@ async function cetakTIFF(id) {
             error
         );
 
-
-        hideLoading();
-
-
-        showToast(
-            error.message ||
-            "Gagal mencetak TIFF",
-            "error"
-        );
     }
 }
 

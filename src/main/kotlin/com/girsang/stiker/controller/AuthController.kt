@@ -2,7 +2,6 @@ package com.girsang.stiker.controller
 
 import com.girsang.stiker.model.dto.request.LoginRequest
 import com.girsang.stiker.repository.DataPenggunaRepository
-import com.girsang.stiker.service.master.DataPenggunaService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.servlet.http.HttpSession
