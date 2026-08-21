@@ -1,6 +1,6 @@
-const BASE_URL = "http://localhost:8080/api" // UNTUK CODING/PENGEMBANG
+//const BASE_URL = "http://localhost:8080/api" // UNTUK CODING/PENGEMBANG
 
-//const BASE_URL = "/api" // UNTUK JARINGAN
+const BASE_URL = "/api" // UNTUK JARINGAN
 const BASE_URL_UPLOAD_GAMBAR = `${BASE_URL}/upload/gambar`
 const BASE_URL_UPLOAD_TIF = `${BASE_URL}/upload/tif`
 
@@ -396,36 +396,6 @@ async function convertTifToWebp(file) {
         imageWidthMM,
         imageHeightMM
     };
-}
-function createMetadataFile(
-    kodeStiker,
-    width,
-    height,
-    dpiX,
-    dpiY,
-    imageWidthMM,
-    imageHeightMM
-) {
-
-    const metadata = {
-        width,
-        height,
-        dpiX,
-        dpiY,
-        imageWidthMM,
-        imageHeightMM
-    };
-
-    return new File(
-        [
-            JSON.stringify(metadata, null, 2)
-        ],
-        `${kodeStiker}.json`,
-        {
-            type: "application/json"
-        }
-    );
-
 }
 
 // CETAK TIFF
@@ -942,173 +912,54 @@ async function cetakTIFF(id) {
         // OPEN PRINT WINDOW
         // ==================================================
 
-        const printWindow =
-            window.open(
-                "",
-                "_blank"
-            );
+        const printWindow = window.open(
+            "./cetak-tif/print-tiff.html",
+            "_blank"
+        );
 
+        printWindow.onload = () => {
 
-        if (!printWindow) {
+            const doc = printWindow.document;
 
-            throw new Error(
-                "Popup diblokir oleh browser"
-            );
+            // ukuran kertas
+            const style = doc.createElement("style");
+
+            style.innerHTML = `
+        @page{
+            size:${stiker.lebarKertas}mm ${stiker.tinggiKertas}mm;
+            margin:0;
         }
 
+        html,
+        body,
+        .print-page{
 
-        // ==================================================
-        // HTML PRINT
-        // ==================================================
+            width:${stiker.lebarKertas}mm;
+            height:${stiker.tinggiKertas}mm;
+        }
 
-        printWindow.document.open();
+        #print-image{
 
+            left:${cropLeft * 25.4 / dpiX}mm;
+            top:${cropTop * 25.4 / dpiY}mm;
 
-        printWindow.document.write(`
-<!DOCTYPE html>
+            width:${imageWidthMM}mm;
+            height:${imageHeightMM}mm;
+        }
+    `;
 
-<html>
+            doc.head.appendChild(style);
 
-<head>
+            doc.getElementById("print-image").src = pngData;
 
-<meta charset="UTF-8">
+            setTimeout(() => {
 
-<title>Cetak TIFF</title>
+                printWindow.focus();
+                printWindow.print();
 
+            }, 500);
 
-<style>
-
-@page {
-
-    size:
-        ${stiker.lebarKertas}mm
-        ${stiker.tinggiKertas}mm;
-
-    margin: 0;
-
-}
-
-
-html,
-body {
-
-    margin: 0;
-    padding: 0;
-
-    width:
-        ${stiker.lebarKertas}mm;
-
-    height:
-        ${stiker.tinggiKertas}mm;
-
-    overflow: hidden;
-
-}
-
-
-.print-page {
-
-    position: relative;
-
-    width:
-        ${stiker.lebarKertas}mm;
-
-    height:
-        ${stiker.tinggiKertas}mm;
-
-    margin: 0;
-
-    padding: 0;
-
-}
-
-
-.print-image {
-
-    position: absolute;
-
-    left:
-        ${cropLeft * 25.4 / dpiX}mm;
-
-    top:
-        ${cropTop * 25.4 / dpiY}mm;
-
-    width:
-        ${imageWidthMM}mm;
-
-    height:
-        ${imageHeightMM}mm;
-
-    display: block;
-
-    margin: 0;
-
-    padding: 0;
-
-    image-rendering: auto;
-
-}
-
-
-@media print {
-
-    html,
-    body {
-
-        margin: 0;
-        padding: 0;
-
-    }
-
-}
-
-</style>
-
-</head>
-
-
-<body>
-
-
-<div class="print-page">
-
-    <img
-        class="print-image"
-        src="${pngData}"
-    >
-
-</div>
-
-
-<script>
-
-window.onload = function() {
-
-    setTimeout(
-        function() {
-
-            window.focus();
-
-            window.print();
-
-        },
-        500
-    );
-
-};
-
-
-
-<\/script>
-
-
-</body>
-
-</html>
-        `);
-
-
-        printWindow.document.close();
+        };
 
 
         // ==================================================

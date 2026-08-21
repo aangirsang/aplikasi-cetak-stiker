@@ -1,9 +1,19 @@
 package com.girsang.stiker.controller
 
 import com.girsang.stiker.model.dto.request.LoginRequest
+import com.girsang.stiker.repository.DataPenggunaRepository
 import com.girsang.stiker.service.master.DataPenggunaService
+import jakarta.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletResponse
 import jakarta.servlet.http.HttpSession
 import org.springframework.http.ResponseEntity
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -12,7 +22,8 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/api/auth")
 class AuthController(
-    private val dataPenggunaService: DataPenggunaService
+    private val authenticationManager: AuthenticationManager,
+    private val repoPengguna: DataPenggunaRepository
 ) {
 
     @PostMapping("/login")
@@ -21,22 +32,44 @@ class AuthController(
         session: HttpSession
     ): ResponseEntity<Any> {
 
-        val pengguna =
-            dataPenggunaService.login(
-                request.namaPengguna,
-                request.kataSandi
-            )
-                ?: return ResponseEntity.badRequest().body(
-                    mapOf(
-                        "success" to false,
-                        "message" to "Username atau password salah"
-                    )
+        val authentication =
+            authenticationManager.authenticate(
+                UsernamePasswordAuthenticationToken(
+                    request.namaPengguna,
+                    request.kataSandi
                 )
+            )
+
+        val context =
+            SecurityContextHolder.createEmptyContext()
+
+        context.authentication = authentication
+
+        SecurityContextHolder.setContext(context)
 
         session.setAttribute(
-            "LOGIN_USER",
-            pengguna.id
+            HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+            context
         )
+
+        return ResponseEntity.ok(
+            mapOf(
+                "success" to true
+            )
+        )
+    }
+
+    @GetMapping("/me")
+    fun me(
+        authentication: Authentication
+    ): ResponseEntity<Any> {
+
+        val pengguna =
+            repoPengguna
+                .findByNamaPengguna(
+                    authentication.name
+                )
+                ?: return ResponseEntity.notFound().build()
 
         return ResponseEntity.ok(
             mapOf(
@@ -50,5 +83,37 @@ class AuthController(
                 )
             )
         )
+    }
+
+    @PostMapping("/logout")
+    fun logout(
+        request: HttpServletRequest,
+        response: HttpServletResponse
+    ): ResponseEntity<Any> {
+
+        SecurityContextLogoutHandler()
+            .logout(
+                request,
+                response,
+                SecurityContextHolder.getContext().authentication
+            )
+
+        return ResponseEntity.ok().build()
+    }
+
+    @GetMapping("/check")
+    fun check(
+        authentication: Authentication?
+    ): String {
+
+        return if (
+            authentication != null &&
+            authentication.isAuthenticated &&
+            authentication.principal != "anonymousUser"
+        ) {
+            "LOGIN"
+        } else {
+            "BELUM LOGIN"
+        }
     }
 }
