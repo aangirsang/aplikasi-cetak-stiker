@@ -89,7 +89,7 @@ async function loadPage(page) {
     await destroyCurrentPage();
 
     const pageTitles = {
-        dashboard: "Dashboard",
+        dashboard: "Dashboard Coba",
         "master-data/data-pengguna": "Data Pengguna",
         "master-data/master-data": "Master Data",
         "data-persediaan/data-pembelian": "Data Pembelian",
@@ -103,8 +103,12 @@ async function loadPage(page) {
 
     try {
 
-        const response =
-            await fetch(`pages/${page}.html`);
+        const response = await fetch(
+            `pages/${page}.html?t=${Date.now()}`,
+            {
+                cache: "no-store"
+            }
+        );
 
         if (!response.ok) {
 

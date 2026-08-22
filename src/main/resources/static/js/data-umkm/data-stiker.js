@@ -741,41 +741,39 @@ function initDragDrop(index){
 // CRUD
 function validasiSimpanDataStiker() {
     let valid = true
-        if(!selectedUmkm){
-            [
-                "popup-data-stiker-nama-usaha",
-                "popup-data-stiker-nama-pemilik",
-                "popup-data-stiker-telepon",
-                "popup-data-stiker-alamat"
-            ].forEach(id => tandaiInvalid(getEl(id)));
 
+    if(!getValue("popup-data-stiker-nama")){
+        tandaiInvalid(getEl("popup-data-stiker-nama"));
+        valid = false;
+    }
+
+    [
+        "popup-data-stiker-panjang",
+        "popup-data-stiker-lebar"
+    ].forEach(id => {
+        if(getValue(id) <= 0){
+            tandaiInvalid(getEl(id));
             valid = false;
         }
-        [
-            "popup-data-stiker-nama",
-            "popup-data-stiker-panjang",
-            "popup-data-stiker-lebar"
-        ].forEach(id => {
-            if(!getValue(id)){
-                tandaiInvalid(getEl(id));
-                valid = false;
-            }
-        });
+    });
 
-        if(!selectedBarang){
-            tandaiInvalid(getEl("popup-data-stiker-barang"));
-            valid = false;
-        }
+    if(!selectedBarang){
+        tandaiInvalid(getEl("popup-data-stiker-barang"));
+        valid = false;
+    }
 
     if(!document.querySelector('input[name="popup-data-stiker-status"]:checked')){
         tandaiInvalid(getEl("popup-data-stiker-status-grup"));
         valid = false;
     }
 
-    return valid;
+    if(!valid){
+        showToast("Data stiker belum lengkap!!!", "warning");
+    } else {
+        return valid;
+    }
 }
 async function stikerToBody() {
-    if (!validasiSimpanDataStiker()) return;
 
     const kodeStiker = getValue("popup-data-stiker-kode")
     const namaStiker = getValue("popup-data-stiker-nama")
@@ -849,15 +847,14 @@ function konfirmasiHapusDataStiker(id) {
     });
 }
 async function simpanDataStiker() {
-    const body = await stikerToBody();
-
     showLoading(
         isEditModeStiker
             ? "Mengubah Data Stiker..."
             : "Menyimpan Data Stiker..."
     );
-
     if (!validasiSimpanDataStiker()) return hideLoading();
+
+    const body = await stikerToBody();
 
     try {
         if(isEditModeStiker) {
