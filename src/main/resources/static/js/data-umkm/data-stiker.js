@@ -321,7 +321,7 @@ async function showPopupStiker(id = null){
     bersihPopupDataStiker();
 
     if(id === null){
-        await showPopupPilihUmkm(async (umkm) => {
+        await showPopupPilihUmkm(false,async (umkm) => {
                 selectedUmkm = umkm;
 
                 await loadKodeStiker(umkm.id);

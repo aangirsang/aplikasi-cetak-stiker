@@ -25,10 +25,14 @@ interface DataUmkmRepository: JpaRepository<DataUmkm, String> {
     ): List<DataUmkm>
 
     @Query("""
-        SELECT DISTINCT u
-        FROM DataUmkm u
-        JOIN u.daftarStiker s
-        WHERE u.status = true
+    SELECT u
+    FROM DataUmkm u
+    WHERE u.status = true
+      AND EXISTS (
+          SELECT 1
+          FROM DataStiker s
+          WHERE s.dataUmkm = u
+      )
     """)
     fun findUmkmWithStiker(): List<DataUmkm>
 

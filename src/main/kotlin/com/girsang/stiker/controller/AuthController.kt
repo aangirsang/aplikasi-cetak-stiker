@@ -5,10 +5,12 @@ import com.girsang.stiker.repository.DataPenggunaRepository
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.servlet.http.HttpSession
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
+import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository
@@ -31,31 +33,47 @@ class AuthController(
         session: HttpSession
     ): ResponseEntity<Any> {
 
-        val authentication =
-            authenticationManager.authenticate(
-                UsernamePasswordAuthenticationToken(
-                    request.namaPengguna,
-                    request.kataSandi
+        return try {
+
+            val authentication =
+                authenticationManager.authenticate(
+                    UsernamePasswordAuthenticationToken(
+                        request.namaPengguna,
+                        request.kataSandi
+                    )
+                )
+
+            val context =
+                SecurityContextHolder.createEmptyContext()
+
+            context.authentication = authentication
+
+            SecurityContextHolder.setContext(context)
+
+            session.setAttribute(
+                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                context
+            )
+
+            ResponseEntity.ok(
+                mapOf(
+                    "success" to true,
+                    "message" to "Login berhasil"
                 )
             )
 
-        val context =
-            SecurityContextHolder.createEmptyContext()
+        } catch (e: AuthenticationException) {
 
-        context.authentication = authentication
+            SecurityContextHolder.clearContext()
 
-        SecurityContextHolder.setContext(context)
-
-        session.setAttribute(
-            HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
-            context
-        )
-
-        return ResponseEntity.ok(
-            mapOf(
-                "success" to true
-            )
-        )
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(
+                    mapOf(
+                        "success" to false,
+                        "message" to "Username atau password salah"
+                    )
+                )
+        }
     }
 
     @GetMapping("/me")

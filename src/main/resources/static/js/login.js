@@ -27,14 +27,19 @@ if (currentUser) {
 
 getEl("form-login").addEventListener("submit", doLogin);
 
-async function doLogin(e){
+async function doLogin(e) {
 
     e.preventDefault();
 
-    const namaPengguna = getEl("namaPengguna").value;
+    const namaPengguna = getEl("namaPengguna").value.trim();
     const kataSandi = getEl("kataSandi").value;
 
-    try{
+    const loginError = getEl("login-error");
+
+    loginError.innerText = "";
+
+    try {
+
         const response = await fetch(BASE_URL_LOGIN, {
             method: "POST",
             headers: {
@@ -47,19 +52,61 @@ async function doLogin(e){
             })
         });
 
-        const result = await response.json();
+        let result = null;
 
-        if (!result.success) {
+        try {
+            result = await response.json();
+        } catch {
+            // Response bukan JSON
+        }
+
+        console.log(
+            "Login:",
+            response.status,
+            result
+        );
+
+        // ==========================================
+        // USERNAME / PASSWORD SALAH
+        // ==========================================
+
+        if (response.status === 401) {
+
+            loginError.innerText =
+                "Username atau password salah";
+
             return;
         }
 
-        // ambil data user dari session spring security
+        // ==========================================
+        // LOGIN GAGAL DENGAN RESPONSE JSON
+        // ==========================================
+
+        if (!response.ok || !result?.success) {
+
+            loginError.innerText =
+                result?.message ||
+                "Username atau password salah";
+
+            return;
+        }
+
+        // ==========================================
+        // LOGIN BERHASIL
+        // ==========================================
+
         const meResponse = await fetch(
             `${BASE_URL}/auth/me`,
             {
                 credentials: "include"
             }
         );
+
+        if (!meResponse.ok) {
+            throw new Error(
+                "Gagal mengambil session user"
+            );
+        }
 
         const me = await meResponse.json();
 
@@ -74,10 +121,6 @@ async function doLogin(e){
 
         resetLoginForm();
 
-        console.log("result", result);
-        console.log("me", me);
-        console.log("loginOverlay", loginOverlay);
-
         loginOverlay.classList.add("hidden");
 
         await loadPage("dashboard");
@@ -87,9 +130,12 @@ async function doLogin(e){
             "success"
         );
 
-    }catch(err){
-        getEl("login-error")
-            .innerText = "Login gagal";
+    } catch (err) {
+
+        console.error("Login error:", err);
+
+        loginError.innerText =
+            "Tidak dapat terhubung ke server";
     }
 }
 

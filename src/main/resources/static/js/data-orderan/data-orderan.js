@@ -123,7 +123,7 @@ async function showPopupOrderan(id = null) {
     } else {
         popupTitle.textContent = "Tambah Data Orderan";
         isEdit = false;
-        await showPopupPilihUmkm(async (umkm) => {
+        await showPopupPilihUmkm(true,async (umkm) => {
             await bersihPopupDataOrderan();
 
             selectUmkm = umkm;

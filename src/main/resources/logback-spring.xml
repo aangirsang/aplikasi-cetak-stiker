@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-    <property name="LOG_PATH" value="${app.data.dir}/logs"/>
+    <springProperty
+            name="LOG_PATH"
+            source="app.data.dir"
+            defaultValue="./data/logs"/>
+
+    <property
+            name="LOG_DIR"
+            value="${LOG_PATH}/logs"/>
+
 
     <!-- Console -->
     <appender name="CONSOLE"

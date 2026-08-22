@@ -7,6 +7,8 @@ let selectedPopupPilihUmkm = null;
 let cariKeywordPopupPilihUmkm = "";
 let sortDirectionPopupPilihUmkm = "asc";
 
+let adaStiker = false;
+
 let dataUmkm = [];
 
 async function initPopupPilihUmkm() {
@@ -47,11 +49,13 @@ async function initPopupPilihUmkm() {
 
 }
 
-async function showPopupPilihUmkm(onSelect, selectedUmkm = null) {
+async function showPopupPilihUmkm(stiker= false, onSelect, selectedUmkm = null) {
 
     callbackPilihUmkm = onSelect;
 
     selectedPopupPilihUmkm = selectedUmkm;
+
+    adaStiker = stiker;
 
     // reset pencarian
     cariKeywordPopupPilihUmkm = "";
@@ -120,7 +124,11 @@ async function loadTablePopupPilihUmkm(reload = false){
 
     try {
 
-        if (reload){
+        if (reload && adaStiker){
+            dataUmkm = await fetchDataUmkmPunyaStiker();
+        }
+
+        if (reload && !adaStiker){
             dataUmkm = await fetchDataUmkm();
         }
 
@@ -146,6 +154,15 @@ async function loadTablePopupPilihUmkm(reload = false){
 }
 async function fetchDataUmkm(){
     const response = await fetch(`${BASE_URL_UMKM}/aktif`);
+
+    if(!response.ok) {
+        throw new Error ("Gagal mengambil data UMKM");
+    }
+
+    return await response.json();
+}
+async function fetchDataUmkmPunyaStiker(){
+    const response = await fetch(`${BASE_URL_UMKM}/punya-stiker`);
 
     if(!response.ok) {
         throw new Error ("Gagal mengambil data UMKM");

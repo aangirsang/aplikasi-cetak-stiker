@@ -235,9 +235,11 @@ function updateProfile(user) {
 
     penggunaAktif = user;
 
-    document.getElementById(
-        "profile-container"
-    ).innerHTML = `
+    const imageUrl = user.pathGambar?.trim()
+        ? `${BASE_URL}${user.pathGambar}`
+        : noImagePerson;
+
+    document.getElementById("profile-container").innerHTML = `
         <div class="profile">
 
             <div class="info">
@@ -249,10 +251,9 @@ function updateProfile(user) {
 
             <div class="profile-photo">
                 <img
-                    src="${user.pathGambar
-        ? `${BASE_URL}${user.pathGambar}`
-        : noImagePerson}"
-                    alt="profile">
+                    src="${imageUrl}"
+                    alt="profile"
+                    onerror="this.onerror=null; this.src='${noImagePerson}'">
             </div>
 
         </div>
