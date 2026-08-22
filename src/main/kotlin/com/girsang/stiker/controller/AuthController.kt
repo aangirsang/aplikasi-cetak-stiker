@@ -62,7 +62,7 @@ class AuthController(
                 )
             )
 
-        } catch (e: AuthenticationException) {
+        } catch (_: AuthenticationException) {
 
             SecurityContextHolder.clearContext()
 

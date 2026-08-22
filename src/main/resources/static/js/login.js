@@ -103,8 +103,8 @@ async function doLogin(e) {
         );
 
         if (!meResponse.ok) {
-            throw new Error(
-                "Gagal mengambil session user"
+            return showToast(
+                "Gagal mengambil session user", "error"
             );
         }
 
