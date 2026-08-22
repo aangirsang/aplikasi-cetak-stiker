@@ -1,5 +1,17 @@
 const loginOverlay = getEl("login-overlay");
-const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+let currentUser;
+
+try {
+
+    currentUser = JSON.parse(
+        localStorage.getItem("currentUser")
+    );
+
+} catch (e) {
+
+    currentUser = null;
+
+}
 
 if (currentUser) {
     updateProfile(currentUser);
@@ -23,43 +35,57 @@ async function doLogin(e){
     const kataSandi = getEl("kataSandi").value;
 
     try{
-        const response =
-            await fetch(BASE_URL_LOGIN,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-                    body: JSON.stringify({
-                        namaPengguna,
-                        kataSandi
-                    })
-                }
-            );
+        const response = await fetch(BASE_URL_LOGIN, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                namaPengguna,
+                kataSandi
+            })
+        });
 
         const result = await response.json();
-        if(!result.success){
-            getEl("login-error").innerText = result.message;
 
-            showToast(result.message, "error");
-
+        if (!result.success) {
             return;
         }
 
-        penggunaAktif = result.data;
-
-
-        localStorage.setItem("currentUser",
-            JSON.stringify(result.data)
+        // ambil data user dari session spring security
+        const meResponse = await fetch(
+            `${BASE_URL}/auth/me`,
+            {
+                credentials: "include"
+            }
         );
 
-        updateProfile(result.data);
+        const me = await meResponse.json();
+
+        penggunaAktif = me.data;
+
+        localStorage.setItem(
+            "currentUser",
+            JSON.stringify(me.data)
+        );
+
+        updateProfile(me.data);
+
         resetLoginForm();
 
-        showToast(`Selamat Datang ${penggunaAktif.namaLengkap}`, "success");
+        console.log("result", result);
+        console.log("me", me);
+        console.log("loginOverlay", loginOverlay);
 
         loginOverlay.classList.add("hidden");
+
+        await loadPage("dashboard");
+
+        showToast(
+            `Selamat Datang ${penggunaAktif.namaLengkap}`,
+            "success"
+        );
 
     }catch(err){
         getEl("login-error")

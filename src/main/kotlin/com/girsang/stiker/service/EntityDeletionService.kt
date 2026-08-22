@@ -1,10 +1,12 @@
 package com.girsang.stiker.service
 
+import jakarta.persistence.CascadeType
 import jakarta.persistence.EntityManager
 import jakarta.persistence.Id
 import jakarta.persistence.metamodel.Attribute
 import jakarta.persistence.OneToMany
 import jakarta.persistence.ManyToMany
+import jakarta.persistence.OneToOne
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.lang.RuntimeException
@@ -63,18 +65,50 @@ class EntityDeletionService(
                 }
 
                 // OneToOne
+                // OneToOne
                 Attribute.PersistentAttributeType.ONE_TO_ONE -> {
-                    val attrName = attr.name
-                    val declaringClass = attr.declaringType.javaType ?: return
-                    val entityName = getClassSimpleName(declaringClass)
-                    val jpql = "SELECT COUNT(e) FROM $entityName e WHERE e.$attrName = :entity"
-                    val count = entityManager.createQuery(jpql, Long::class.java)
-                        .setParameter("entity", entity)
-                        .singleResult
-                    if (count > 0) {
-                        throw RuntimeException(
-                            "${entity.javaClass.simpleName} masih direferensi di $attrName (OneToOne) dengan $count referensi"
-                        )
+
+                    val annotation =
+                        field?.getAnnotation(OneToOne::class.java)
+
+                    // Jika child akan ikut terhapus,
+                    // jangan dianggap sebagai dependency yang menghalangi delete.
+                    if (
+                        annotation?.orphanRemoval == true ||
+                        annotation?.cascade?.contains(CascadeType.REMOVE) == true ||
+                        annotation?.cascade?.contains(CascadeType.ALL) == true
+                    ) {
+                        return@forEach
+                    }
+
+                    val mappedBy = annotation?.mappedBy
+
+                    if (!mappedBy.isNullOrBlank()) {
+
+                        val targetEntity = attr.javaType
+
+                        val entityName =
+                            getClassSimpleName(targetEntity)
+
+                        val jpql = """
+                            SELECT COUNT(e)
+                            FROM $entityName e
+                            WHERE e.$mappedBy = :entity
+                        """.trimIndent()
+
+                        val count =
+                            entityManager
+                                .createQuery(jpql, Long::class.java)
+                                .setParameter("entity", entity)
+                                .singleResult
+
+                        if (count > 0) {
+
+                            throw RuntimeException(
+                                "${entity.javaClass.simpleName} masih direferensi " +
+                                        "di $entityName.$mappedBy (OneToOne) dengan $count referensi"
+                            )
+                        }
                     }
                 }
 

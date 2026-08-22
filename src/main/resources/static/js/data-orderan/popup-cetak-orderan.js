@@ -34,20 +34,8 @@ function showPopupCetakOrderan(orderan) {
     getEl("popup-cetak-orderan-jumlah")
         .textContent = `${orderan.totalStiker} Lembar`;
 
-    getEl("cetak-order-nama-usaha")
-        .value = orderan.namaUmkm;
-
-    getEl("cetak-order-nama-pemilik")
-        .value = orderan.namaPemilik;
-
-    getEl("cetak-order-instagram")
-        .value = orderan.instagram;
-
-    getEl("cetak-order-kontak")
-        .value = orderan.noTelpon;
-
-    getEl("cetak-order-alamat")
-        .value = orderan.alamat;
+    getEl("popup-cetak-orderan-umkm").textContent =
+        `${orderan.namaPemilik} - ${orderan.namaUmkm}`;
 
     renderListStikerCetakOrder(orderan.rincian)
 
@@ -107,16 +95,16 @@ function renderListStikerCetakOrder(rincian){
             
                     <span class="input-satuan-lembar">Lembar</span>
                 </div>
-                ${rinci.pathCDR && rinci.pathCDR.trim() !== "" ? `
-                    <button
-                        type="button"
-                        onclick="
-                            event.stopPropagation();
-                            cetakStiker('${rinci.stikerId}');
-                        ">
-                        Cetak Stiker
-                    </button>
-                ` : ""}
+                
+                <button
+                    type="button"
+                    onclick="
+                    event.stopPropagation();
+                    cetakTIFF('${rinci.stikerId}')
+                    ">
+                    Cetak
+                </button>
+                            
             </div>
 
 

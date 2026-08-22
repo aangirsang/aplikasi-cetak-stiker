@@ -182,6 +182,7 @@ fun cariByumkmDanStatus(umkmId: String): List<DataStikerResponse> {
         val layout = DataLayoutCetak(
             dataStiker = stiker,
             pathTIF = request.pathTIF,
+            kertas = request.kertas,
             lebarKertas = request.lebarKertas,
             tinggiKertas = request.tinggiKertas,
             offsetX = request.offsetX,
@@ -202,6 +203,7 @@ fun cariByumkmDanStatus(umkmId: String): List<DataStikerResponse> {
     fun ubahLayout(stiker: DataStiker, layout: DataLayoutCetak, request: DataStikerRequest) {
         layout.apply {
             layout.pathTIF = request.pathTIF
+            layout.kertas = request.kertas
             layout.lebarKertas = request.lebarKertas
             layout.tinggiKertas = request.tinggiKertas
             layout.offsetX = request.offsetX

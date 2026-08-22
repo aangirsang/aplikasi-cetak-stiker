@@ -56,6 +56,7 @@
                 namaBarang = stiker.dataBarang.namaBarang,
                 stokBarang = stiker.dataBarang.stokBarang,
                 pathTIF = stiker.layoutCetak?.pathTIF ?: "",
+                kertas = stiker.layoutCetak?.kertas ?: "",
                 lebarKertas = stiker.layoutCetak?.lebarKertas ?: 0.0,
                 tinggiKertas = stiker.layoutCetak?.tinggiKertas ?: 0.0,
                 offsetX = stiker.layoutCetak?.offsetX ?: 0.0,

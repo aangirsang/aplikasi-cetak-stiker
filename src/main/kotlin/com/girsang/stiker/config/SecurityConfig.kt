@@ -2,6 +2,8 @@ package com.girsang.stiker.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
@@ -13,60 +15,66 @@ import org.springframework.security.web.SecurityFilterChain
 class SecurityConfig {
 
     @Bean
+    fun authenticationManager(
+        configuration: AuthenticationConfiguration
+    ): AuthenticationManager {
+        return configuration.authenticationManager
+    }
+
+
+    @Bean
     fun passwordEncoder(): PasswordEncoder {
         return BCryptPasswordEncoder()
     }
-
 
     @Bean
     fun securityFilterChain(
         http: HttpSecurity
     ): SecurityFilterChain {
 
-        http.csrf {
-                it.disable()
-            }
-            .cors { }
+        http
+            .csrf { it.disable() }
+
             .authorizeHttpRequests {
 
-                // endpoint public
                 it.requestMatchers(
-
                     "/",
-                    "/login",
+                    "/index.html",
                     "/error",
+                    "/favicon.ico",
 
                     "/css/**",
                     "/js/**",
                     "/images/**",
 
-                    // API
-                    "/api/**"
+                    "/assets/**",
+                    "/pages/**",
 
+                    "/api/data-pengguna/ping",
+
+                    "/api/auth/login"
                 ).permitAll()
 
-                // halaman admin
                 it.requestMatchers(
                     "/admin/**"
-                )
-                    .hasRole("ADMIN")
+                ).hasRole("ADMIN")
 
-                // selain itu wajib login
                 it.anyRequest()
-                    .permitAll()
+                    .authenticated()
             }
 
             .formLogin {
                 it.disable()
             }
 
-            .logout {
+            .httpBasic {
+                it.disable()
+            }
 
-                it.logoutUrl("/logout")
-                    .logoutSuccessUrl(
-                        "/login?logout"
-                    )
-                    .permitAll()
+            .logout {
+                it.logoutUrl("/api/auth/logout")
+                    .invalidateHttpSession(true)
+                    .deleteCookies("JSESSIONID")
             }
 
         return http.build()

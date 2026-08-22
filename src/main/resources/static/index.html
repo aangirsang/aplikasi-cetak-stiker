@@ -1,9 +1,10 @@
 <!doctype html>
 <html lang="id">
-<head>
     <meta charset="UTF-8">
+
     <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+          content="width=device-width, initial-scale=1.0">
+
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Rumah BUMN Batu Bara</title>
 
@@ -11,38 +12,16 @@
     <link rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp" />
 
+    <link rel="icon" type="image/x-icon" href="./assets/images/Logo.ico">
+
     <!-- Flatpickr -->
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
     <!-- Panggil CSS -->
-    <link rel="stylesheet" href="css/variable.css">
-    <link rel="stylesheet" href="css/global.css">
-    <link rel="stylesheet" href="css/index.css">
-    <link rel="stylesheet" href="css/toast.css">
-    <link rel="stylesheet" href="css/login.css">
-    <link rel="stylesheet" href="css/data-orderan.css">
-    <link rel="stylesheet" href="css/dashboard.css">
-    <link rel="stylesheet" href="css/popup/popup-konfirmasi-hapus.css">
-    <link rel="stylesheet" href="css/popup/popup-loading.css">
-    <link rel="stylesheet" href="css/popup/popup-lihat-gambar.css">
-    <link rel="stylesheet" href="css/popup/popup-pilih-umkm.css">
-    <link rel="stylesheet" href="css/popup/popup-pilih-barang.css">
-    <link rel="stylesheet" href="css/popup/popup-pilih-stiker.css">
-    <link rel="stylesheet" href="css/popup/popup-lihat-stiker.css">
-    <link rel="stylesheet" href="css/popup/popup-layout-cetak.css">
-    <link rel="stylesheet" href="css/data-master/data-pengguna.css">
-    <link rel="stylesheet" href="css/data-master/data-master.css">
-    <link rel="stylesheet" href="css/data-persediaan/data-barang.css">
-    <link rel="stylesheet" href="css/data-persediaan/data-pembelian.css">
-    <link rel="stylesheet" href="css/data-persediaan/data-riwayat-stok.css">
-    <link rel="stylesheet" href="css/data-persediaan/data-penyesuaian.css">
-    <link rel="stylesheet" href="css/data-umkm/data-umkm.css">
-    <link rel="stylesheet" href="css/data-umkm/data-stiker.css">
-    <link rel="stylesheet" href="css/data-orderan/data-orderan.css">
-    <link rel="stylesheet" href="css/data-orderan/popup-cetak-orderan.css">
-</head>
-<body>
+    <link rel="stylesheet" href="./css/app.css">
+
+    <body>
     <div class="container">
         <aside>
             <!-------------------- LOGO -------------------->
@@ -135,11 +114,27 @@
         <main class="main">
             <!--NAVBAR-->
             <header class="navbar">
-                <h1 id="page-title">Dashboard</h1>
+
+                <button
+                        id="mobile-menu-btn"
+                        class="mobile-menu-btn"
+                        type="button"
+                        aria-label="Buka menu">
+
+                <span class="material-symbols-sharp">
+                    menu
+                </span>
+
+                </button>
+
+                <h1 id="page-title">
+                    Dashboard
+                </h1>
+
                 <div class="kanan">
-                    <!--PROFILE ACCOUNT-->
                     <div id="profile-container"></div>
                 </div>
+
             </header>
 
             <!--CONTENT-->
@@ -147,6 +142,7 @@
 
             </section>
         </main>
+        <div id="mobile-menu-overlay" class="mobile-menu-overlay"></div>
     </div>
 
     <!-- LOGIN -->
@@ -222,10 +218,12 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
     <script src="https://unpkg.com/utif@3.1.0/UTIF.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/3.0.1/jspdf.umd.min.js"></script>
     <script src="js/global.js"></script>
     <script src="js/components/popup-hapus.js"></script>
     <script src="js/components/popup-loading.js"></script>
     <script src="js/components/popup-lihat-gambar.js"></script>
+    <script src="js/components/mobile-menu.js"></script>
     <script src="js/toast.js"></script>
     <script type="module" src="js/master-data/data-pengguna.js"></script>
     <script type="module" src="js/master-data/master-data.js"></script>

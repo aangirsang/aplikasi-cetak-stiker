@@ -51,9 +51,6 @@ async function initDataOrderan() {
     getEl("btn-batal-data-order")
         .addEventListener("click", closePopupOrderan);
 
-    getEl("btn-umkm-data-order")
-        .addEventListener("click",  () => tampilPopupPilihUmkm());
-
     getEl("btn-stiker-data-order")
         .addEventListener("click",  () => tampilPopupPilihStiker());
 
@@ -126,6 +123,18 @@ async function showPopupOrderan(id = null) {
     } else {
         popupTitle.textContent = "Tambah Data Orderan";
         isEdit = false;
+        await showPopupPilihUmkm(async (umkm) => {
+            await bersihPopupDataOrderan();
+
+            selectUmkm = umkm;
+
+            getEl("data-order-umkm").textContent =
+                `${umkm.namaPemilik} - ${umkm.namaUsaha}`;
+
+            popup.classList.add("show");
+
+        }, selectUmkm);
+        return;
     }
 
     popup.classList.add("show");
@@ -139,7 +148,7 @@ function tampilPopupCetakOrderan(id) {
 function isiPopupOrderan() {
     selectUmkm = {
         id: selectOrderan.dataUmkmId,
-        namaUmkm: selectOrderan.namaUmkm,
+        namaUsaha: selectOrderan.namaUmkm,
         namaPemilik: selectOrderan.namaPemilik,
         alamat: selectOrderan.alamat,
         instagram: selectOrderan.instagram,
@@ -155,23 +164,14 @@ function isiPopupOrderan() {
         })
     })
 
-    getEl("data-order-nama-usaha").value =
-        selectOrderan.namaUmkm;
-    getEl("data-order-nama-pemilik").value =
-        selectOrderan.namaPemilik;
-    getEl("data-order-instagram").value =
-        selectOrderan.instagram;
-    getEl("data-order-kontak").value =
-        selectOrderan.noTelpon;
-    getEl("data-order-alamat").value =
-        selectOrderan.alamat;
 
     getEl("data-order-faktur").textContent =
         selectOrderan.faktur;
     getEl("data-order-tanggal").textContent =
         formatTanggal(selectOrderan.tanggal)
+    getEl("data-order-umkm").textContent =
+        `${selectOrderan.namaPemilik} - ${selectOrderan.namaUmkm}`;
 
-    tampilBtnStikerDataOrder(false)
     renderListStikerDataOrder();
     updateTotalJumlahDataOrder();
 }
@@ -188,17 +188,6 @@ async function bersihPopupDataOrderan() {
     rincian = [];
 
     renderListStikerDataOrder();
-
-    tampilBtnStikerDataOrder(true);
-
-
-    [
-        "data-order-nama-usaha",
-        "data-order-nama-pemilik",
-        "data-order-instagram",
-        "data-order-kontak",
-        "data-order-alamat"
-    ].forEach(id => getEl(id).value = "");
 
     getEl("data-order-jumlah").textContent =
         "0 Lembar";
@@ -255,7 +244,7 @@ function renderListStikerDataOrder(){
         rincian.map(rinci => `
         <div class="item-card"
         id="item-card-${rinci.stikerId}"
-        onclick="lihatStiker(${rinci.stikerId})">
+        onclick="lihatStikerOrderan('${rinci.stikerId}')">
 
             <div class="stiker-image">
                 <img
@@ -310,36 +299,7 @@ function renderListStikerDataOrder(){
         </div>
     `).join("");
 }
-function tampilBtnStikerDataOrder(status) {
-    const btnStiker = getEl("btn-stiker-data-order");
-    btnStiker.disabled = status;
-    if (status === true){
-        btnStiker.classList.add("btn-disabled");
-    } else {
-        btnStiker.classList.remove("btn-disabled");
-    }
-}
-async function tampilPopupPilihUmkm(){
-    await showPopupPilihUmkm(async (umkm) => {
-        await bersihPopupDataOrderan();
 
-        selectUmkm = umkm;
-
-        getEl("data-order-nama-usaha").value =
-            umkm.namaUsaha;
-        getEl("data-order-nama-pemilik").value =
-            umkm.namaPemilik;
-        getEl("data-order-instagram").value =
-            umkm.instagram;
-        getEl("data-order-kontak").value =
-            umkm.noTelpon;
-        getEl("data-order-alamat").value =
-            umkm.alamat;
-
-        tampilBtnStikerDataOrder(false)
-
-    }, selectUmkm);
-}
 async function tampilPopupPilihStiker(){
     await showPopupPilihStiker((stikerDipilih) => {
 
@@ -416,6 +376,18 @@ function updateTotalJumlahDataOrder(){
 
     getEl("data-order-jumlah").textContent =
         `${total} Lembar`;
+}
+async function lihatStikerOrderan(id){
+
+    const response = await fetch(`${BASE_URL_STIKER}/${id}`);
+
+    if(!response.ok){
+        return showToast("Gagal memuat data stiker!!","error");
+    }
+
+    const stiker = await response.json();
+
+    showPopupLihatStiker(stiker);
 }
 
 //TABEL
@@ -977,3 +949,4 @@ window.toggleDetailOrderan = toggleDetailOrderan;
 window.showPopupOrderan = showPopupOrderan;
 window.tampilPopupCetakOrderan = tampilPopupCetakOrderan;
 window.konfirmasiHapusDataOrderan = konfirmasiHapusDataOrderan;
+window.lihatStikerOrderan = lihatStikerOrderan;

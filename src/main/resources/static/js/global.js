@@ -1,8 +1,7 @@
-const BASE_URL = "http://localhost:8080/api" // UNTUK CODING/PENGEMBANG
+//const BASE_URL = "http://localhost:8080/api" // UNTUK CODING/PENGEMBANG
 
-//const BASE_URL = "/api" // UNTUK JARINGAN
+const BASE_URL = "/api" // UNTUK JARINGAN
 const BASE_URL_UPLOAD_GAMBAR = `${BASE_URL}/upload/gambar`
-const BASE_URL_UPLOAD_CDR = `${BASE_URL}/upload/cdr`
 const BASE_URL_UPLOAD_TIF = `${BASE_URL}/upload/tif`
 
 const BASE_URL_PENGGUNA = `${BASE_URL}/data-pengguna`;
@@ -46,38 +45,84 @@ function getPaginatedData(data, page, rows){
     return data.slice(start, start + rows);
 }
 
-function loadPagination(id, totalData, currentPage, rowsPerPage, callback){
-
+function loadPagination(
+    id,
+    totalData,
+    currentPage,
+    rowsPerPage,
+    callback
+) {
     const pagination = getEl(id);
 
     pagination.innerHTML = "";
 
     const totalPages =
-        Math.max(1, Math.ceil(totalData / rowsPerPage));
+        Math.max(
+            1,
+            Math.ceil(totalData / rowsPerPage)
+        );
 
     const maxVisible = 3;
 
-    pagination.innerHTML += `
-        <button
-            type="button"
-            onclick="${callback.name}(${currentPage - 1})"
-            ${currentPage === 1 ? "disabled" : ""}
-        >
-            Prev
-        </button>
-    `;
+    // ==========================================
+    // CREATE BUTTON
+    // ==========================================
+
+    function createButton(
+        text,
+        page,
+        disabled = false,
+        active = false
+    ) {
+        const button =
+            document.createElement("button");
+
+        button.type = "button";
+        button.textContent = text;
+
+        if (active) {
+            button.classList.add("active");
+        }
+
+        button.disabled = disabled;
+
+        button.addEventListener("click", () => {
+            callback(page);
+        });
+
+        return button;
+    }
+
+    // ==========================================
+    // PREV
+    // ==========================================
+
+    pagination.appendChild(
+        createButton(
+            "Prev",
+            currentPage - 1,
+            currentPage === 1
+        )
+    );
+
+    // ==========================================
+    // PAGE RANGE
+    // ==========================================
 
     let startPage =
         Math.max(
             1,
-            currentPage - Math.floor(maxVisible / 2)
+            currentPage -
+            Math.floor(maxVisible / 2)
         );
 
     let endPage =
         startPage + maxVisible - 1;
 
-    if(endPage > totalPages){
+    if (endPage > totalPages) {
+
         endPage = totalPages;
+
         startPage =
             Math.max(
                 1,
@@ -85,62 +130,88 @@ function loadPagination(id, totalData, currentPage, rowsPerPage, callback){
             );
     }
 
-    if(startPage > 1){
+    // ==========================================
+    // FIRST PAGE
+    // ==========================================
 
-        pagination.innerHTML += `
-            <button
-                type="button"
-                onclick="${callback.name}(1)">
-                1
-            </button>
-        `;
+    if (startPage > 1) {
 
-        if(startPage > 2){
-            pagination.innerHTML += `
-                <span class="pagination-dots">...</span>
-            `;
+        pagination.appendChild(
+            createButton("1", 1)
+        );
+
+        if (startPage > 2) {
+
+            const dots =
+                document.createElement("span");
+
+            dots.className =
+                "pagination-dots";
+
+            dots.textContent = "...";
+
+            pagination.appendChild(dots);
         }
     }
 
-    for(let i = startPage; i <= endPage; i++){
+    // ==========================================
+    // NUMBER
+    // ==========================================
 
-        pagination.innerHTML += `
-            <button
-                type="button"
-                class="${i === currentPage ? "active" : ""}"
-                onclick="${callback.name}(${i})"
-            >
-                ${i}
-            </button>
-        `;
+    for (
+        let i = startPage;
+        i <= endPage;
+        i++
+    ) {
+
+        pagination.appendChild(
+            createButton(
+                i,
+                i,
+                false,
+                i === currentPage
+            )
+        );
     }
 
-    if(endPage < totalPages){
+    // ==========================================
+    // LAST PAGE
+    // ==========================================
 
-        if(endPage < totalPages - 1){
-            pagination.innerHTML += `
-                <span class="pagination-dots">...</span>
-            `;
+    if (endPage < totalPages) {
+
+        if (endPage < totalPages - 1) {
+
+            const dots =
+                document.createElement("span");
+
+            dots.className =
+                "pagination-dots";
+
+            dots.textContent = "...";
+
+            pagination.appendChild(dots);
         }
 
-        pagination.innerHTML += `
-            <button
-                type="button"
-                onclick="${callback.name}(${totalPages})">
-                ${totalPages}
-            </button>
-        `;
+        pagination.appendChild(
+            createButton(
+                totalPages,
+                totalPages
+            )
+        );
     }
 
-    pagination.innerHTML += `
-        <button
-            type="button"
-            onclick="${callback.name}(${currentPage + 1})"
-            ${currentPage === totalPages ? "disabled" : ""}
-        >
-            Next
-        </button>
-    `;
+    // ==========================================
+    // NEXT
+    // ==========================================
+
+    pagination.appendChild(
+        createButton(
+            "Next",
+            currentPage + 1,
+            currentPage === totalPages
+        )
+    );
 }
 
 function togglePassword(inputId, button) {
@@ -326,35 +397,610 @@ async function convertTifToWebp(file) {
         imageHeightMM
     };
 }
-function createMetadataFile(
-    kodeStiker,
-    width,
-    height,
-    dpiX,
-    dpiY,
-    imageWidthMM,
-    imageHeightMM
-) {
 
-    const metadata = {
-        width,
-        height,
-        dpiX,
-        dpiY,
-        imageWidthMM,
-        imageHeightMM
-    };
+// CETAK TIFF
+async function cetakTIFF(id) {
 
-    return new File(
-        [
-            JSON.stringify(metadata, null, 2)
-        ],
-        `${kodeStiker}.json`,
-        {
-            type: "application/json"
+    // ==================================================
+    // SHOW LOADING
+    // ==================================================
+
+    showLoading("Menyiapkan cetakan...");
+
+
+    try {
+
+        // ==================================================
+        // LOAD DATA STIKER
+        // ==================================================
+
+        const response =
+            await fetch(
+                `${BASE_URL_STIKER}/${id}`
+            );
+
+
+        if (!response.ok) {
+
+            hideLoading();
+
+            return showToast(
+                "Gagal mencetak TIFF",
+                "error"
+            );
         }
-    );
 
+
+        const stiker =
+            await response.json();
+
+
+        console.log(
+            "Data Stiker:",
+            stiker
+        );
+
+
+        // ==================================================
+        // VALIDASI
+        // ==================================================
+
+        if (!stiker) {
+            hideLoading();
+
+            return showToast(
+                "Data stiker tidak tersedia",
+                "error"
+            );
+        }
+
+
+        if (!stiker.pathTIF) {
+            hideLoading();
+
+            return showToast(
+                "File TIFF tidak tersedia",
+                "error"
+            );
+        }
+
+
+        if (
+            stiker.lebarKertas <= 0 ||
+            stiker.tinggiKertas <= 0
+        ) {
+            hideLoading();
+
+            return showToast(
+                "Ukuran kertas tidak valid",
+                "error"
+            );
+
+        }
+
+
+        // ==================================================
+        // DPI
+        // ==================================================
+
+        const dpiX =
+            stiker.dpiX > 0
+                ? stiker.dpiX
+                : 300;
+
+
+        const dpiY =
+            stiker.dpiY > 0
+                ? stiker.dpiY
+                : 300;
+
+
+        console.log(
+            "DPI:",
+            dpiX,
+            "x",
+            dpiY
+        );
+
+
+        // ==================================================
+        // URL TIFF
+        // ==================================================
+
+        const url =
+            BASE_URL +
+            encodeURI(
+                stiker.pathTIF
+            ) +
+            ".tif";
+
+
+        console.log(
+            "Memuat TIFF:",
+            url
+        );
+
+
+        // ==================================================
+        // DOWNLOAD TIFF
+        // ==================================================
+
+        showLoading(
+            "Memuat file TIFF..."
+        );
+
+
+        const responseTiff =
+            await fetch(url);
+
+
+        if (!responseTiff.ok) {
+            hideLoading();
+
+            return showToast(
+                "File TIFF tidak ditemukan",
+                "error"
+            );
+        }
+
+
+        const buffer =
+            await responseTiff.arrayBuffer();
+
+
+        // ==================================================
+        // DECODE TIFF
+        // ==================================================
+
+        showLoading(
+            "Memproses gambar TIFF..."
+        );
+
+
+        const ifds =
+            UTIF.decode(
+                buffer
+            );
+
+
+        if (
+            !ifds ||
+            ifds.length === 0
+        ) {
+            hideLoading();
+
+            return showToast(
+                "TIFF tidak dapat dibaca",
+                "error"
+            );
+        }
+
+
+        const ifd =
+            ifds[0];
+
+
+        // ==================================================
+        // DECODE IMAGE
+        // ==================================================
+
+        UTIF.decodeImage(
+            buffer,
+            ifd
+        );
+
+
+        const tifWidth =
+            ifd.width;
+
+
+        const tifHeight =
+            ifd.height;
+
+
+        console.log(
+            "TIFF:",
+            tifWidth,
+            "x",
+            tifHeight
+        );
+
+
+        console.log(
+            "BITS:",
+            JSON.stringify(ifd.t258)
+        );
+
+
+        console.log(
+            "SAMPLES:",
+            JSON.stringify(ifd.t277)
+        );
+
+
+        console.log(
+            "COMPRESSION:",
+            JSON.stringify(ifd.t259)
+        );
+
+
+        console.log(
+            "PHOTOMETRIC:",
+            JSON.stringify(ifd.t262)
+        );
+
+
+        // ==================================================
+        // RGBA
+        // ==================================================
+
+        const rgba =
+            UTIF.toRGBA8(
+                ifd
+            );
+
+
+        if (
+            !rgba ||
+            rgba.length === 0
+        ) {
+            hideLoading();
+
+            return showToast(
+                "Gagal membaca pixel TIFF",
+                "error"
+            );
+        }
+
+
+        // ==================================================
+        // UKURAN KERTAS PIXEL
+        // ==================================================
+
+        const paperWidthPx =
+            Math.round(
+                stiker.lebarKertas *
+                dpiX /
+                25.4
+            );
+
+
+        const paperHeightPx =
+            Math.round(
+                stiker.tinggiKertas *
+                dpiY /
+                25.4
+            );
+
+
+        console.log(
+            "Kertas:",
+            paperWidthPx,
+            "x",
+            paperHeightPx
+        );
+
+
+        // ==================================================
+        // OFFSET PIXEL
+        // ==================================================
+
+        const offsetXPx =
+            stiker.offsetX *
+            dpiX /
+            25.4;
+
+
+        const offsetYPx =
+            stiker.offsetY *
+            dpiY /
+            25.4;
+
+
+        console.log(
+            "Offset:",
+            offsetXPx,
+            offsetYPx
+        );
+
+
+        // ==================================================
+        // BATAS TIFF
+        // ==================================================
+
+        const tifLeft =
+            offsetXPx;
+
+
+        const tifTop =
+            offsetYPx;
+
+
+        const tifRight =
+            offsetXPx +
+            tifWidth;
+
+
+        const tifBottom =
+            offsetYPx +
+            tifHeight;
+
+
+        // ==================================================
+        // INTERSECTION
+        // ==================================================
+
+        const cropLeft =
+            Math.max(
+                0,
+                tifLeft
+            );
+
+
+        const cropTop =
+            Math.max(
+                0,
+                tifTop
+            );
+
+
+        const cropRight =
+            Math.min(
+                paperWidthPx,
+                tifRight
+            );
+
+
+        const cropBottom =
+            Math.min(
+                paperHeightPx,
+                tifBottom
+            );
+
+
+        // ==================================================
+        // VALIDASI
+        // ==================================================
+
+        if (
+            cropRight <= cropLeft ||
+            cropBottom <= cropTop
+        ) {
+            hideLoading();
+
+            return showToast(
+                "Gambar TIFF berada di luar area kertas",
+                "error"
+            );
+        }
+
+
+        // ==================================================
+        // CROP SIZE
+        // ==================================================
+
+        const cropWidth =
+            Math.round(
+                cropRight -
+                cropLeft
+            );
+
+
+        const cropHeight =
+            Math.round(
+                cropBottom -
+                cropTop
+            );
+
+
+        // ==================================================
+        // SOURCE POSITION
+        // ==================================================
+
+        const sourceX =
+            Math.round(
+                cropLeft -
+                tifLeft
+            );
+
+
+        const sourceY =
+            Math.round(
+                cropTop -
+                tifTop
+            );
+
+
+        console.log(
+            "Source:",
+            sourceX,
+            sourceY
+        );
+
+
+        console.log(
+            "Crop:",
+            cropWidth,
+            cropHeight
+        );
+
+
+        // ==================================================
+        // CANVAS
+        // ==================================================
+
+        showLoading(
+            "Menyiapkan gambar cetak..."
+        );
+
+
+        const printCanvas =
+            document.createElement(
+                "canvas"
+            );
+
+
+        printCanvas.width =
+            cropWidth;
+
+
+        printCanvas.height =
+            cropHeight;
+
+
+        const printCtx =
+            printCanvas.getContext(
+                "2d"
+            );
+
+
+        // ==================================================
+        // MATIKAN SMOOTHING
+        // ==================================================
+
+        printCtx.imageSmoothingEnabled =
+            false;
+
+
+        // ==================================================
+        // IMAGE DATA
+        // ==================================================
+
+        const imageData =
+            new ImageData(
+                new Uint8ClampedArray(
+                    rgba
+                ),
+                tifWidth,
+                tifHeight
+            );
+
+
+        // ==================================================
+        // COPY PIXEL
+        // ==================================================
+
+        printCtx.putImageData(
+            imageData,
+            -sourceX,
+            -sourceY
+        );
+
+
+        // ==================================================
+        // UKURAN FISIK GAMBAR
+        // ==================================================
+
+        const imageWidthMM =
+            cropWidth *
+            25.4 /
+            dpiX;
+
+
+        const imageHeightMM =
+            cropHeight *
+            25.4 /
+            dpiY;
+
+
+        console.log(
+            "Image MM:",
+            imageWidthMM,
+            "x",
+            imageHeightMM
+        );
+
+
+        // ==================================================
+        // CONVERT PNG
+        // ==================================================
+
+        showLoading(
+            "Menyiapkan halaman cetak..."
+        );
+
+
+        const pngData =
+            printCanvas.toDataURL(
+                "image/png"
+            );
+
+
+        // ==================================================
+        // OPEN PRINT WINDOW
+        // ==================================================
+
+        const printWindow = window.open(
+            "./cetak-tif/print-tiff.html",
+            "_blank"
+        );
+
+        printWindow.onload = () => {
+
+            const doc = printWindow.document;
+
+            // ukuran kertas
+            const style = doc.createElement("style");
+
+            style.innerHTML = `
+        @page{
+            size:${stiker.lebarKertas}mm ${stiker.tinggiKertas}mm;
+            margin:0;
+        }
+
+        html,
+        body,
+        .print-page{
+
+            width:${stiker.lebarKertas}mm;
+            height:${stiker.tinggiKertas}mm;
+        }
+
+        #print-image{
+
+            left:${cropLeft * 25.4 / dpiX}mm;
+            top:${cropTop * 25.4 / dpiY}mm;
+
+            width:${imageWidthMM}mm;
+            height:${imageHeightMM}mm;
+        }
+    `;
+
+            doc.head.appendChild(style);
+
+            doc.getElementById("print-image").src = pngData;
+
+            setTimeout(() => {
+
+                printWindow.focus();
+                printWindow.print();
+
+            }, 500);
+
+        };
+
+
+        // ==================================================
+        // SELESAI
+        // ==================================================
+
+        hideLoading();
+
+
+        showToast(
+            "Halaman cetak siap",
+            "success"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Gagal mencetak TIFF:",
+            error
+        );
+
+    }
 }
 
 function formatTanggal(timestamp) {
