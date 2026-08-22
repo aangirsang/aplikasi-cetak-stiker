@@ -1,0 +1,33 @@
+/* =========================================================
+   RIWAYAT STOK
+   ========================================================= */
+
+/*data-riwayat-stok.css*/
+.popup.show .content-popup-download-data-riwayat-stok{
+    transform: translateY(0);
+}
+
+.content-popup-download-data-riwayat-stok{
+    padding: var(--card-padding);
+    border-radius: 12px;
+    background: var(--color-background);
+
+    width: 30rem;
+    height: 15rem;
+
+    transform: translateY(-60px);
+    transition: transform .25s ease;
+}
+
+.content-popup-download-data-riwayat-stok h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+.content-popup-download-data-riwayat-stok .date-range-box {
+    width: 100%;
+    margin-top: 2rem;
+
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}

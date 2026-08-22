@@ -1,0 +1,67 @@
+/* =========================================================
+   PILIH UMKM
+   ========================================================= */
+
+/*popup-pilih-umkm.css*/
+.content-popup-pilih-umkm {
+    padding: var(--card-padding);
+    border-radius: 12px;
+    background: var(--color-background);
+
+    width: 80rem;
+    max-width: 90vw;
+
+    height: 51rem;
+    max-height: 90vh;
+
+    box-sizing: border-box;
+    overflow-y: auto;
+
+    display: flex;
+    flex-direction: column;
+
+    transform: translateY(-60px);
+    transition: transform .25s ease;
+}
+
+.popup.show .content-popup-pilih-umkm{
+    transform: translateY(0);
+}
+
+.content-popup-pilih-umkm .table-popup-pilih {
+    height: 40rem;
+    min-height: 20rem;
+
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: .5rem;
+    margin-top: 1rem;
+
+    background: var(--color-white);
+    box-shadow: none;
+}
+
+.tabel-card-popup-pilih-umkm {
+    height: 40rem;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    flex: 0 1 auto;
+
+    min-height: 10rem;
+}
+
+.pilih-umkm-row:hover td {
+    color: var(--color-primary);
+    transform: translateX(6px);
+}
+
+#pagination-popup-pilih-umkm {
+    flex-shrink: 0;
+
+    padding-top: 0.75rem;
+}

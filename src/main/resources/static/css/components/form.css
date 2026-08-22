@@ -1,0 +1,328 @@
+/* =========================================================
+   FORM CONTROLS
+   ========================================================= */
+
+.input-group {
+    position: relative;
+}
+
+.input-group input{
+    width: 100%;
+    height: 50px;
+
+    padding: 0 16px;
+
+    border: var(--border-button);
+    border-radius: var(--border-radius-2);
+
+    outline: none;
+    background: transparent;
+
+    transition: border-color 0.3s ease;
+}
+
+/* LABEL DEFAULT = jadi placeholder */
+.input-group label {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--color-white);
+    color: var(--color-dark-variant);
+    padding: 0 5px;
+    pointer-events: none;
+
+    transition: all 0.3s ease;
+}
+
+/* Saat input aktif / ada isi */
+.input-group input:focus + label,
+.input-group input:not(:placeholder-shown) + label{
+    top: 0;
+    left: 10px;
+    font-size: 12px;
+    transform: translateY(-50%);
+}
+
+/* ==========================================
+   FLOATING DATE INPUT
+========================================== */
+
+.date-group{
+    position: relative;
+    width: 100%;
+}
+
+.date-group input[type="date"]{
+    width: 100%;
+    height: 50px;
+
+    padding: 0 16px;
+
+    border: var(--border-button);
+    border-radius: var(--border-radius-2);
+
+    background: transparent;
+    outline: none;
+}
+
+/* label selalu di atas */
+.date-group label{
+    position: absolute;
+
+    top: 0;
+    left: 10px;
+
+    transform: translateY(-50%);
+
+    background: var(--color-white);
+    color: var(--color-dark-variant);
+
+    padding: 0 5px;
+
+    font-size: 12px;
+    pointer-events: none;
+}
+
+/* ==========================================
+   FLOATING TEXTAREA
+========================================== */
+
+.textarea-group {
+    position: relative;
+}
+
+.textarea-group textarea{
+    width: 100%;
+    min-height: 20px;
+
+    padding: 16px;
+
+    border: var(--border-button);
+    border-radius: var(--border-radius-2);
+
+    outline: none;
+    background: transparent;
+
+    resize: none;
+}
+
+.textarea-group label{
+    position: absolute;
+
+    left: 12px;
+    top: 20px;
+
+    background: var(--color-white);
+    color: var(--color-dark-variant);
+
+    padding: 0 5px;
+
+    pointer-events: none;
+    transition: all .3s ease;
+}
+
+.textarea-group textarea:focus + label,
+.textarea-group textarea:not(:placeholder-shown) + label{
+    top: 0;
+    left: 10px;
+    font-size: 12px;
+    transform: translateY(-50%);
+}
+
+
+/* ==========================================
+   PASSWORD INPUT
+========================================== */
+
+.password-group {
+    position: relative;
+}
+
+/* ----------- CUSTOM PASSWORD INPUT ----------- */
+.password-group input {
+    width: 100%;
+    height: 50px;
+    padding: 0 50px 0 16px;
+    border: var(--border-button);
+    border-radius: var(--border-radius-2);
+    outline: none;
+    background: transparent;
+    box-sizing: border-box;
+}
+
+/* floating label */
+.password-group label {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    background: var(--color-white);
+    padding: 0 5px;
+
+    pointer-events: none;
+    transition: .25s ease;
+    color: var(--color-dark-variant);
+}
+
+/* saat focus */
+.password-group input:focus + label {
+    top: 0;
+    font-size: 12px;
+}
+
+/* saat ada isi */
+.password-group input:not(:placeholder-shown) + label {
+    top: 0;
+    font-size: 12px;
+}
+
+/* tombol eye */
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+
+    width: 40px;
+    height: 40px;
+
+    box-shadow: none;
+}
+
+.toggle-password span {
+    background: transparent;
+    color: var(--color-dark-variant);
+    font-size: 1.2rem;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toggle-password:hover,
+.toggle-password:hover > span{
+    background: transparent;
+    color: var(--color-primary);
+}
+
+
+/* ==========================================
+   RADIO GROUP
+========================================== */
+
+.form-group-radio {
+    width: 100%;
+}
+
+.radio-group {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    width: 100%;
+    height: 50px;
+
+    padding: 0 16px;
+
+    border: var(--border-button);
+    border-radius: var(--border-radius-2);
+
+    box-sizing: border-box;
+    background: var(--color-white);
+}
+
+/* floating label */
+.radio-floating-label {
+    position: absolute;
+
+    top: 0;
+    left: 12px;
+
+    transform: translateY(-50%);
+
+    background: var(--color-white);
+    padding: 0 5px;
+
+    font-size: 12px;
+    color: var(--color-dark-variant);
+}
+
+/* item radio */
+.radio-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.radio-item input[type="radio"] {
+    appearance: auto !important;
+    -webkit-appearance: radio !important;
+    -moz-appearance: radio !important;
+
+    width: 16px;
+    height: 16px;
+    margin: 0;
+
+    accent-color: var(--color-primary);
+    cursor: pointer;
+}
+
+/* ==========================================
+   INPUT NUMBER
+========================================== */
+
+.input-satuan{
+    position: relative;
+    width: 100%;
+}
+
+.input-icon{
+    position: absolute;
+    left: 5px;
+    top: 0;
+    bottom: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: auto 0;
+
+    width: 20px;
+    height: 20px;
+
+    z-index: 2;
+    pointer-events: none;
+}
+
+.input-satuan input{
+    width: 100%;
+    padding-left: 30px;   /* ruang untuk svg */
+    padding-right: 25px;  /* ruang untuk cm */
+}
+
+.input-satuan span{
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-dark-variant);
+    pointer-events: none;
+}
+
+.input-satuan label {
+    left: 20px;
+}

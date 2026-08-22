@@ -1,0 +1,133 @@
+/* =========================================================
+   DATA MASTER
+   ========================================================= */
+
+/*data-master.css*/
+.master-data {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.level-data,
+.kategori-data {
+    height: 87vh;
+    max-height: 87vh;
+
+    background: var(--color-white);
+    padding: var(--card-padding);
+    padding-bottom: 1rem;
+
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--box-shadow);
+
+    transition: all 300ms ease;
+
+    /* PENTING */
+    display: flex;
+    flex-direction: column;
+
+    /* Agar padding tidak menambah ukuran */
+    box-sizing: border-box;
+
+    /* Agar child boleh mengecil */
+    min-height: 0;
+}
+
+.list-view {
+    margin-top: 1rem;
+    padding: 12px;
+
+    border-radius: var(--border-radius-2);
+    background: var(--color-white);
+    border: 1px solid #dcdcdc;
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    /* PENTING */
+    flex: 1;
+    min-height: 0;
+
+    /* HAPUS height dan max-height */
+}
+
+.btn-master-data {
+    margin-top: 1rem;
+    width: 100%;
+}
+
+
+.list-item{
+    color: var(--color-dark);
+    padding: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 300ms ease;
+}
+
+.list-item h3 {
+    font-weight: 500;
+}
+
+.list-item:hover {
+    background: var(--color-light);
+    color: var(--color-primary);
+    padding-left: 2rem;
+}
+
+.list-item:hover button{
+    margin-right: 0.5rem;
+}
+
+.action-btn {
+    margin-left: auto;
+    display: flex;
+    gap: .5rem; /* jarak tombol */
+}
+
+.delete-btn span,
+.update-btn span {
+    font-size: 1.1rem;
+}
+
+.delete-btn button:hover,
+.delete-btn button:hover > span,
+.update-btn button:hover,
+.update-btn button:hover > span{
+    background: transparent;
+    color: var(--color-primary);
+}
+
+
+
+/* POPUP TAMBAH DATA */
+.content-popup-master-data {
+    padding: var(--card-padding);
+    border-radius: var(--border-radius-2);
+    background: var(--color-white);
+
+    display: flex;
+    flex-direction: column;
+
+    width: 30rem;
+    height: 15rem;
+
+    transform: translateY(-60px);
+    transition: transform .25s ease;
+}
+
+.popup.show .content-popup-master-data{
+    transform: translateY(0);
+}
+
+.content-popup-master-data .form-group {
+    width: 100%;
+    margin-top: 1rem;
+}
