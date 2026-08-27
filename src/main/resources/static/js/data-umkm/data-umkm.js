@@ -85,7 +85,6 @@ async function loadTableDataUmkm(reload = false){
         );
 
     } catch(error){
-        console.log(error);
         showToast(error, "error")
         dataUmkm = [];
     }
@@ -517,8 +516,6 @@ async function simpanDataUmkm(){
             ? new Date(tanggalLahirString).getTime()
             : null;
 
-    console.log(isEditModeUmkm)
-
     showLoading(
         isEditModeUmkm
             ? "Mengubah Data..."
@@ -614,10 +611,6 @@ async function hapusDataUmkm(id) {
     }
 }
 function konfirmasiHapusUmkm(id){
-    console.log(
-        "konfirmasiHapusUmkm",
-        id
-    );
 
     showPopupHapus({
         title: "Konfirmasi Hapus Data UMKM",

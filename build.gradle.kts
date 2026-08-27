@@ -1,13 +1,14 @@
 plugins {
 	kotlin("jvm") version "2.3.21"
 	kotlin("plugin.spring") version "2.3.21"
+	kotlin("plugin.jpa") version "2.3.21"
+
 	id("org.springframework.boot") version "4.1.0"
 	id("io.spring.dependency-management") version "1.1.7"
-	kotlin("plugin.jpa") version "2.3.21"
 }
 
 group = "com.girsang"
-version = "0.0.1-SNAPSHOT"
+version = "1.0.0"
 
 java {
 	toolchain {
@@ -20,23 +21,50 @@ repositories {
 }
 
 dependencies {
+
+	// ==============================
+	// SPRING BOOT
+	// ==============================
+
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-webmvc")
-
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 
+	// ==============================
+	// KOTLIN
+	// ==============================
+
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
+
+	// ==============================
+	// JACKSON
+	// ==============================
+
 	implementation("tools.jackson.module:jackson-module-kotlin")
 
+	// ==============================
+	// HIBERNATE SQLITE
+	// ==============================
+
 	implementation("org.hibernate.orm:hibernate-community-dialects")
+
+	// ==============================
+	// IMAGE
+	// ==============================
 
 	implementation("net.coobird:thumbnailator:0.4.20")
 	implementation("org.sejda.imageio:webp-imageio:0.1.6")
 
-	developmentOnly("org.springframework.boot:spring-boot-devtools")
+	// ==============================
+	// SQLITE
+	// ==============================
 
 	runtimeOnly("org.xerial:sqlite-jdbc")
+
+	// ==============================
+	// TEST
+	// ==============================
 
 	testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-security-test")
@@ -48,7 +76,10 @@ dependencies {
 
 kotlin {
 	compilerOptions {
-		freeCompilerArgs.addAll("-Xjsr305=strict", "-Xannotation-default-target=param-property")
+		freeCompilerArgs.addAll(
+			"-Xjsr305=strict",
+			"-Xannotation-default-target=param-property"
+		)
 	}
 }
 
@@ -63,6 +94,9 @@ tasks.withType<Test> {
 }
 
 tasks.processResources {
-	duplicatesStrategy =
-		DuplicatesStrategy.INCLUDE
+	duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+tasks.bootJar {
+	archiveFileName.set("aplikasi-cetak-stiker.jar")
 }

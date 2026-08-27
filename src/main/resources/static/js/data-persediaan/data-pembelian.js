@@ -456,7 +456,6 @@ function hapusBarang(index) {
 
 // CRUD
 async function simpanDataPembelian(){
-    console.log(penggunaAktif)
     if(dataPembelianRinci.length === 0){
         showToast("Belum ada barang.", "warning");
         return;
@@ -564,9 +563,6 @@ async function downloadDataPembelian(){
         awal = formatTanggalFile(tanggalAwalDownloadPembelian);
         akhir = formatTanggalFile(tanggalAkhirDownloadPembelian);
     }
-
-    console.log(awal);
-    console.log(akhir);
     try {
         const downloadData = await fetchDownloadPembelian(awal, akhir);
 
@@ -579,8 +575,6 @@ async function downloadDataPembelian(){
             "Total"
         ];
 
-        console.log(downloadData);
-
         const rows = downloadData.map((item, index) => [
             index + 1,
             formatTanggalFile(item.tanggal),
@@ -589,8 +583,6 @@ async function downloadDataPembelian(){
             item.jumlah,
             item.total
         ]);
-
-        console.log(rows);
 
         const tanggal = new Date()
 
@@ -639,7 +631,6 @@ window.initDataPembelian = initDataPembelian;
 window.sortTablePembelianRinci = sortTablePembelianRinci;
 window.ubahHargaPembelian = ubahHargaPembelian;
 window.ubahJumlahPembelian = ubahJumlahPembelian;
-window.formatRupiah = formatRupiah;
 window.hapusBarang = hapusBarang;
 window.toggleDetailPembelian = toggleDetailPembelian;
 window.destroyDataPembelian = destroyDataPembelian;

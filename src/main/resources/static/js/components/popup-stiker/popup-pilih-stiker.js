@@ -259,14 +259,7 @@ function getStiker(id){
     return daftarStiker.find(item => item.id === id);
 }
 async function lihatStiker(id) {
-
-    console.log(id)
-
-    const stiker = getStiker(id);
-
-    if (!stiker) return;
-
-    showPopupLihatStiker(stiker);
+    await showPopupLihatStiker(id);
 }
 
 window.initPopupPilihStiker = initPopupPilihStiker;

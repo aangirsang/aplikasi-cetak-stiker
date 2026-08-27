@@ -2,6 +2,8 @@ package com.girsang.stiker.model.mapper
 
 import com.girsang.stiker.model.dto.response.DataOrderanResponse
 import com.girsang.stiker.model.dto.response.DataOrderanRinciResponse
+import com.girsang.stiker.model.dto.response.DataTabelOrderanResponse
+import com.girsang.stiker.model.dto.response.DataTabelOrderanRinciResponse
 import com.girsang.stiker.model.entity.DataOrderan
 import com.girsang.stiker.model.entity.DataOrderanRinci
 import org.springframework.stereotype.Component
@@ -30,6 +32,16 @@ class DataOrderanMapper {
         )
     }
 
+    fun toResponseTabel(entity: DataOrderan) : DataTabelOrderanResponse {
+        return DataTabelOrderanResponse(
+            id = entity.id,
+            faktur = entity.faktur,
+            tanggal = entity.tanggal,
+            namaUmkm = entity.dataUMKM.namaUsaha,
+            totalStiker = entity.totalStiker
+        )
+    }
+
     fun toResponse(entity: DataOrderanRinci): DataOrderanRinciResponse {
         return DataOrderanRinciResponse(
             id = entity.id,
@@ -50,6 +62,17 @@ class DataOrderanMapper {
             pathGambar2 = entity.dataStiker.pathGambar2,
             jumlah = entity.jumlah,
             pathTIF = entity.dataStiker.layoutCetak?.pathTIF ?: ""
+        )
+    }
+
+    fun toTabelResponse(entity: DataOrderanRinci) : DataTabelOrderanRinciResponse {
+        return DataTabelOrderanRinciResponse(
+            id = entity.id,
+            stikerId = entity.dataStiker.id,
+            kodeStiker = entity.dataStiker.kodeStiker,
+            namaStiker = entity.dataStiker.namaStiker,
+            ukuranStiker = "${formatAngka(entity.dataStiker.panjang)} X ${formatAngka(entity.dataStiker.lebar)}",
+            jumlah = entity.jumlah
         )
     }
     private fun formatAngka(value: Double): String {

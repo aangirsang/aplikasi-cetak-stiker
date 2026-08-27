@@ -111,26 +111,8 @@ function renderListStikerCetakOrder(rincian){
         </div>
     `).join("");
 }
-function lihatStikerCetak(id) {
-
-    const rinci = selectRincian.find(r => r.stikerId === id);
-
-    console.log(rinci);
-    const stiker = {
-        id: rinci.stikerId,
-        kodeStiker: rinci.kodeStiker,
-        namaStiker: rinci.namaStiker,
-        panjang: rinci.panjang,
-        lebar: rinci.lebar,
-        status: rinci.status,
-        catatan: rinci.catatan,
-        pathGambar1: rinci.pathGambar1,
-        pathGambar2: rinci.pathGambar2,
-    };
-
-    //if (!stiker) return;
-
-    showPopupLihatStiker(stiker);
+async function lihatStikerCetak(id) {
+    await showPopupLihatStiker(id);
 }
 
 function tutupPopupCetakOrderan() {

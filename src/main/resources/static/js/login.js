@@ -60,12 +60,6 @@ async function doLogin(e) {
             // Response bukan JSON
         }
 
-        console.log(
-            "Login:",
-            response.status,
-            result
-        );
-
         // ==========================================
         // USERNAME / PASSWORD SALAH
         // ==========================================

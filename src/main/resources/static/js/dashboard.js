@@ -76,7 +76,6 @@ async function fetchTabelDashboard(){
         tanggalAkhir: akhir
     });
 
-    console.log(`${BASE_URL_ORDERAN}/tanggal?${params}`);
 
     const response = await fetch(`${BASE_URL_ORDERAN}/tanggal?${params}`);
 
@@ -317,7 +316,6 @@ async function loadDiagramGaris(){
         const namaBulan = new Date(item.tahun, item.bulan - 1)
             .toLocaleString("id-ID", { month: "long" });
 
-        console.log(namaBulan);
     });
 
     const bulans = dataRekap.map(item =>

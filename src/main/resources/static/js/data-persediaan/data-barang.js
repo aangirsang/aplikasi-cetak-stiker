@@ -59,7 +59,6 @@ async function loadTabelDataBarang(reload = false) {
         renderTabelDataBarang(paginated);
         loadPagination("pagination", filtered.length, currentPageBarang, rowsPerPageBarang, changePageBarang);
     } catch(error){
-        console.log(error);
         showToast(error, "error")
         dataUmkm = [];
     }

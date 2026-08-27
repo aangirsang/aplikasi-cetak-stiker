@@ -15,7 +15,7 @@
     max-width: 90vw;
 
     height: 45rem;
-    min-height: 90vh;
+    max-height: 90vh;
 
     box-sizing: border-box;
     overflow-y: auto;

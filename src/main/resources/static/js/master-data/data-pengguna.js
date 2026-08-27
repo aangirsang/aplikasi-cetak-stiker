@@ -357,7 +357,6 @@ function isiPopupDataPengguna(data){
             ? `${BASE_URL}${data.pathGambar}`
             : noImagePerson;
 
-    console.log(previewImage.src);
 }
 function closePopupPengguna(){
     getEl("popup-data-pengguna").classList.remove("show");
@@ -534,7 +533,6 @@ async function simpanDataPengguna() {
 
     try {
         if(isEdit){
-            console.log(kataSandi)
             const response = await fetch(`${BASE_URL_PENGGUNA}/${selectedPengguna}`, {
                 method: 'PUT',
                 headers: {
@@ -741,14 +739,6 @@ async function handlePreviewGambar(event) {
                 1024 /
                 1024
             ).toFixed(2);
-
-        console.log(
-            `Asli: ${ukuranAwal} MB`
-        );
-
-        console.log(
-            `WebP: ${ukuranWebp} MB`
-        );
 
     } catch(error){
 

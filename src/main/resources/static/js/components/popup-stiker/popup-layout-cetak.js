@@ -906,8 +906,6 @@ async function simpanLayout() {
 
         const kertas = selectedKertas.namaKertas;
 
-        console.log(kertas);
-
         if (selectedTif) {
 
             const hasil =
@@ -917,9 +915,6 @@ async function simpanLayout() {
                 hasil.path;
 
             pathFile = pathFileTif.replace(/\.[^.]+$/, "");
-
-            console.log(selectedStiker);
-            console.log(pathFile);
 
         }
 
@@ -1640,13 +1635,6 @@ async function handleUploadTif(event) {
             result.imageHeightMM
         };
 
-
-        console.log(
-            "Metadata:",
-            metadataFile
-        );
-
-
         // ==================================================
         // TAMPILKAN WEBP
         // ==================================================
@@ -1753,8 +1741,6 @@ async function uploadFileTif(kodeStiker){
     }
 
     const text = await response.json();
-
-    console.log(text[0]);
 
     return text[0];
 

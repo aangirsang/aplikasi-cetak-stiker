@@ -12,8 +12,12 @@ class AppPathProvider(
 
 ) {
 
+
+    fun dataDir(): File =
+        File(dataDir)
+
     fun uploadsDir(): File =
-        File(dataDir, "uploads")
+        File(dataDir(), "uploads")
 
     // ===========================
     // GAMBAR
@@ -50,7 +54,7 @@ class AppPathProvider(
     // ===========================
 
     fun databaseDir(): File =
-        File(dataDir, "database")
+        File(dataDir(), "database")
 
     fun databaseFile(): File =
         File(databaseDir(), "cetak-stiker.db")

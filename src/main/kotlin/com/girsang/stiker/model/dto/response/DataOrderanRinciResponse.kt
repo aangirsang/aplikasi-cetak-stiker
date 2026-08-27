@@ -22,3 +22,12 @@ data class DataOrderanRinciResponse(
     val jumlah: Int,
     var pathTIF: String = ""
 )
+
+data class DataTabelOrderanRinciResponse(
+    val id: String,
+    val stikerId: String,
+    val kodeStiker: String,
+    val namaStiker: String,
+    val ukuranStiker: String,
+    val jumlah: Int,
+)

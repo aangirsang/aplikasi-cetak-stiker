@@ -5,6 +5,8 @@ import com.girsang.stiker.model.dto.request.DataOrderanRequest
 import com.girsang.stiker.model.dto.request.DataOrderanRinciRequest
 import com.girsang.stiker.model.dto.response.DataOrderanResponse
 import com.girsang.stiker.model.dto.response.DataOrderanRinciResponse
+import com.girsang.stiker.model.dto.response.DataTabelOrderanResponse
+import com.girsang.stiker.model.dto.response.DataTabelOrderanRinciResponse
 import com.girsang.stiker.model.entity.DataOrderan
 import com.girsang.stiker.model.entity.DataOrderanRinci
 import com.girsang.stiker.model.mapper.DataOrderanMapper
@@ -37,6 +39,10 @@ class DataOrderanService(
         repoOrder.findAll().map { mapper.toResponse(it) }
 
     @Transactional(readOnly = true)
+    fun semuaTabelOrderan(): List<DataTabelOrderanResponse> =
+        repoOrder.findAll().map { mapper.toResponseTabel(it) }
+
+    @Transactional(readOnly = true)
     fun cariOrderanByTanggal(
         tanggalAwal: LocalDate?,
         tanggalAkhir: LocalDate?,
@@ -51,6 +57,10 @@ class DataOrderanService(
     @Transactional(readOnly = true)
     fun semuaRinci(): List<DataOrderanRinciResponse> =
         repoRinci.findAll().map { mapper.toResponse(it) }
+
+    @Transactional(readOnly = true)
+    fun semuaTabelRinci(idOrder: String): List<DataTabelOrderanRinciResponse> =
+        repoRinci.findByDataOrderanId(idOrder).map { mapper.toTabelResponse(it) }
 
     @Transactional(readOnly = true)
     fun cariId(id: String): DataOrderanResponse {

@@ -38,8 +38,6 @@ async function initPilihBarang() {
         .getElementById("batal-popup-pilih-barang")
         ?.addEventListener("click", () => {
 
-            console.log("klik batal");
-
             tutupPopupPilihBarang();
         });
 }

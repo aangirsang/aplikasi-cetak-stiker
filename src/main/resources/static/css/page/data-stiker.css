@@ -3,6 +3,9 @@
    ========================================================= */
 
 /*data-stiker.css*/
+#popup-data-stiker{
+    z-index: 1002;
+}
 .content-popup-data-stiker {
     padding: var(--card-padding);
     border-radius: 12px;

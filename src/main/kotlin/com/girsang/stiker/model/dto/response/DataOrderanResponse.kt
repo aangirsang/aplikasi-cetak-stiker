@@ -18,3 +18,11 @@ data class DataOrderanResponse(
     val totalStiker: Int,
     val rincian: List<DataOrderanRinciResponse>
 )
+
+data class DataTabelOrderanResponse(
+    val id: String,
+    val faktur: String,
+    val tanggal: Long,
+    val namaUmkm: String,
+    val totalStiker: Int,
+)

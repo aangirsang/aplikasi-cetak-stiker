@@ -1,7 +1,9 @@
 /* =========================================================
    POPUP PILIH BARANG
    ========================================================= */
-
+#popup-pilih-barang{
+    z-index: 1003;
+}
 .content-popup-pilih-barang {
     padding: var(--card-padding);
     border-radius: 12px;

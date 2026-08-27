@@ -3,7 +3,9 @@
    ========================================================= */
 
 /*popup-layout-cetak.css*/
-
+#popup-layout-cetak{
+    z-index: 1003;
+}
 .popup-content-layout-cetak{
     width:95%;
     height:95%;

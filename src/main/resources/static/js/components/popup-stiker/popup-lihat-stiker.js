@@ -1,8 +1,8 @@
-
-let selectedPopupLihatStiker = null;
+let selectedStiker = null;
 
 async function initPopupLihatStiker() {
     await initPopupLihatGambar();
+    await initPopupDataStiker();
 
     // cek agar tidak dimuat dua kali
     if(document.getElementById("popup-lihat-stiker")){
@@ -27,6 +27,9 @@ async function initPopupLihatStiker() {
         if(e.target.id === "tutup-popup-lihat-stiker"){
             tutupPopupLihatStiker();
         }
+        if(e.target.id === "edit-popup-lihat-stiker"){
+            editDataStiker(selectedStiker.id);
+        }
     });
 
     getEl("lihat-stiker-preview-gambar-1")
@@ -36,18 +39,9 @@ async function initPopupLihatStiker() {
         .addEventListener("click", () => lihatGambarStiker(2));
 }
 
-function showPopupLihatStiker(selectedStiker) {
+async function showPopupLihatStiker(id) {
 
-    selectedPopupLihatStiker = selectedStiker;
-
-    getEl("lihat-stiker-kode").textContent = selectedStiker.kodeStiker;
-    getEl("lihat-stiker-nama").textContent = selectedStiker.namaStiker;
-    getEl("lihat-stiker-ukuran").textContent = `${selectedStiker.panjang} x ${selectedStiker.lebar} cm`;
-    getEl("lihat-stiker-status").textContent = `${selectedStiker.status ? "Aktif" : "Non-Aktif"}`;
-    getEl("lihat-stiker-catatan").textContent = selectedStiker.catatan;
-
-    setPreviewGambarPopupLihatStiker(1, selectedStiker.pathGambar1);
-    setPreviewGambarPopupLihatStiker(2, selectedStiker.pathGambar2);
+    await isiDataStiker(id);
 
     document
         .getElementById("popup-lihat-stiker")
@@ -58,6 +52,44 @@ function tutupPopupLihatStiker() {
     document
         .getElementById("popup-lihat-stiker")
         .classList.remove("show");
+}
+function bersihDataSttiker(){
+    selectedStiker = null;
+
+    getEl("lihat-stiker-kode").textContent = "";
+    getEl("lihat-stiker-nama").textContent = "";
+    getEl("lihat-stiker-ukuran").textContent = `0 cm`;
+    getEl("lihat-stiker-status").textContent = "";
+    getEl("lihat-stiker-catatan").textContent = "";
+
+    setPreviewGambarPopupLihatStiker(1, "");
+    setPreviewGambarPopupLihatStiker(2, "");
+}
+async function isiDataStiker(id) {
+    const response = await fetch(`${BASE_URL_STIKER}/${id}`);
+
+    if (!response.ok) {
+        showToast("Gagal mengambil data stiker!!", "error")
+        throw new Error("Gagal mengambil data stiker");
+    }
+
+    selectedStiker = await response.json();
+
+
+    getEl("lihat-stiker-kode").textContent = selectedStiker.kodeStiker;
+    getEl("lihat-stiker-nama").textContent = selectedStiker.namaStiker;
+    getEl("lihat-stiker-ukuran").textContent = `${selectedStiker.panjang} x ${selectedStiker.lebar} cm`;
+    getEl("lihat-stiker-status").textContent = `${selectedStiker.status ? "Aktif" : "Non-Aktif"}`;
+    getEl("lihat-stiker-catatan").textContent = selectedStiker.catatan;
+
+    setPreviewGambarPopupLihatStiker(1, selectedStiker.pathGambar1);
+    setPreviewGambarPopupLihatStiker(2, selectedStiker.pathGambar2);
+}
+async function editDataStiker(id) {
+    await showPopupStiker(id, async (savedId) => {
+       bersihDataSttiker();
+       await isiDataStiker(savedId);
+    });
 }
 
 function setPreviewGambarPopupLihatStiker(index, path) {

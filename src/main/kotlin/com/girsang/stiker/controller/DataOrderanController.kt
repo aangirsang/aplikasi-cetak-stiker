@@ -3,6 +3,8 @@ package com.girsang.stiker.controller
 import com.girsang.stiker.model.dto.request.DataOrderanRequest
 import com.girsang.stiker.model.dto.response.DataOrderanResponse
 import com.girsang.stiker.model.dto.response.DataOrderanRinciResponse
+import com.girsang.stiker.model.dto.response.DataTabelOrderanResponse
+import com.girsang.stiker.model.dto.response.DataTabelOrderanRinciResponse
 import com.girsang.stiker.model.dto.response.download.orderan.RekapOrderanBulananResponse
 import com.girsang.stiker.service.orderan.DataOrderanService
 import com.girsang.stiker.service.orderan.LaporanOrderanService
@@ -31,6 +33,10 @@ class DataOrderanController(
     fun semuaData(): ResponseEntity<List<DataOrderanResponse>> =
         ResponseEntity.ok(serviceOrder.semuaOrderan())
 
+    @GetMapping("/tabel")
+    fun semuaDataTabel(): ResponseEntity<List<DataTabelOrderanResponse>> =
+        ResponseEntity.ok(serviceOrder.semuaTabelOrderan())
+
     @GetMapping("/tanggal")
     fun cariOrderanByTanggal(
 
@@ -49,6 +55,10 @@ class DataOrderanController(
     @GetMapping("/rincian")
     fun semuaRincian(): ResponseEntity<List<DataOrderanRinciResponse>> =
         ResponseEntity.ok(serviceOrder.semuaRinci())
+
+    @GetMapping("/rincian/{id}")
+    fun semuaRincianTabel(@PathVariable id: String): ResponseEntity<List<DataTabelOrderanRinciResponse>> =
+        ResponseEntity.ok(serviceOrder.semuaTabelRinci(id))
 
     @GetMapping("/{id}")
     fun cariId(

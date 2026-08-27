@@ -18,7 +18,7 @@ document.addEventListener(
         try {
 
             const response = await fetch(
-                `${BASE_URL}/api/auth/me`,
+                `${BASE_URL}/auth/me`,
                 {
                     credentials: "include"
                 }
@@ -45,9 +45,9 @@ document.addEventListener(
 
             const me = await response.json();
 
-            penggunaAktif = me;
+            penggunaAktif = me.data;
 
-            updateProfile(me);
+            updateProfile(me.data);
 
             loginOverlay.classList.add("hidden");
 

@@ -434,13 +434,6 @@ async function cetakTIFF(id) {
         const stiker =
             await response.json();
 
-
-        console.log(
-            "Data Stiker:",
-            stiker
-        );
-
-
         // ==================================================
         // VALIDASI
         // ==================================================
@@ -495,14 +488,6 @@ async function cetakTIFF(id) {
                 : 300;
 
 
-        console.log(
-            "DPI:",
-            dpiX,
-            "x",
-            dpiY
-        );
-
-
         // ==================================================
         // URL TIFF
         // ==================================================
@@ -513,13 +498,6 @@ async function cetakTIFF(id) {
                 stiker.pathTIF
             ) +
             ".tif";
-
-
-        console.log(
-            "Memuat TIFF:",
-            url
-        );
-
 
         // ==================================================
         // DOWNLOAD TIFF
@@ -597,39 +575,6 @@ async function cetakTIFF(id) {
         const tifHeight =
             ifd.height;
 
-
-        console.log(
-            "TIFF:",
-            tifWidth,
-            "x",
-            tifHeight
-        );
-
-
-        console.log(
-            "BITS:",
-            JSON.stringify(ifd.t258)
-        );
-
-
-        console.log(
-            "SAMPLES:",
-            JSON.stringify(ifd.t277)
-        );
-
-
-        console.log(
-            "COMPRESSION:",
-            JSON.stringify(ifd.t259)
-        );
-
-
-        console.log(
-            "PHOTOMETRIC:",
-            JSON.stringify(ifd.t262)
-        );
-
-
         // ==================================================
         // RGBA
         // ==================================================
@@ -672,15 +617,6 @@ async function cetakTIFF(id) {
                 25.4
             );
 
-
-        console.log(
-            "Kertas:",
-            paperWidthPx,
-            "x",
-            paperHeightPx
-        );
-
-
         // ==================================================
         // OFFSET PIXEL
         // ==================================================
@@ -695,13 +631,6 @@ async function cetakTIFF(id) {
             stiker.offsetY *
             dpiY /
             25.4;
-
-
-        console.log(
-            "Offset:",
-            offsetXPx,
-            offsetYPx
-        );
 
 
         // ==================================================
@@ -810,21 +739,6 @@ async function cetakTIFF(id) {
                 tifTop
             );
 
-
-        console.log(
-            "Source:",
-            sourceX,
-            sourceY
-        );
-
-
-        console.log(
-            "Crop:",
-            cropWidth,
-            cropHeight
-        );
-
-
         // ==================================================
         // CANVAS
         // ==================================================
@@ -902,15 +816,6 @@ async function cetakTIFF(id) {
             25.4 /
             dpiY;
 
-
-        console.log(
-            "Image MM:",
-            imageWidthMM,
-            "x",
-            imageHeightMM
-        );
-
-
         // ==================================================
         // CONVERT PNG
         // ==================================================
@@ -938,6 +843,8 @@ async function cetakTIFF(id) {
         printWindow.onload = () => {
 
             const doc = printWindow.document;
+
+            doc.title = `${stiker.namaUsaha} - ${stiker.namaStiker}`;
 
             // ukuran kertas
             const style = doc.createElement("style");

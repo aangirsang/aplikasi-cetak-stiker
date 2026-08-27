@@ -283,7 +283,6 @@ function showPopupDataPenyesuaian(id = null) {
             stokBarang: selectedPenyesuaian.stokBarang
         }
 
-        console.log(selectedBarang);
 
         getEl("data-penyesuaian-tanggal").textContent = formatTanggal(selectedPenyesuaian.tanggal)
 
@@ -316,7 +315,6 @@ function showPopupDataPenyesuaian(id = null) {
                 ? `${BASE_URL}${selectedPenyesuaian.pathGambar}`
                 : noImageStiker;
 
-        console.log(previewImage.src);
     } else {
         btnBarang.disabled = false;
         btnBarang.classList.remove("btn-disabled");
@@ -457,14 +455,6 @@ async function handlePreviewGambar(event) {
                 1024 /
                 1024
             ).toFixed(2);
-
-        console.log(
-            `Asli: ${ukuranAwal} MB`
-        );
-
-        console.log(
-            `WebP: ${ukuranWebp} MB`
-        );
 
     } catch(error){
 

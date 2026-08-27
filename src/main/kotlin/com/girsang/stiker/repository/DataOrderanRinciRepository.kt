@@ -7,6 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 
 interface DataOrderanRinciRepository: JpaRepository<DataOrderanRinci, String> {
+
+    fun findByDataOrderanId(orderId: String): List<DataOrderanRinci>
+
     @Query("""
         SELECT r
         FROM DataOrderanRinci r

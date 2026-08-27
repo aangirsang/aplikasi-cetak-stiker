@@ -13,9 +13,6 @@ let dataUmkm = [];
 
 async function initPopupPilihUmkm() {
 
-
-    console.log("init popup");
-
     // cek agar tidak dimuat dua kali
     if(document.getElementById("popup-pilih-umkm")){
         return;
@@ -41,8 +38,6 @@ async function initPopupPilihUmkm() {
     document
         .getElementById("batal-popup-pilih-umkm")
         ?.addEventListener("click", () => {
-
-            console.log("klik batal");
 
             tutupPopupPilihUmkm();
         });
@@ -246,8 +241,6 @@ function createRowPopupPilihUmkm(umkm){
     `;
 }
 async function changePagePopupPilihUmkm(page){
-
-    console.log("Klik halaman:", page);
 
     const totalPages = Math.ceil(
         getFilterDataPopupPilihUmkm().length /

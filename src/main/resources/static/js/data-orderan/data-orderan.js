@@ -378,34 +378,44 @@ function updateTotalJumlahDataOrder(){
         `${total} Lembar`;
 }
 async function lihatStikerOrderan(id){
-
-    const response = await fetch(`${BASE_URL_STIKER}/${id}`);
-
-    if(!response.ok){
-        return showToast("Gagal memuat data stiker!!","error");
-    }
-
-    const stiker = await response.json();
-
-    showPopupLihatStiker(stiker);
+    await showPopupLihatStiker(id);
 }
 
 //TABEL
 async function loadTabelDataOrderan(reload = false) {
+
+    const totalStart = performance.now();
+
     showLoading("Memuat Data Orderan..");
+
     try {
-        if(reload){
+
+        let start = performance.now();
+
+        if (reload) {
             dataOrderan = await fetchDataOrderan();
             cariDataOrderan = "";
             tanggalAwalOrderan = "";
             tanggalAkhirOrderan = "";
         }
 
-        const filtered = await getFilterDataOrderan();
-        const sorted = await getsortedDataOrderan(filtered);
-        const paginated = getPaginatedData(sorted, currentPageOrderan, rowsPerPageOrderan)
+        start = performance.now();
+        const filtered = getFilterDataOrderan();
 
+        start = performance.now();
+        const sorted = getsortedDataOrderan(filtered);
+
+        start = performance.now();
+        const paginated = getPaginatedData(
+            sorted,
+            currentPageOrderan,
+            rowsPerPageOrderan
+        );
+
+        start = performance.now();
         renderTabelOrderan(paginated);
+
+        start = performance.now();
         loadPagination(
             "pagination",
             filtered.length,
@@ -413,12 +423,17 @@ async function loadTabelDataOrderan(reload = false) {
             rowsPerPageOrderan,
             changePageOrderan
         );
-    } catch(error){
+
+    } catch(error) {
+
         console.error(error);
-        showToast(error, "error")
+        showToast(error, "error");
         dataOrderan = [];
+
     } finally {
+
         hideLoading();
+
     }
 }
 async function fetchDataOrderan() {
@@ -524,6 +539,7 @@ function createTabelOrderan(item, isOpened) {
     return `
         <tr 
             class="orderan-row ${isOpened ? 'selected' : ''}"
+            data-id="${item.id}"
             onclick="event.stopPropagation(); toggleDetailOrderan('${item.id}')"
         >
             <td>${item.faktur}</td>
@@ -542,15 +558,18 @@ function createTabelOrderan(item, isOpened) {
                         <span class="material-symbols-sharp">edit</span>
                     </button>
 
-                    <button onclick="event.stopPropagation(); konfirmasiHapusDataOrderan('${item.id}')">
+                    <button
+                        onclick="event.stopPropagation(); konfirmasiHapusDataOrderan('${item.id}')">
                         <span class="material-symbols-sharp">delete</span>
                     </button>
                 </div>
             </td>
         </tr>
-        
-        <!-- DETAIL -->
-        <tr class="detail-table ${isOpened ? "show" : ""}">
+
+        <tr
+            class="detail-table ${isOpened ? "show" : ""}"
+            data-id="${item.id}"
+        >
             <td colspan="6">
                 <div class="detail-content">
                     <table class="detail-horizontal-table">
@@ -562,21 +581,22 @@ function createTabelOrderan(item, isOpened) {
                                 <th>Jumlah</th>
                             </tr>
                         </thead>
+
                         <tbody>
-                             ${item.rincian.map(rinci => `
-                                    <tr>
-                                        <td>${rinci.kodeStiker}</td>
-                                        <td>${rinci.namaStiker}</td>
-                                        <td>${rinci.ukuranStiker}</td>
-                                        <td>${rinci.jumlah}</td>
-                                    </tr>
-                                `).join("")}
+                            ${item.rincian.map(rinci => `
+                                <tr>
+                                    <td>${rinci.kodeStiker}</td>
+                                    <td>${rinci.namaStiker}</td>
+                                    <td>${rinci.ukuranStiker}</td>
+                                    <td>${rinci.jumlah}</td>
+                                </tr>
+                            `).join("")}
                         </tbody>
                     </table>
                 </div>
             </td>
         </tr>
-    `
+    `;
 }
 async function sortTabelOrderan(field) {
     if(sortFieldDataOrderan === field) {
@@ -592,24 +612,74 @@ async function changePageOrderan(page){
     currentPageOrderan = page;
     await loadTabelDataOrderan();
 }
-async function toggleDetailOrderan(id) {
-    openedDetailOrderanId = openedDetailOrderanId === id ? null : id;
+function toggleDetailOrderan(id) {
 
-    await loadTabelDataOrderan();
+    const row = document.querySelector(
+        `.orderan-row[data-id="${id}"]`
+    );
+
+    const detail = document.querySelector(
+        `.detail-table[data-id="${id}"]`
+    );
+
+    if (!row || !detail) return;
+
+    const isOpened = openedDetailOrderanId === id;
+
+    // Tutup detail sebelumnya
+    if (openedDetailOrderanId !== null) {
+
+        const oldRow = document.querySelector(
+            `.orderan-row[data-id="${openedDetailOrderanId}"]`
+        );
+
+        const oldDetail = document.querySelector(
+            `.detail-table[data-id="${openedDetailOrderanId}"]`
+        );
+
+        oldRow?.classList.remove("selected");
+        oldDetail?.classList.remove("show");
+    }
+
+    if (isOpened) {
+        openedDetailOrderanId = null;
+        return;
+    }
+
+    openedDetailOrderanId = id;
+
+    row.classList.add("selected");
+    detail.classList.add("show");
 
     setTimeout(() => {
-        document.querySelector(".detail-table.show")?.scrollIntoView({
-            behavior:"smooth",
-            block:"nearest"
+        detail.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest"
         });
     }, 50);
 }
-async function closeDetailOrderanOutside(event){
-    if(event.target.closest(".orderan-row, .detail-table")) return;
-    if(openedDetailOrderanId === null) return;
+function closeDetailOrderanOutside(event) {
+
+    if (event.target.closest(".orderan-row, .detail-table")) {
+        return;
+    }
+
+    if (openedDetailOrderanId === null) {
+        return;
+    }
+
+    const row = document.querySelector(
+        `.orderan-row[data-id="${openedDetailOrderanId}"]`
+    );
+
+    const detail = document.querySelector(
+        `.detail-table[data-id="${openedDetailOrderanId}"]`
+    );
+
+    row?.classList.remove("selected");
+    detail?.classList.remove("show");
 
     openedDetailOrderanId = null;
-    await loadTabelDataOrderan();
 }
 async function destroyDataOrderan() {
 
