@@ -1,6 +1,5 @@
-// DATA
 let selectedStiker = null;
-
+let layoutCloseCallback = null;
 // CANVAS
 let canvas = null;
 let ctx = null;
@@ -118,6 +117,12 @@ async function initPopupLayoutCetak() {
         .addEventListener(
             "click",
             () => simpanLayout()
+        );
+
+    getEl("btn-layout-hapus")
+        .addEventListener(
+            "click",
+            () => hapus()
         );
 
     // TIF
@@ -672,14 +677,19 @@ async function loadTiff(stiker) {
 }
 
 // POPUP
-async function showPopupLayoutCetak(stiker) {
-
+async function showPopupLayoutCetak(stiker, onClose) {
+    layoutCloseCallback = onClose;
+    selectedStiker = stiker;
     document
         .getElementById("popup-layout-cetak")
         .classList.add("show");
 
+    console.log("Stiker layout:",
+        selectedStiker)
+    console.log("layoutCloseCallback:",
+        layoutCloseCallback)
     getEl("popup-layout-title")
-        .textContent = `Layout Cetak: ${stiker.kodeStiker}`
+        .textContent = `${selectedStiker.namaUsaha} - ${selectedStiker.namaStiker}`
 
     // Reset data lama
     clearLayout();
@@ -698,10 +708,6 @@ async function showPopupLayoutCetak(stiker) {
     showLoading(
         "Menampilkan gambar..."
     );
-
-
-    selectedStiker = stiker;
-
 
     try {
 
@@ -905,7 +911,7 @@ async function simpanLayout() {
         let pathFileTif;
 
         const kertas = selectedKertas.namaKertas;
-
+/*
         if (selectedTif) {
 
             const hasil =
@@ -917,6 +923,8 @@ async function simpanLayout() {
             pathFile = pathFileTif.replace(/\.[^.]+$/, "");
 
         }
+
+ */
 
 
         selectedStiker.offsetX = offsetX;
@@ -931,10 +939,12 @@ async function simpanLayout() {
         selectedStiker.dpiY = metadataFile.dpiY
         selectedStiker.imageWidthMM = metadataFile.imageWidthMM
         selectedStiker.imageHeightMM = metadataFile.imageHeightMM
+        selectedStiker.selectedTif = selectedTif
+        selectedStiker.selectedTifConvert = selectedTifConvert
 
-
+/*
         let response;
-        if(!selectedStiker.id){
+        if(!selectedPopupDataStiker.id){
             response =
                 await fetch(
                     `${BASE_URL_STIKER}`,
@@ -947,14 +957,14 @@ async function simpanLayout() {
                         },
 
                         body: JSON.stringify(
-                            selectedStiker
+                            selectedPopupDataStiker
                         )
                     }
                 );
         } else {
             response =
                 await fetch(
-                    `${BASE_URL_STIKER}/${selectedStiker.id}`,
+                    `${BASE_URL_STIKER}/${selectedPopupDataStiker.id}`,
                     {
                         method: "PUT",
 
@@ -964,7 +974,7 @@ async function simpanLayout() {
                         },
 
                         body: JSON.stringify(
-                            selectedStiker
+                            selectedPopupDataStiker
                         )
                     }
                 );
@@ -976,11 +986,22 @@ async function simpanLayout() {
             return;
         }
 
+ */
+
 
         showToast(
             "Data Layout stiker berhasil disimpan",
             "success"
         );
+
+        if (typeof layoutCloseCallback  === "function") {
+            layoutCloseCallback (selectedStiker);
+        }
+
+        closeLayout();
+
+        // Bersihkan callback
+        layoutCloseCallback = null;
 
     } catch (e) {
 
@@ -993,6 +1014,55 @@ async function simpanLayout() {
 
         hideLoading();
     }
+}
+
+async function hapus() {
+
+
+    const id = selectedStiker.layoutID;
+
+    console.log(selectedStiker);
+    console.log(id);
+    console.log(!id);
+
+    if(id){
+        showLoading(
+            "Menghapus Data..."
+        );
+        try {
+            const response = await fetch(`${BASE_URL_STIKER}/hapus-layout/${id}`, {
+                method: 'DELETE'
+            });
+            if(await gagalHapus(response)) return;
+
+            selectedStiker.offsetX = 0;
+            selectedStiker.offsetY = 0;
+            selectedStiker.lebarKertas = 0;
+            selectedStiker.tinggiKertas = 0;
+            selectedStiker.pathTIF = ""
+            selectedStiker.kertas = ""
+            selectedStiker.width = 0
+            selectedStiker.height = 0
+            selectedStiker.dpiX = 0
+            selectedStiker.dpiY = 0
+            selectedStiker.imageWidthMM = 0
+            selectedStiker.imageHeightMM = 0
+            selectedStiker.selectedTif = null
+            selectedStiker.selectedTifConvert = null
+
+            if (typeof layoutCloseCallback  === "function") {
+                layoutCloseCallback (selectedStiker);
+            }
+
+            showToast("Data berhasil dihapus", "success");
+            closeLayout();
+        } catch (e) {
+            showToast(e.message, "warning");
+        } finally {
+            hideLoading();
+        }
+    }
+
 }
 
 // RESIZE CANVAS

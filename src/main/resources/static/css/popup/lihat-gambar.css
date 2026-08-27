@@ -29,11 +29,13 @@
 
     border: none;
     border-radius: 50%;
+
+    z-index: 10
 }
 
 .popup-image-view{
-    width: 90vw;
-    height: 90vh;
+    width: 98vw;
+    height: 98vh;
 
     display:flex;
     justify-content:center;
@@ -41,6 +43,8 @@
 
     overflow:hidden;
     position:relative;
+
+    z-index: 1
 }
 
 #img-fullscreen{

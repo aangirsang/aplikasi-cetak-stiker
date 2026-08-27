@@ -55,6 +55,7 @@
                 barangId = stiker.dataBarang.id,
                 namaBarang = stiker.dataBarang.namaBarang,
                 stokBarang = stiker.dataBarang.stokBarang,
+                layoutID = stiker.layoutCetak?.id ?: "",
                 pathTIF = stiker.layoutCetak?.pathTIF ?: "",
                 kertas = stiker.layoutCetak?.kertas ?: "",
                 lebarKertas = stiker.layoutCetak?.lebarKertas ?: 0.0,

@@ -142,6 +142,11 @@ fun cariByumkmDanStatus(umkmId: String): List<DataStikerResponse> {
         deletionService.safeDelete(DataStiker::class.java, id)
     }
 
+    fun hapusLayout(id: String) {
+        if(!repoLayout.existsById(id)) throw NoSuchElementException("Data tidak ditemukan")
+        repoLayout.deleteById(id)
+    }
+
     private fun generateKodeStiker(namaUMKM: String, tahun: Int): String {
         val nama = namaUMKM.trim()
         val tahunStr = tahun.toString().takeLast(2)

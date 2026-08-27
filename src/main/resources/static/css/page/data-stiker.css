@@ -382,7 +382,8 @@
     max-height: none;
 
     user-select: none;
-    pointer-events: none;
+    pointer-events: auto;
+    cursor: pointer;
 
     z-index: 2;
 }
@@ -405,4 +406,11 @@
     pointer-events: none;
 
     z-index: 3;
+}
+
+.preview-gambar-1,
+.preview-gambar-2{
+
+    pointer-events: auto;
+    cursor: pointer;
 }

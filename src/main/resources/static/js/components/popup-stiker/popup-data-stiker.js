@@ -1,4 +1,4 @@
-let selectedStiker = null;
+let selectedPopupDataStiker = null;
 
 let selectedUmkm = null;
 let selectedBarang = null;
@@ -20,6 +20,10 @@ let gambarBerubah = {
     1: false,
     2: false
 };
+
+let selectedTif = null;
+let selectedTifConvert = null;
+let pathFile = ""
 
 async function initPopupDataStiker() {
     // cek agar tidak dimuat dua kali
@@ -60,6 +64,17 @@ async function initPopupDataStiker() {
         .addEventListener("change", (event) => handlePreviewGambar(event, 1));
     getEl("popup-data-stiker-file-input-2")
         .addEventListener("change", (event) => handlePreviewGambar(event, 2));
+
+    getEl("preview-gambar-1")
+        .addEventListener("click", () =>lihatGambarStiker(1));
+    getEl("preview-gambar-2")
+        .addEventListener("click", () =>lihatGambarStiker(2));
+
+    getEl("preview-layout-gambar")
+        .addEventListener(
+            "click",
+            lihatPreviewLayoutTif
+        );
 
     // BARANG
     getEl("popup-data-stiker-barang")
@@ -106,11 +121,13 @@ async function showPopupStiker(id = null, onSaveSuccess = null) {
 
         if(!response.ok) return showToast("Gagal Memuat Data Stiker!!", "error")
 
-        selectedStiker = await response.json();
+        selectedPopupDataStiker = await response.json();
 
         //isiDataUmkm(selectedCariUmkm);
 
-        isiDataStiker(selectedStiker);
+        console.log(selectedPopupDataStiker);
+
+        isiDataStiker(selectedPopupDataStiker);
 
         popupTitle.textContent = `Edit Data Stiker: ${selectedUmkm.namaPemilik} - ${selectedUmkm.namaUsaha}`;
     }
@@ -191,7 +208,7 @@ function isiDataStiker(stiker) {
             ? `${BASE_URL}${stiker.pathGambar2}`
             : noImageStiker;
 
-    tampilkanPreviewLayoutCetak(selectedStiker);
+    tampilkanPreviewLayoutCetak(stiker);
 }
 function tutupPopupStiker() {
     getEl("popup-data-stiker").classList.remove("show");
@@ -253,17 +270,30 @@ async function tampilPopupPilihBarang(){
 
 async function tampilPopupLayout(){
 
-    if(!selectedStiker){
-        if (!validasiSimpanDataStiker()) return;
-        selectedStiker = await stikerToBody();
+    if(!selectedPopupDataStiker){
+        //if (!validasiSimpanDataStiker()) return;
+        selectedPopupDataStiker = await stikerToBody();
     }
 
-    await showPopupLayoutCetak(selectedStiker);
+    console.log(selectedPopupDataStiker);
+
+    await showPopupLayoutCetak(selectedPopupDataStiker,(stiker) => {
+
+        selectedPopupDataStiker = stiker
+        selectedTif = selectedPopupDataStiker.selectedTif;
+        selectedTifConvert = selectedPopupDataStiker.selectedTifConvert;
+
+        console.log("selectedTif: ", selectedTif);
+        console.log("selectedTifConvert: ", selectedTifConvert);
+
+        isiDataStiker(selectedPopupDataStiker);
+    });
+
 }
 
 // FORM
 function bersihPopupDataStiker() {
-    selectedStiker = null;
+    selectedPopupDataStiker = null;
     selectedUmkm = null;
     selectedBarang = null
     isEditModeStiker = false;
@@ -312,6 +342,7 @@ function setKodeStiker(kode){
     inputKode.value = kode;
     counter.textContent = `${kode.length}/20`;
 }
+
 function tampilkanPreviewLayoutCetak(data) {
 
     const container =
@@ -375,13 +406,6 @@ function tampilkanPreviewLayoutCetak(data) {
         paperWidth <= 0 ||
         paperHeight <= 0
     ) {
-
-        console.warn(
-            "Ukuran kertas tidak valid:",
-            paperWidth,
-            paperHeight
-        );
-
         return;
     }
 
@@ -852,19 +876,80 @@ function tampilkanPreviewLayoutCetak(data) {
     // MULAI LOAD
     // =====================================================
 
-    if (urlGambar) {
+    let objectUrl = null;
 
-        gambar.src =
-            urlGambar;
+    if (data.selectedTifConvert instanceof File) {
+
+        objectUrl =
+            URL.createObjectURL(
+                data.selectedTifConvert
+            );
+
+        gambar.src = objectUrl;
+
+    } else if (urlGambar) {
+
+        gambar.src = urlGambar;
 
     } else {
 
-        menggunakanNoImage =
-            true;
+        menggunakanNoImage = true;
 
-        gambar.src =
-            noImageStiker;
+        gambar.src = noImageStiker;
     }
+
+    console.log(
+        "gambar.src:",
+        gambar.src
+    );
+
+}
+
+function lihatPreviewLayoutTif() {
+
+    const gambar =
+        getEl("preview-layout-gambar");
+
+    if (!gambar || !gambar.src) {
+        showToast(
+            "Gambar TIF belum tersedia",
+            "warning"
+        );
+        return;
+    }
+
+    const src = gambar.src;
+
+    if (
+        src === noImageStiker ||
+        src.endsWith("/undefined") ||
+        src.endsWith("/")
+    ) {
+        showToast(
+            "Gambar TIF belum tersedia",
+            "warning"
+        );
+        return;
+    }
+
+    console.log(
+        "Membuka preview TIF:",
+        src
+    );
+
+    const fullscreen =
+        getEl("img-fullscreen");
+
+    if (!fullscreen) {
+        console.error(
+            "img-fullscreen tidak ditemukan"
+        );
+        return;
+    }
+
+    fullscreen.src = src;
+
+    showPopupLihatGambar();
 }
 
 
@@ -1120,10 +1205,7 @@ async function stikerToBody() {
         }
     }
 
-    /*
-    let pathFileTif = pathTif;
-    let pathFile;
-
+    let pathFileTif;
     if (selectedTif) {
 
         const hasil =
@@ -1134,14 +1216,14 @@ async function stikerToBody() {
 
         pathFile = pathFileTif.replace(/\.[^.]+$/, "");
 
+    } else (
+        pathFile = selectedPopupDataStiker.pathTIF
 
-    }
-
-     */
+    )
 
     return {
         umkmId: selectedUmkm.id,
-        barangId: selectedBarang.id,
+        barangId: selectedBarang?.id ?? null,
         kodeStiker,
         namaStiker,
         panjang: panjangStiker,
@@ -1149,7 +1231,20 @@ async function stikerToBody() {
         catatan: catatanStiker,
         status: statusStiker,
         pathGambar1: gambar1,
-        pathGambar2: gambar2
+        pathGambar2: gambar2,
+
+        pathTIF: pathFile,
+        kertas: selectedPopupDataStiker.kertas,
+        lebarKertas: selectedPopupDataStiker.lebarKertas,
+        tinggiKertas: selectedPopupDataStiker.tinggiKertas,
+        offsetX: selectedPopupDataStiker.offsetX,
+        offsetY: selectedPopupDataStiker.offsetY,
+        width: selectedPopupDataStiker.width,
+        height: selectedPopupDataStiker.height,
+        dpiX: selectedPopupDataStiker.dpiX,
+        dpiY: selectedPopupDataStiker.dpiY,
+        imageWidthMM: selectedPopupDataStiker.imageWidthMM,
+        imageHeightMM: selectedPopupDataStiker.imageHeightMM,
     };
 }
 async function simpanDataStiker() {
@@ -1164,7 +1259,7 @@ async function simpanDataStiker() {
 
     try {
         if(isEditModeStiker) {
-            const response = await fetch(`${BASE_URL_STIKER}/${selectedStiker.id}`, {
+            const response = await fetch(`${BASE_URL_STIKER}/${selectedPopupDataStiker.id}`, {
                 method: "PUT",
                 headers: {"Content-type": "application/json"},
                 body: JSON.stringify(body)
@@ -1187,7 +1282,7 @@ async function simpanDataStiker() {
         if (onSaveSuccessStiker) {
             await onSaveSuccessStiker(
                 isEditModeStiker
-                    ? selectedStiker.id
+                    ? selectedPopupDataStiker.id
                     : null
             );
         }
@@ -1205,6 +1300,45 @@ async function simpanDataStiker() {
     }
 }
 
+async function uploadFileTif(kodeStiker){
+
+
+    const formData = new FormData();
+
+    formData.append(
+        "file",
+        selectedTif,
+        `${kodeStiker}.tif`
+    );
+
+    formData.append(
+        "file",
+        selectedTifConvert,
+        `${kodeStiker}.webp`
+    );
+
+    const response = await fetch(
+        BASE_URL_UPLOAD_TIF,
+        {
+            method:"POST",
+            body:formData
+        }
+    );
+
+    if(!response.ok){
+
+        throw new Error(
+            "Gagal upload file TIF"
+        );
+
+    }
+
+    const text = await response.json();
+
+    return text[0];
+
+}
+
 
 window.initPopupDataStiker = initPopupDataStiker;
 window.toggleMenuImageStiker = toggleMenuImageStiker;
@@ -1212,3 +1346,4 @@ window.pilihGambarStiker = pilihGambarStiker;
 window.hapusGambarStiker = hapusGambarStiker;
 window.lihatGambarStiker  = lihatGambarStiker;
 window.showPopupStiker = showPopupStiker;
+window.selectedPopupDataStiker = selectedPopupDataStiker;

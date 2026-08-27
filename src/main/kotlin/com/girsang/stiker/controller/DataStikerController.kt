@@ -49,6 +49,16 @@ class DataStikerController(
         }
     }
 
+    @DeleteMapping("/hapus-layout/{id}")
+    fun hapusLayout(@PathVariable id: String): ResponseEntity<Any> {
+        return try {
+            service.hapusLayout(id)
+            ResponseEntity.ok(mapOf("message" to "Data berhasil dihapus"))
+        } catch (e: RuntimeException) {
+            ResponseEntity.status(400).body(mapOf("error" to e.message))
+        }
+    }
+
     @GetMapping("/kode/{umkmId}")
     fun getKodeStiker(@PathVariable umkmId: String): ResponseEntity<Map<String, String>> {
         val kode = service.getKodeStikerBerikutnya(umkmId)

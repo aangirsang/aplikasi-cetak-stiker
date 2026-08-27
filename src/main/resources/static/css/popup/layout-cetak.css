@@ -7,8 +7,9 @@
     z-index: 1003;
 }
 .popup-content-layout-cetak{
-    width:95%;
-    height:95%;
+    width: 95vw;
+    height: 95vh;
+
     background:#ececec;
     border-radius:8px;
     display:flex;
@@ -54,8 +55,19 @@
 }
 
 .layout-toolbar-button{
-    display:flex;
-    gap:1rem;
+    flex: 0 0 60px;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 1rem;
+
+    background:var(--color-white);
+
+    padding: 10px 8px;
 }
 
 .toolbar-group button.active{
@@ -69,9 +81,23 @@
     color: var(--color-white);
 }
 
+.layout-main {
+    flex: 1 1 auto;
+
+    display: flex;
+
+    width: 100%;
+    min-height: 0;
+
+}
+
+
+
 .layout-workspace{
     flex:1;
     background:var(--color-background-canvas);
+
+    overflow: auto;
 }
 
 .layout-workspace canvas{

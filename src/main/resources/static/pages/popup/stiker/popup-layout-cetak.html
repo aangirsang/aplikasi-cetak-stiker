@@ -3,9 +3,6 @@
         <div class="popup-content-layout-cetak">
 
             <div class="layout-toolbar">
-                <div class="toolbar-group">
-                    <h2 id="popup-layout-title">Layout Cetak</h2>
-                </div>
                 <div class="toolbar-tengah">
                     <div class="toolbar-group">
                         <div class="custom-select" id="custom-select-ukuran-kertas">
@@ -83,10 +80,24 @@
                     </div>
                 </div>
 
+                <div class="toolbar-group">
+                    <h3 id="popup-layout-title">Layout Cetak</h3>
+                </div>
+
+
+            </div>
+            <div class="layout-main">
+                <div class="layout-workspace">
+                    <canvas id="layoutCanvas"></canvas>
+                </div>
                 <div class="layout-toolbar-button">
+                    <button onclick="closeLayout()">
+                        <span class="material-symbols-sharp">close</span>
+                    </button>
 
-
-                    <button type="button" id="btn-layout-gambar">Pilih Gambar</button>
+                    <button type="button" id="btn-layout-gambar">
+                        <span class="material-symbols-sharp">folder_open</span>
+                    </button>
                     <input
                             type="file"
                             id="input-layout-tif"
@@ -97,22 +108,14 @@
                         <span class="material-symbols-sharp">reset_focus</span>
                     </button>
                     <button type="button" id="btn-layout-simpan">
-                        <span class="material-symbols-sharp">file_save</span>
+                        <span class="material-symbols-sharp">save</span>
                     </button>
-
-                    <button onclick="closeLayout()">
-                        <span class="material-symbols-sharp">close</span>
+                    <button type="button" id="btn-layout-hapus">
+                        <span class="material-symbols-sharp">delete_forever</span>
                     </button>
-
                 </div>
-
             </div>
 
-            <div class="layout-workspace">
-
-                <canvas id="layoutCanvas"></canvas>
-
-            </div>
 
             <div class="layout-status">
 
