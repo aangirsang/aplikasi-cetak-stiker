@@ -25,6 +25,8 @@ let selectedTif = null;
 let selectedTifConvert = null;
 let pathFile = ""
 
+let statusLayout = false;
+
 async function initPopupDataStiker() {
     // cek agar tidak dimuat dua kali
     if(getEl("popup-data-stiker")){
@@ -124,8 +126,6 @@ async function showPopupStiker(id = null, onSaveSuccess = null) {
         selectedPopupDataStiker = await response.json();
 
         //isiDataUmkm(selectedCariUmkm);
-
-        console.log(selectedPopupDataStiker);
 
         isiDataStiker(selectedPopupDataStiker);
 
@@ -275,18 +275,17 @@ async function tampilPopupLayout(){
         selectedPopupDataStiker = await stikerToBody();
     }
 
-    console.log(selectedPopupDataStiker);
-
     await showPopupLayoutCetak(selectedPopupDataStiker,(stiker) => {
 
         selectedPopupDataStiker = stiker
         selectedTif = selectedPopupDataStiker.selectedTif;
         selectedTifConvert = selectedPopupDataStiker.selectedTifConvert;
 
-        console.log("selectedTif: ", selectedTif);
-        console.log("selectedTifConvert: ", selectedTifConvert);
+        statusLayout = true;
 
         isiDataStiker(selectedPopupDataStiker);
+
+        console.log("Data Stiker Setelah Layout:", selectedPopupDataStiker);
     });
 
 }
@@ -297,6 +296,8 @@ function bersihPopupDataStiker() {
     selectedUmkm = null;
     selectedBarang = null
     isEditModeStiker = false;
+
+    statusLayout = false;
 
     selectedWebpFiles = {
         1: null,
@@ -875,33 +876,47 @@ function tampilkanPreviewLayoutCetak(data) {
     // =====================================================
     // MULAI LOAD
     // =====================================================
+    console.log("Status Layout: ", statusLayout)
 
-    let objectUrl = null;
+    if(statusLayout){
+        let objectUrl = null;
+        console.log("Status Tiff: ", !data.selectedTifConvert)
 
-    if (data.selectedTifConvert instanceof File) {
+        if (data.selectedTifConvert instanceof File) {
 
-        objectUrl =
-            URL.createObjectURL(
-                data.selectedTifConvert
-            );
+            objectUrl =
+                URL.createObjectURL(
+                    data.selectedTifConvert
+                );
 
-        gambar.src = objectUrl;
+            gambar.src = objectUrl;
 
-    } else if (urlGambar) {
+            console.log("Menggunakan selectedTifConvert")
 
-        gambar.src = urlGambar;
+        } else if(!data.selectedTifConvert){
+            menggunakanNoImage = true;
 
+            gambar.src = noImageStiker;
+
+            console.log("selectedTifConvert kosong setelah dihapus")
+        }
     } else {
+        if (urlGambar) {
 
-        menggunakanNoImage = true;
+            gambar.src = urlGambar;
 
-        gambar.src = noImageStiker;
+            console.log("Menggunakan data dari backend")
+
+        } else {
+
+            menggunakanNoImage = true;
+
+            gambar.src = noImageStiker;
+
+            console.log("data backend kosong")
+
+        }
     }
-
-    console.log(
-        "gambar.src:",
-        gambar.src
-    );
 
 }
 
@@ -931,11 +946,6 @@ function lihatPreviewLayoutTif() {
         );
         return;
     }
-
-    console.log(
-        "Membuka preview TIF:",
-        src
-    );
 
     const fullscreen =
         getEl("img-fullscreen");
@@ -1233,6 +1243,7 @@ async function stikerToBody() {
         pathGambar1: gambar1,
         pathGambar2: gambar2,
 
+        layoutID: selectedPopupDataStiker.layoutID,
         pathTIF: pathFile,
         kertas: selectedPopupDataStiker.kertas,
         lebarKertas: selectedPopupDataStiker.lebarKertas,
@@ -1256,6 +1267,8 @@ async function simpanDataStiker() {
     if (!validasiSimpanDataStiker()) return hideLoading();
 
     const body = await stikerToBody();
+
+    console.log("Data yang Disimpan:", body);
 
     try {
         if(isEditModeStiker) {

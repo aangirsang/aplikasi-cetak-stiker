@@ -37,7 +37,7 @@ class DataStikerService(
         return daftar.map { mapper.toResponse(it) }
     }
 
-fun cariByumkmDanStatus(umkmId: String): List<DataStikerResponse> {
+    fun cariByumkmDanStatus(umkmId: String): List<DataStikerResponse> {
         val daftar = repoStiker.findByUmkmIdAndStatusTrue(umkmId)
         return daftar.map { mapper.toResponse(it) }
     }
@@ -120,7 +120,12 @@ fun cariByumkmDanStatus(umkmId: String): List<DataStikerResponse> {
             stiker.dataBarang = barang
         }
 
-        if(request.imageWidthMM>0 &&
+        if(request.pathTIF.isEmpty() &&
+            request.layoutID.isNotEmpty()){
+            println("       HAPUS LAYOUT: ${stiker.namaStiker}")
+            hapusLayout(request.layoutID)
+            stiker.layoutCetak = null
+        } else if(request.imageWidthMM>0 &&
             request.imageHeightMM>0){
             if(layout == null){
                 println("       SIMPAN BARU: ${stiker.namaStiker}")

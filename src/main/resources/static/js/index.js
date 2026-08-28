@@ -308,8 +308,8 @@ async function logout() {
 // ==============================
 function resetLoginForm() {
 
-    getEl("namaPengguna").value = "";
-    getEl("kataSandi").value = "";
+    getEl("namaPengguna").value = "admin";
+    getEl("kataSandi").value = "admin123";
 
     getEl("login-error")
         .textContent = "";

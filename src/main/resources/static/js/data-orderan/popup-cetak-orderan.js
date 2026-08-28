@@ -67,10 +67,9 @@ function renderListStikerCetakOrder(rincian){
 
             <div class="stiker-image">
                 <img
-                    src="${rinci.pathGambar1
-            ? `${BASE_URL}${rinci.pathGambar1}`
-            : noImageStiker}"
-                    alt="${rinci.namaStiker}">
+                    src="${rinci.pathGambar1 ? `${BASE_URL}${rinci.pathGambar1}` : noImageStiker}"
+                    alt="${rinci.namaStiker}"
+                    onerror="this.onerror=null; this.src='${noImageStiker}';">
             </div>
 
             <div class="stiker-info">

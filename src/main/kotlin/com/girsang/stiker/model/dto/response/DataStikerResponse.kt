@@ -22,6 +22,7 @@ data class DataStikerResponse(
     var status: Boolean = true,
     var pathGambar1: String = "",
     var pathGambar2: String = "",
+
     var layoutID: String = "",
     var pathTIF: String = "",
     var kertas: String = "",

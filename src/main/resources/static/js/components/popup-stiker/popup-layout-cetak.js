@@ -686,8 +686,6 @@ async function showPopupLayoutCetak(stiker, onClose) {
 
     console.log("Stiker layout:",
         selectedStiker)
-    console.log("layoutCloseCallback:",
-        layoutCloseCallback)
     getEl("popup-layout-title")
         .textContent = `${selectedStiker.namaUsaha} - ${selectedStiker.namaStiker}`
 
@@ -908,24 +906,7 @@ async function simpanLayout() {
 
     try {
 
-        let pathFileTif;
-
         const kertas = selectedKertas.namaKertas;
-/*
-        if (selectedTif) {
-
-            const hasil =
-                await uploadFileTif(selectedStiker.kodeStiker);
-
-            pathFileTif =
-                hasil.path;
-
-            pathFile = pathFileTif.replace(/\.[^.]+$/, "");
-
-        }
-
- */
-
 
         selectedStiker.offsetX = offsetX;
         selectedStiker.offsetY = offsetY;
@@ -942,53 +923,6 @@ async function simpanLayout() {
         selectedStiker.selectedTif = selectedTif
         selectedStiker.selectedTifConvert = selectedTifConvert
 
-/*
-        let response;
-        if(!selectedPopupDataStiker.id){
-            response =
-                await fetch(
-                    `${BASE_URL_STIKER}`,
-                    {
-                        method: "POST",
-
-                        headers: {
-                            "Content-type":
-                                "application/json"
-                        },
-
-                        body: JSON.stringify(
-                            selectedPopupDataStiker
-                        )
-                    }
-                );
-        } else {
-            response =
-                await fetch(
-                    `${BASE_URL_STIKER}/${selectedPopupDataStiker.id}`,
-                    {
-                        method: "PUT",
-
-                        headers: {
-                            "Content-type":
-                                "application/json"
-                        },
-
-                        body: JSON.stringify(
-                            selectedPopupDataStiker
-                        )
-                    }
-                );
-        }
-
-        if (
-            await gagalSimpan(response)
-        ) {
-            return;
-        }
-
- */
-
-
         showToast(
             "Data Layout stiker berhasil disimpan",
             "success"
@@ -997,6 +931,8 @@ async function simpanLayout() {
         if (typeof layoutCloseCallback  === "function") {
             layoutCloseCallback (selectedStiker);
         }
+
+        console.log("Setelah Layout Disimpan: ", selectedStiker)
 
         closeLayout();
 
@@ -1030,10 +966,13 @@ async function hapus() {
             "Menghapus Data..."
         );
         try {
+            /*
             const response = await fetch(`${BASE_URL_STIKER}/hapus-layout/${id}`, {
                 method: 'DELETE'
             });
             if(await gagalHapus(response)) return;
+
+             */
 
             selectedStiker.offsetX = 0;
             selectedStiker.offsetY = 0;
@@ -1054,7 +993,9 @@ async function hapus() {
                 layoutCloseCallback (selectedStiker);
             }
 
-            showToast("Data berhasil dihapus", "success");
+            console.log("Setelah Layout Dihapus: ", selectedStiker)
+
+            showToast("Data layout dihapus", "success");
             closeLayout();
         } catch (e) {
             showToast(e.message, "warning");

@@ -12,6 +12,7 @@ data class DataStikerRequest(
     var pathGambar2: String = "",
 
     // DATA LAYOUT CETAK
+    var layoutID: String = "",
     var pathTIF: String = "",
     var kertas: String = "",
     var lebarKertas: Double = 0.0,
