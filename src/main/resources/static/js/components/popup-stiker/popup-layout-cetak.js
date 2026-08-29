@@ -1250,7 +1250,6 @@ async function simpanLayout() {
 
 async function hapus() {
 
-    const id = selectedStiker?.layoutID;
 
     showLoading("Menghapus Data...");
 

@@ -369,12 +369,6 @@ function tampilkanPreviewLayoutCetak(data) {
             "preview-layout-gambar"
         );
 
-    const garis =
-        document.getElementById(
-            "preview-garis-bawah"
-        );
-
-
     if (!paper || !gambar) {
 
         console.error(
