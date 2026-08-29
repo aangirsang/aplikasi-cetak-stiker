@@ -147,6 +147,7 @@ async function initPopupLayoutCetak() {
         handleUploadTif
     );
 
+    initDragDropLayout();
 
     // ----------------------------------------------
     // KERTAS
@@ -486,6 +487,10 @@ function clearLayout() {
 
     metadataFile = null;
 
+    selectedTif = null;
+    selectedTifConvert = null;
+    pathFile = "";
+
     dpiX = 300;
     dpiY = 300;
 
@@ -519,19 +524,115 @@ function resetLayout() {
 
     drawLayout();
 }
+// RESET TOTAL
+// Dipanggil di awal, sebelum load data stiker
+function resetSemuaLayout() {
+
+    // ==================================================
+    // STATE GAMBAR
+    // ==================================================
+
+    clearLayout();
+
+
+    // ==================================================
+    // STATE KERTAS
+    // ==================================================
+
+    selectedKertas = KERTAS[2];
+
+    orientation = "portrait";
+
+    customPaperWidth = 210;
+    customPaperHeight = 297;
+
+
+    // ==================================================
+    // STATE ZOOM / VIEW
+    // ==================================================
+
+    resetView();
+
+
+    // ==================================================
+    // UI: DROPDOWN KERTAS
+    // ==================================================
+
+    const selectedText =
+        getEl("selected-text-ukuran-kertas");
+
+    if (selectedText) {
+
+        selectedText.textContent =
+            selectedKertas.namaKertas;
+    }
+
+
+    // ==================================================
+    // UI: TOMBOL ORIENTASI
+    // ==================================================
+
+    const portrait =
+        getEl("btnPortrait");
+
+    const landscape =
+        getEl("btnLandscape");
+
+    if (portrait) {
+        portrait.classList.add("active");
+    }
+
+    if (landscape) {
+        landscape.classList.remove("active");
+    }
+
+
+    // ==================================================
+    // UI: DIBUAT / DIUBAH
+    // ==================================================
+
+    const dibuat =
+        getEl("dibuat");
+
+    const diubah =
+        getEl("diubah");
+
+    if (dibuat) {
+        dibuat.textContent = "";
+    }
+
+    if (diubah) {
+        diubah.textContent = "";
+    }
+
+
+    // ==================================================
+    // KERTAS & CANVAS
+    // ==================================================
+
+    createPaper();
+
+    updateStatus();
+}
 
 // LOAD LAYOUT
 // Membuka data stiker
 async function loadTiff(stiker) {
 
-    const pathGambar = stiker.pathTIF;
+    const pathGambar =
+        stiker.pathTIF;
 
+    const portrait =
+        getEl("btnPortrait");
 
-    const portrait = getEl("btnPortrait");
-    const landscape =getEl("btnLandscape");
+    const landscape =
+        getEl("btnLandscape");
 
-    const dibuat = getEl("dibuat");
-    const diubah = getEl("diubah");
+    const dibuat =
+        getEl("dibuat");
+
+    const diubah =
+        getEl("diubah");
 
 
     // ==================================================
@@ -542,56 +643,76 @@ async function loadTiff(stiker) {
         stiker.lebarKertas > 0 &&
         stiker.tinggiKertas > 0
     ) {
-        paperWidth = stiker.lebarKertas;
-        paperHeight = stiker.tinggiKertas;
+
+        paperWidth =
+            stiker.lebarKertas;
+
+        paperHeight =
+            stiker.tinggiKertas;
 
         portrait.classList.remove("active");
         landscape.classList.remove("active");
 
         if (paperWidth <= paperHeight) {
+
             portrait.classList.add("active");
+
         } else {
+
             landscape.classList.add("active");
         }
 
-        dibuat.textContent = `Dibuat: ${formatTanggal(stiker.dibuatPada)}`
-        diubah.textContent = `Diubah: ${formatTanggal(stiker.diubahPada)}`
+        dibuat.textContent =
+            `Dibuat: ${formatTanggal(stiker.dibuatPada)}`;
 
+        diubah.textContent =
+            `Diubah: ${formatTanggal(stiker.diubahPada)}`;
 
-        getEl("selected-text-ukuran-kertas").textContent = stiker.kertas;
+        getEl(
+            "selected-text-ukuran-kertas"
+        ).textContent =
+            stiker.kertas;
 
-        pathFile = stiker.pathTIF;
+        pathFile =
+            stiker.pathTIF ?? "";
+
     } else {
 
         createPaper();
-        dibuat.textContent = `Dibuat: ${formatTanggal(new Date())}`
-        diubah.textContent = `Diubah: ${formatTanggal(new Date())}`
+
+        dibuat.textContent =
+            `Dibuat: ${formatTanggal(new Date())}`;
+
+        diubah.textContent =
+            `Diubah: ${formatTanggal(new Date())}`;
+
+        pathFile = "";
     }
+
+
+    // ==================================================
+    // CEK GAMBAR
+    // ==================================================
+
+    const hasConvert =
+        stiker.selectedTifConvert !== null &&
+        stiker.selectedTifConvert !== undefined;
+
+    const hasPathTif =
+        pathGambar !== null &&
+        pathGambar !== undefined &&
+        pathGambar !== "";
+
 
     // ==================================================
     // TANPA GAMBAR
     // ==================================================
 
-    if (!pathGambar) {
+    if (!hasConvert && !hasPathTif) {
 
-        gambar = new Image();
-
-        metadataFile = null;
-
-        dpiX = 300;
-        dpiY = 300;
-
-        imageWidthMM = 0;
-        imageHeightMM = 0;
-
-        offsetX = 0;
-        offsetY = 0;
-
-
-        resetView();
+        clearLayout();
 
         updateStatus();
-
         drawLayout();
 
         return;
@@ -606,7 +727,7 @@ async function loadTiff(stiker) {
 
 
     // ==================================================
-    // LOAD GAMBAR
+    // URL BACKEND
     // ==================================================
 
     const url =
@@ -614,25 +735,182 @@ async function loadTiff(stiker) {
         encodeURI(pathGambar);
 
 
+    // ==================================================
+    // LOAD IMAGE
+    // ==================================================
+
     try {
 
-        // load gambar
-        await new Promise((resolve, reject) => {
+        gambar =
+            new Image();
 
-            gambar = new Image();
+        await new Promise(
+            (resolve, reject) => {
 
-            gambar.onload = resolve;
+                gambar.onload =
+                    resolve;
 
-            gambar.onerror = () => {
-                reject(
-                    new Error(
-                        `Gambar tidak ditemukan: ${gambar.src}`
-                    )
+                gambar.onerror =
+                    () => reject(
+                        new Error(
+                            `Gambar tidak ditemukan: ${gambar.src}`
+                        )
+                    );
+
+
+                // ==========================================
+                // PRIORITAS 1
+                // selectedTifConvert
+                // ==========================================
+
+                if (hasConvert) {
+
+                    const convert =
+                        stiker.selectedTifConvert;
+
+
+                    if (
+                        convert instanceof File
+                    ) {
+
+                        const objectUrl =
+                            URL.createObjectURL(
+                                convert
+                            );
+
+                        gambar.onload = () => {
+
+                            URL.revokeObjectURL(
+                                objectUrl
+                            );
+
+                            resolve();
+                        };
+
+                        gambar.src =
+                            objectUrl;
+
+                    } else if (
+                        convert instanceof HTMLImageElement
+                    ) {
+
+                        gambar.src =
+                            convert.src;
+
+                    } else if (
+                        typeof convert === "string"
+                    ) {
+
+                        gambar.src =
+                            convert;
+
+                    } else {
+
+                        reject(
+                            new Error(
+                                "selectedTifConvert tidak valid"
+                            )
+                        );
+                    }
+
+
+                    console.log(
+                        "Menggunakan selectedTifConvert"
+                    );
+
+                    return;
+                }
+
+
+                // ==========================================
+                // PRIORITAS 2
+                // pathTIF
+                // ==========================================
+
+                if (hasPathTif) {
+
+                    gambar.src =
+                        `${url}.webp`;
+
+                    console.log(
+                        "Menggunakan WEBP dari backend"
+                    );
+
+                    return;
+                }
+
+
+                // ==========================================
+                // TANPA GAMBAR
+                // ==========================================
+
+                resolve();
+            }
+        );
+
+
+        // ==========================================
+        // Jika menggunakan backend
+        // ambil File TIF + WEBP
+        // ==========================================
+
+        if (
+            !hasConvert &&
+            hasPathTif
+        ) {
+
+            const responsewebp =
+                await fetch(
+                    `${url}.webp`
                 );
-            };
 
-            gambar.src = `${url}.webp`;
-        });
+            if (!responsewebp.ok) {
+
+                throw new Error(
+                    "WEBP tidak ditemukan"
+                );
+            }
+
+
+            const blobwebp =
+                await responsewebp.blob();
+
+            selectedTifConvert =
+                new File(
+                    [blobwebp],
+                    "gambar.webp",
+                    {
+                        type: blobwebp.type
+                    }
+                );
+
+
+            const responsetif =
+                await fetch(
+                    `${url}.tif`
+                );
+
+            if (!responsetif.ok) {
+
+                throw new Error(
+                    "TIF tidak ditemukan"
+                );
+            }
+
+
+            const blobtif =
+                await responsetif.blob();
+
+            selectedTif =
+                new File(
+                    [blobtif],
+                    "gambar.tif",
+                    {
+                        type: blobtif.type
+                    }
+                );
+        }
+
 
     } catch (error) {
 
@@ -656,8 +934,11 @@ async function loadTiff(stiker) {
         stiker.offsetY !== 0
     ) {
 
-        offsetX = stiker.offsetX;
-        offsetY = stiker.offsetY;
+        offsetX =
+            stiker.offsetX;
+
+        offsetY =
+            stiker.offsetY;
 
     } else {
 
@@ -678,30 +959,45 @@ async function loadTiff(stiker) {
 
 // POPUP
 async function showPopupLayoutCetak(stiker, onClose) {
+    resetSemuaLayout();
     layoutCloseCallback = onClose;
     selectedStiker = stiker;
+
     document
         .getElementById("popup-layout-cetak")
         .classList.add("show");
 
-    console.log("Stiker layout:",
-        selectedStiker)
     getEl("popup-layout-title")
-        .textContent = `${selectedStiker.namaUsaha} - ${selectedStiker.namaStiker}`
+        .textContent =
+        `${selectedStiker.namaUsaha} - ${selectedStiker.namaStiker}`;
 
-    // Reset data lama
+    // ==========================================
+    // RESET STATE
+    // ==========================================
+
     clearLayout();
 
+    // ==========================================
+    // LOAD STATE DARI STIKER
+    // ==========================================
+
+    selectedTif =
+        stiker.selectedTif ?? null;
+
+    selectedTifConvert =
+        stiker.selectedTifConvert ?? null;
+
+    pathFile =
+        stiker.pathTIF ?? "";
+
     await new Promise(
-        resolve => requestAnimationFrame(resolve)
+        resolve =>
+            requestAnimationFrame(resolve)
     );
 
-
-    // Pastikan canvas tersedia
     createCanvas();
 
     resizeCanvas();
-
 
     showLoading(
         "Menampilkan gambar..."
@@ -954,56 +1250,54 @@ async function simpanLayout() {
 
 async function hapus() {
 
+    const id = selectedStiker?.layoutID;
 
-    const id = selectedStiker.layoutID;
+    showLoading("Menghapus Data...");
 
-    console.log(selectedStiker);
-    console.log(id);
-    console.log(!id);
+    try {
+        // Kalau memang ada layoutID tersimpan di backend,
+        // panggil endpoint delete di sini (opsional, sesuai kebutuhanmu)
+        // if (id) { await fetch(`${BASE_URL_LAYOUT}/${id}`, { method: "DELETE" }); }
 
-    if(id){
-        showLoading(
-            "Menghapus Data..."
-        );
-        try {
-            /*
-            const response = await fetch(`${BASE_URL_STIKER}/hapus-layout/${id}`, {
-                method: 'DELETE'
-            });
-            if(await gagalHapus(response)) return;
+        selectedStiker.offsetX = 0;
+        selectedStiker.offsetY = 0;
+        selectedStiker.lebarKertas = 0;
+        selectedStiker.tinggiKertas = 0;
+        selectedStiker.pathTIF = "";
+        selectedStiker.kertas = "";
+        selectedStiker.width = 0;
+        selectedStiker.height = 0;
+        selectedStiker.dpiX = 0;
+        selectedStiker.dpiY = 0;
+        selectedStiker.imageWidthMM = 0;
+        selectedStiker.imageHeightMM = 0;
+        selectedStiker.selectedTif = null;
+        selectedStiker.selectedTifConvert = null;
 
-             */
+        pathFile = "";
+        selectedTif = null;
+        selectedTifConvert = null;
 
-            selectedStiker.offsetX = 0;
-            selectedStiker.offsetY = 0;
-            selectedStiker.lebarKertas = 0;
-            selectedStiker.tinggiKertas = 0;
-            selectedStiker.pathTIF = ""
-            selectedStiker.kertas = ""
-            selectedStiker.width = 0
-            selectedStiker.height = 0
-            selectedStiker.dpiX = 0
-            selectedStiker.dpiY = 0
-            selectedStiker.imageWidthMM = 0
-            selectedStiker.imageHeightMM = 0
-            selectedStiker.selectedTif = null
-            selectedStiker.selectedTifConvert = null
+        clearLayout();
+        createPaper();
+        updateStatus();
+        drawLayout();
 
-            if (typeof layoutCloseCallback  === "function") {
-                layoutCloseCallback (selectedStiker);
-            }
-
-            console.log("Setelah Layout Dihapus: ", selectedStiker)
-
-            showToast("Data layout dihapus", "success");
-            closeLayout();
-        } catch (e) {
-            showToast(e.message, "warning");
-        } finally {
-            hideLoading();
+        if (typeof layoutCloseCallback === "function") {
+            layoutCloseCallback(selectedStiker);
         }
-    }
 
+        showToast("Data layout dihapus", "success");
+
+        closeLayout();
+        layoutCloseCallback = null;   // ikut ditambahkan, biar konsisten dgn simpanLayout()
+
+    } catch (e) {
+        console.error(e);
+        showToast(e.message, "warning");
+    } finally {
+        hideLoading();
+    }
 }
 
 // RESIZE CANVAS
@@ -1586,6 +1880,13 @@ async function handleUploadTif(event) {
         return;
     }
 
+    await processTifFile(file);
+
+    // reset supaya bisa pilih file yang sama lagi
+    event.target.value = "";
+}
+
+async function processTifFile(file) {
 
     // ==================================================
     // VALIDASI
@@ -1718,6 +2019,57 @@ async function handleUploadTif(event) {
         hideLoading();
     }
 }
+// DRAG DROP TIF
+function initDragDropLayout() {
+
+    const workspace =
+        document.querySelector(".layout-workspace");
+
+    if (!workspace) {
+        console.error(
+            "Element .layout-workspace tidak ditemukan"
+        );
+        return;
+    }
+
+    workspace.addEventListener("dragover", e => {
+        e.preventDefault();
+        workspace.classList.add("dragover");
+    });
+
+    workspace.addEventListener("dragenter", e => {
+        e.preventDefault();
+        workspace.classList.add("dragover");
+    });
+
+    workspace.addEventListener("dragleave", e => {
+
+        if (e.target === workspace) {
+            workspace.classList.remove("dragover");
+        }
+
+    });
+
+    workspace.addEventListener("drop", async e => {
+
+        e.preventDefault();
+
+        workspace.classList.remove("dragover");
+
+        const files = e.dataTransfer.files;
+
+        if (files.length === 0) return;
+
+        // Kalau ada lebih dari satu file, ambil yang pertama saja
+        const file = files[0];
+
+        await processTifFile(file);
+
+    });
+
+}
+
+
 async function uploadFileTif(kodeStiker){
 
 

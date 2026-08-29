@@ -140,3 +140,9 @@
 
     border-radius: .5rem;
 }
+
+.layout-workspace.dragover {
+    outline: 2px dashed #4a90e2;
+    outline-offset: -4px;
+    background-color: rgba(74, 144, 226, 0.08);
+}

@@ -271,7 +271,6 @@ async function tampilPopupPilihBarang(){
 async function tampilPopupLayout(){
 
     if(!selectedPopupDataStiker){
-        //if (!validasiSimpanDataStiker()) return;
         selectedPopupDataStiker = await stikerToBody();
     }
 
@@ -381,6 +380,47 @@ function tampilkanPreviewLayoutCetak(data) {
         console.error(
             "Element preview layout tidak ditemukan!"
         );
+
+        return;
+    }
+
+
+    // =====================================================
+    // CEK APAKAH ADA GAMBAR / LAYOUT SAMA SEKALI
+    // (mis. setelah "Hapus" di popup layout cetak)
+    // =====================================================
+
+    const pathTIFCheck =
+        typeof data.pathTIF === "string"
+            ? data.pathTIF.trim()
+            : "";
+
+    const adaTifConvert =
+        data.selectedTifConvert instanceof File ||
+        typeof data.selectedTifConvert === "string";
+
+    const tidakAdaGambar =
+        pathTIFCheck === "" &&
+        !adaTifConvert;
+
+    if (tidakAdaGambar) {
+
+        gambar.onload = null;
+        gambar.onerror = null;
+
+        gambar.style.position = "absolute";
+        gambar.style.left = "0";
+        gambar.style.top = "0";
+        gambar.style.width = "100%";
+        gambar.style.height = "100%";
+        gambar.style.maxWidth = "none";
+        gambar.style.maxHeight = "none";
+        gambar.style.objectFit = "contain";
+        gambar.style.display = "block";
+
+        gambar.src = noImageStiker;
+
+        console.log("Tidak ada data layout/gambar, tampilkan noImageStiker 100% parent");
 
         return;
     }
@@ -880,7 +920,7 @@ function tampilkanPreviewLayoutCetak(data) {
 
     if(statusLayout){
         let objectUrl = null;
-        console.log("Status Tiff: ", !data.selectedTifConvert)
+        console.log("Status Tiff !data.selectedTifConvert: ", !data.selectedTifConvert)
 
         if (data.selectedTifConvert instanceof File) {
 
@@ -893,7 +933,14 @@ function tampilkanPreviewLayoutCetak(data) {
 
             console.log("Menggunakan selectedTifConvert")
 
-        } else if(!data.selectedTifConvert){
+        } else if (typeof data.selectedTifConvert === "string") {
+
+            gambar.src = data.selectedTifConvert;
+
+
+            console.log("Menggunakan selectedTifConvert String")
+
+        }else {
             menggunakanNoImage = true;
 
             gambar.src = noImageStiker;
@@ -1216,6 +1263,7 @@ async function stikerToBody() {
     }
 
     let pathFileTif;
+
     if (selectedTif) {
 
         const hasil =
@@ -1226,10 +1274,12 @@ async function stikerToBody() {
 
         pathFile = pathFileTif.replace(/\.[^.]+$/, "");
 
-    } else (
-        pathFile = selectedPopupDataStiker.pathTIF
+    } else {
 
-    )
+        pathFile = selectedPopupDataStiker?.pathTIF ?? "";
+
+    }
+
 
     return {
         umkmId: selectedUmkm.id,
@@ -1243,19 +1293,19 @@ async function stikerToBody() {
         pathGambar1: gambar1,
         pathGambar2: gambar2,
 
-        layoutID: selectedPopupDataStiker.layoutID,
+        layoutID: selectedPopupDataStiker?.layoutID ?? "",
         pathTIF: pathFile,
-        kertas: selectedPopupDataStiker.kertas,
-        lebarKertas: selectedPopupDataStiker.lebarKertas,
-        tinggiKertas: selectedPopupDataStiker.tinggiKertas,
-        offsetX: selectedPopupDataStiker.offsetX,
-        offsetY: selectedPopupDataStiker.offsetY,
-        width: selectedPopupDataStiker.width,
-        height: selectedPopupDataStiker.height,
-        dpiX: selectedPopupDataStiker.dpiX,
-        dpiY: selectedPopupDataStiker.dpiY,
-        imageWidthMM: selectedPopupDataStiker.imageWidthMM,
-        imageHeightMM: selectedPopupDataStiker.imageHeightMM,
+        kertas: selectedPopupDataStiker?.kertas ?? "",
+        lebarKertas: selectedPopupDataStiker?.lebarKertas ?? "",
+        tinggiKertas: selectedPopupDataStiker?.tinggiKertas ?? "",
+        offsetX: selectedPopupDataStiker?.offsetX ?? "",
+        offsetY: selectedPopupDataStiker?.offsetY ?? "",
+        width: selectedPopupDataStiker?.width ?? "",
+        height: selectedPopupDataStiker?.height ?? "",
+        dpiX: selectedPopupDataStiker?.dpiX ?? "",
+        dpiY: selectedPopupDataStiker?.dpiY ?? "",
+        imageWidthMM: selectedPopupDataStiker?.imageWidthMM ?? "",
+        imageHeightMM: selectedPopupDataStiker?.imageHeightMM ?? "",
     };
 }
 async function simpanDataStiker() {
