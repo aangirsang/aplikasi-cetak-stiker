@@ -101,7 +101,8 @@
 }
 
 /*data-orderan.css*/
-.content-popup-data-order {
+.content-popup-data-order,
+.content-popup-cetak-orderan {
     padding: var(--card-padding);
     border-radius: 12px;
     background: var(--color-background);
@@ -109,18 +110,34 @@
     width: 90rem;
     max-width: 90vw;
 
-    height: 58rem;
-    max-height: 90vh;
+    height: min(58rem, 98vh);
 
     box-sizing: border-box;
-    overflow-y: auto;
 
+    /* HAPUS overflow-y: auto; dari sini — ini penyebab seluruh popup ikut scroll */
+    /* overflow-y: auto;  ⬅️ dihapus */
+
+    /* BARU: jadikan flex column supaya anak-anaknya bisa berbagi ruang */
+    display: flex;
+    flex-direction: column;
 
     transform: translateY(-60px);
     transition: transform .25s ease;
 }
 
+/* form di dalamnya juga perlu ikut flex supaya tinggi mengalir ke bawah */
+#form-data-order,
+#form-popup-cetak-orderan,
+#form-popup-data-order {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+    min-height: 0; /* WAJIB, supaya overflow anak bisa bekerja */
+}
+
 .popup.show .content-popup-data-order,
+.popup.show .content-popup-cetak-orderan,
 .popup.show .content-popup-download-data-orderan{
     transform: translateY(0);
 }
@@ -206,21 +223,31 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 2rem;
+
+
+    /* BARU: biar grid ini ikut mengisi sisa ruang, bukan cuma auto-height */
+    flex: 1;
+    min-height: 0;
+    margin-top: 2rem;
 }
 
 .form-data-order-grid-kanan,
 .popup-cetak-oreran-grid-kanan{
+    height: 100%;
+
     display: flex;
     flex-direction: column;
 
-    height: 42rem;
-    margin-top: 2rem;
     background: var(--color-white) ;
     padding: var(--card-padding);
     border-radius: var(--border-radius-2);
     box-shadow: var(--box-shadow);
 
     transition: all 300ms ease;
+
+    /* Sudah ada flex:1 & min-height:0 di CSS kamu — pertahankan */
+    flex: 1;
+    min-height: 0;
 }
 
 .form-data-order-grid-kiri-atas{
@@ -260,15 +287,21 @@
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 1rem;
 
-    height: 50rem;
-    overflow-y: auto;
+    /* GANTI height: 50rem (tinggi tetap) menjadi flex mengisi sisa ruang */
+    flex: 1;
+    min-height: 0;
+    height: auto; /* override height:50rem yang lama */
+
+    overflow-y: auto; /* INI yang scroll */
 
     padding: .5rem;
     margin-bottom: .5rem;
 }
 
+.data-order-stiker-list .item-card{
+    height: 30.5rem;
+}
 
-.data-order-stiker-list .item-card,
 .popup-cetak-oreran-list .item-card{
-    height: 29rem;
+    height: 30.5rem;
 }

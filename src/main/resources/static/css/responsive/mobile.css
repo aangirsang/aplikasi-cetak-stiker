@@ -1047,11 +1047,6 @@
 
         max-width: 100%;
     }
-
-    .data-order-stiker-list .item-card,
-    .popup-cetak-oreran-list .item-card{
-        height: 33rem;
-    }
 }
 
 
@@ -1216,8 +1211,4 @@
                 calc(100vw - 1rem);
     }
 
-    .data-order-stiker-list .item-card,
-    .popup-cetak-oreran-list .item-card{
-        height: 33rem;
-    }
 }

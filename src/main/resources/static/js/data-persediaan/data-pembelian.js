@@ -190,7 +190,9 @@ async function loadTabelDataPembelian(reload = false) {
     }
 }
 async function fetchDataPembelian() {
-    const response = await fetch(BASE_URL_PEMBELIAN);
+    const response = await fetch(BASE_URL_PEMBELIAN,{
+        credentials: "include"  // pastikan ini ada
+    });
 
     if(!response.ok){
         throw new Error("Gagal Memuat Data Pembelian!");
@@ -477,6 +479,7 @@ async function simpanDataPembelian(){
         if(isEditDataPembelian){
             const response = await fetch(`${BASE_URL_PEMBELIAN}/${selectPembelian.id}`, {
                 method: "PUT",
+                credentials: "include",  // pastikan ini ada
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(body)
             });
@@ -484,6 +487,7 @@ async function simpanDataPembelian(){
         } else {
             const response = await fetch(`${BASE_URL_PEMBELIAN}`, {
                 method: "POST",
+                credentials: "include",  // pastikan ini ada
                 headers: {
                     "Content-Type": "application/json"
                 },
@@ -512,7 +516,8 @@ async function hapusDataPembelian(id) {
     showLoading("Menghapus Data Pembelian...");
     try {
         const response = await fetch(`${BASE_URL_PEMBELIAN}/${id}`, {
-            method: "DELETE"
+            method: "DELETE",
+            credentials: "include"
         });
 
         if (await gagalHapus(response)) return;
@@ -545,7 +550,9 @@ async function fetchDownloadPembelian(awal, akhir) {
         tanggalAwal: awal,
         tanggalAkhir: akhir
     });
-    const response = await fetch(`${BASE_URL_PEMBELIAN}/laporan?${params}`);
+    const response = await fetch(`${BASE_URL_PEMBELIAN}/laporan?${params}`,{
+        credentials: "include"
+    });
 
     if(!response.ok){
         showToast("Gagal memuat data!!","error")

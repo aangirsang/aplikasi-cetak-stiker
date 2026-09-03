@@ -89,7 +89,7 @@ async function loadPage(page) {
     await destroyCurrentPage();
 
     const pageTitles = {
-        dashboard: "Dashboard Coba",
+        dashboard: "Aplikasi Cetak",
         "master-data/data-pengguna": "Data Pengguna",
         "master-data/master-data": "Master Data",
         "data-persediaan/data-pembelian": "Data Pembelian",

@@ -1,6 +1,6 @@
 let currentPageStiker = 1;
 let cariDataStiker = "";
-const rowsPerPageStiker = 15;
+const rowsPerPageStiker = 12;
 
 let sortFieldDataStiker = "";
 let sortDirectionStiker = "";
@@ -98,7 +98,9 @@ async function loadTabelDataStiker(reload = false) {
     }
 }
 async function fetchDataStiker() {
-    const response = await fetch(BASE_URL_STIKER);
+    const response = await fetch(BASE_URL_STIKER,{
+        credentials: "include"  // pastikan ini ada
+    });
 
     if(!response.ok){
         throw new Error("Gagal Memuat Data Stiker!");
@@ -272,7 +274,9 @@ async function destroyDataStiker() {
 
 // CRUD
 async function refreshDataStikerById(id) {
-    const response = await fetch(`${BASE_URL_STIKER}/${id}`);
+    const response = await fetch(`${BASE_URL_STIKER}/${id}`,{
+        credentials: "include"  // pastikan ini ada
+    });
 
     if (!response.ok) {
         throw new Error("Gagal mengambil data stiker terbaru");
@@ -307,7 +311,8 @@ async function hapusDataStiker(id) {
     showLoading("Menghapus Data Stiker...");
     try {
         const response = await fetch(`${BASE_URL_STIKER}/${id}`, {
-            method: "DELETE"
+            method: "DELETE",
+            credentials: "include"  // pastikan ini ada
         });
 
         if (await gagalHapus(response)) return;

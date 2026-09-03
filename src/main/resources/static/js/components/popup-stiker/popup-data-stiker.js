@@ -54,7 +54,6 @@ async function initPopupDataStiker() {
     await initPopupHapus();
     await initPopupLayoutCetak();
 
-
     getEl("btn-popup-data-stiker-batal").addEventListener(
         "click", tutupPopupStiker);
 
@@ -119,7 +118,9 @@ async function showPopupStiker(id = null, onSaveSuccess = null) {
 
         isEditModeStiker = true;
 
-        const response = await fetch(`${BASE_URL_STIKER}/${id}`)
+        const response = await fetch(`${BASE_URL_STIKER}/${id}`,{
+            credentials: "include"  // pastikan ini ada
+        })
 
         if(!response.ok) return showToast("Gagal Memuat Data Stiker!!", "error")
 
@@ -240,7 +241,9 @@ async function loadKodeStiker(umkmId) {
 
     try {
         const response = await fetch(
-            `${BASE_URL_STIKER}/kode/${umkmId}`
+            `${BASE_URL_STIKER}/kode/${umkmId}`, {
+                credentials: "include"  // pastikan ini ada
+            }
         );
 
         if (!response.ok) {
@@ -1132,6 +1135,7 @@ async function uploadGambarStiker(){
             BASE_URL_UPLOAD_GAMBAR,
             {
                 method: "POST",
+                credentials: "include",  // pastikan ini ada
                 body: formData
             }
         );
@@ -1318,6 +1322,7 @@ async function simpanDataStiker() {
         if(isEditModeStiker) {
             const response = await fetch(`${BASE_URL_STIKER}/${selectedPopupDataStiker.id}`, {
                 method: "PUT",
+                credentials: "include",  // pastikan ini ada
                 headers: {"Content-type": "application/json"},
                 body: JSON.stringify(body)
             });
@@ -1326,6 +1331,7 @@ async function simpanDataStiker() {
         } else {
             const response = await fetch(BASE_URL_STIKER, {
                 method: "POST",
+                credentials: "include",  // pastikan ini ada
                 headers: {
                     "Content-Type": "application/json"
                 },
@@ -1378,6 +1384,7 @@ async function uploadFileTif(kodeStiker){
         BASE_URL_UPLOAD_TIF,
         {
             method:"POST",
+            credentials: "include",  // pastikan ini ada
             body:formData
         }
     );

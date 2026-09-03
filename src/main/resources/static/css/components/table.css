@@ -14,13 +14,20 @@ table {
 }
 
 .table-page-container {
-    height: 82vh;
+    /*height: 82vh;*/
     background: var(--color-white);
     padding: var(--card-padding);
     padding-bottom: 1rem;
     border-radius: var(--card-border-radius);
     box-shadow: var(--box-shadow);
     transition: all 300ms ease;
+
+    /* BARU: biar container ini juga ikut flex dan mengisi sisa ruang */
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0; /* penting supaya overflow anak bisa bekerja di dalam flex */
+    height: calc(100vh - 12rem); /* sesuaikan 4rem dengan total margin/header di luar dashboard */
 
 }
 
@@ -39,9 +46,10 @@ table {
 }
 
 .tabel-page-card {
-    height: 73vh;
+    /* BARU: bagian inilah yang akan scroll/menyesuaikan tinggi */
+    flex: 1;
+    min-height: 0;
     overflow-y: auto;
-    overflow-x: hidden;
 }
 
 table {
@@ -60,9 +68,8 @@ table tbody td{
 .tbl-data thead th{
     position: sticky;
     top: 0;
-    z-index: 10;
-
     background: var(--color-white);
+    z-index: 1;
     cursor: pointer;
 }
 

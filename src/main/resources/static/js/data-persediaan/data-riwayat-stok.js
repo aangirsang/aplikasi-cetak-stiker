@@ -107,7 +107,7 @@ async function loadTabelDataRiwayatStok(reload = false) {
     }
 }
 async function fetchDataRiwayatStok() {
-    const response = await fetch(BASE_URL_RIWAYAT);
+    const response = await fetch(BASE_URL_RIWAYAT,{credentials: "include"});
 
     if(!response.ok){
         throw new Error("Gagal Memuat Data!!");

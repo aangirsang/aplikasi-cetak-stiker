@@ -66,7 +66,9 @@ function bersihDataSttiker(){
     setPreviewGambarPopupLihatStiker(2, "");
 }
 async function isiDataStiker(id) {
-    const response = await fetch(`${BASE_URL_STIKER}/${id}`);
+    const response = await fetch(`${BASE_URL_STIKER}/${id}`,{
+        credentials: "include"  // pastikan ini ada
+    });
 
     if (!response.ok) {
         showToast("Gagal mengambil data stiker!!", "error")

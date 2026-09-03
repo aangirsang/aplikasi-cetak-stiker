@@ -1,6 +1,6 @@
-//const BASE_URL = "http://localhost:8080/api" // UNTUK CODING/PENGEMBANG
+const BASE_URL = "http://localhost:8080/api" // UNTUK CODING/PENGEMBANG
 
-const BASE_URL = "/api" // UNTUK JARINGAN
+//const BASE_URL = "/api" // UNTUK JARINGAN
 const BASE_URL_UPLOAD_GAMBAR = `${BASE_URL}/upload/gambar`
 const BASE_URL_UPLOAD_TIF = `${BASE_URL}/upload/tif`
 
@@ -416,7 +416,7 @@ async function cetakTIFF(id) {
 
         const response =
             await fetch(
-                `${BASE_URL_STIKER}/${id}`
+                `${BASE_URL_STIKER}/${id}`,{credentials: "include"}
             );
 
 
@@ -509,7 +509,7 @@ async function cetakTIFF(id) {
 
 
         const responseTiff =
-            await fetch(url);
+            await fetch(url,{credentials: "include"});
 
 
         if (!responseTiff.ok) {
@@ -1006,3 +1006,24 @@ async function gagalSimpan(response) {
     return true;
 }
 
+async function fetchPartialHtml(path) {
+    const response = await fetch(path, { cache: "no-store" });
+    if (!response.ok) {
+        throw new Error(`Gagal memuat ${path} (status ${response.status})`);
+    }
+
+    let html = await response.text();
+
+    console.log("RAW panjang:", html.length);
+    console.log("RAW ada popup-actions?", html.includes("popup-actions")); // ⬅️ BARU
+
+    html = html.replace(
+        /<!--\s*Code injected by live-server\s*-->[\s\S]*?<\/script>/gi,
+        ""
+    );
+
+    console.log("CLEANED panjang:", html.length);
+    console.log("CLEANED ada popup-actions?", html.includes("popup-actions")); // ⬅️ BARU
+
+    return html;
+}

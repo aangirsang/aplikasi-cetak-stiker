@@ -97,7 +97,9 @@ async function loadTablePopupStiker(reload = false){
     }
 }
 async function fetchDataStiker(umkm) {
-    const response = await fetch(`${BASE_URL_STIKER}/umkm-status-true/${umkm.id}`)
+    const response = await fetch(`${BASE_URL_STIKER}/umkm-status-true/${umkm.id}`,{
+        credentials: "include"  // pastikan ini ada
+    })
 
     if(!response.ok) {
         showToast("Gagal mengambil data stiker!!","error");

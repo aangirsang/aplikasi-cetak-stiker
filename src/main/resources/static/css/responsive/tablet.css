@@ -81,12 +81,6 @@
         overflow-y: auto;
     }
 
-
-    .data-order-stiker-list .item-card,
-    .popup-cetak-oreran-list .item-card{
-        height: 33rem;
-    }
-
     .search-bar-date {
         grid-template-columns: 1fr 1fr;
     }
@@ -264,12 +258,6 @@
         min-height: 0;
     }
 
-    .data-order-stiker-list .item-card,
-    .popup-cetak-oreran-list .item-card{
-        height: 33rem;
-    }
-
-
     /* =====================================================
        DATA MASTER
        ===================================================== */
@@ -290,10 +278,4 @@
     .dashboard .table-page-container {
         height: 100%;
     }
-
-    .data-order-stiker-list .item-card,
-    .popup-cetak-oreran-list .item-card{
-        height: 33rem;
-    }
-
 }

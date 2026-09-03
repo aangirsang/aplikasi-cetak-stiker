@@ -1,7 +1,7 @@
 
 let currentPageUmkm = 1;
 let cariDataUmkm = "";
-const rowsPerPageUmkm = 15;
+const rowsPerPageUmkm = 12;
 
 let sortFieldDataUmkm = "";
 let sortDirectionUmkm = "";
@@ -90,7 +90,9 @@ async function loadTableDataUmkm(reload = false){
     }
 }
 async function fetchDataUmkm(){
-    const response = await fetch(BASE_URL_UMKM);
+    const response = await fetch(BASE_URL_UMKM,{
+        credentials: "include"  // pastikan ini ada
+    });
 
     if(!response.ok) {
         throw new Error ("Gagal mengambil data UMKM");
@@ -249,7 +251,9 @@ async function closeDetailUmkmOutside(event){
 
 // LOAD DATA KATEGORI
 async function fetchDataKategori(){
-    const response = await fetch(BASE_URL_KATEGORI);
+    const response = await fetch(BASE_URL_KATEGORI,{
+        credentials: "include"  // pastikan ini ada
+    });
 
     if(!response.ok) {
         throw new Error ("Gagal mengambil data Kategori");
@@ -526,6 +530,7 @@ async function simpanDataUmkm(){
         if(isEditModeUmkm){
             const response = await fetch(`${BASE_URL_UMKM}/${selectedUmkm}`, {
                 method: 'PUT',
+                credentials: "include",  // pastikan ini ada
                 headers: {
                     'content-type': 'application/json'
                 },
@@ -553,6 +558,7 @@ async function simpanDataUmkm(){
         } else {
             const response = await fetch(BASE_URL_UMKM, {
                 method: 'POST',
+                credentials: "include",  // pastikan ini ada
                 headers: {
                     'content-type': 'application/json'
                 },
@@ -598,7 +604,8 @@ async function hapusDataUmkm(id) {
 
     try {
         const response = await fetch(`${BASE_URL_UMKM}/${id}`, {
-            method: 'DELETE'
+            method: 'DELETE',
+            credentials: "include"  // pastikan ini ada
         });
         if(await gagalHapus(response)) return;
 

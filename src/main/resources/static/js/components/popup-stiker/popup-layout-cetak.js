@@ -861,7 +861,9 @@ async function loadTiff(stiker) {
 
             const responsewebp =
                 await fetch(
-                    `${url}.webp`
+                    `${url}.webp`,{
+                        credentials: "include"  // pastikan ini ada
+                    }
                 );
 
             if (!responsewebp.ok) {
@@ -887,7 +889,9 @@ async function loadTiff(stiker) {
 
             const responsetif =
                 await fetch(
-                    `${url}.tif`
+                    `${url}.tif`,{
+                        credentials: "include"  // pastikan ini ada
+                    }
                 );
 
             if (!responsetif.ok) {
@@ -2090,6 +2094,7 @@ async function uploadFileTif(kodeStiker){
         BASE_URL_UPLOAD_TIF,
         {
             method:"POST",
+            credentials: "include",  // pastikan ini ada
             body:formData
         }
     );

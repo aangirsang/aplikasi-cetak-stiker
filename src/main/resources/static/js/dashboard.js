@@ -40,14 +40,14 @@ async function loadTabelDashboard(){
         dataOrderanDashboard = await fetchTabelDashboard();
 
         const sorted = await getsortedDataOrderan(dataOrderanDashboard);
-        const paginated = getPaginatedData(sorted, currentPageDashboard, 15)
+        const paginated = getPaginatedData(sorted, currentPageDashboard, 12)
 
         renderTabelOrderan(paginated);
         loadPagination(
             "pagination",
             sorted.length,
             currentPageDashboard,
-            15,
+            12,
             changePageDashboard
         );
 
@@ -77,7 +77,9 @@ async function fetchTabelDashboard(){
     });
 
 
-    const response = await fetch(`${BASE_URL_ORDERAN}/tanggal?${params}`);
+    const response = await fetch(`${BASE_URL_ORDERAN}/tanggal?${params}`, {
+        credentials: "include"  // pastikan ini ada
+    });
 
     if(!response.ok){
         throw new Error("Gagal Memuat Data Tabel!");
@@ -131,7 +133,7 @@ function renderTabelOrderan(data) {
 function createTabelOrderan(item, isOpened) {
     return `
         <tr 
-            class="dahsboard-row ${isOpened ? 'selected' : ''}"
+                class="dahsboard-row ${isOpened ? 'selected' : ''}"
             onclick="event.stopPropagation(); toggleDetailDashboard('${item.id}')"
         >
             <td>${item.faktur}</td>
@@ -227,7 +229,9 @@ async function loadDiagramBatang() {
         tanggalAkhir: akhir
     });
 
-    const response = await fetch(`${BASE_URL_ORDERAN}/laporan?${params}`);
+    const response = await fetch(`${BASE_URL_ORDERAN}/laporan?${params}`, {
+        credentials: "include"  // pastikan ini ada
+    });
 
     if (!response.ok) {
         return showToast("Gagal Memuat Data!!", "error");
@@ -304,7 +308,9 @@ async function loadDiagramGaris(){
         tanggalAkhir: akhir
     });
 
-    const response = await fetch(`${BASE_URL_ORDERAN}/rekap-bulanan?${params}`);
+    const response = await fetch(`${BASE_URL_ORDERAN}/rekap-bulanan?${params}`, {
+        credentials: "include"  // pastikan ini ada
+    });
 
     if (!response.ok) {
         return showToast("Gagal Memuat Data!!", "error");

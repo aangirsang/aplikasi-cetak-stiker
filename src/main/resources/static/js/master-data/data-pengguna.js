@@ -111,7 +111,9 @@ async function loadTablePengguna(reload = false){
 async function fetchDataPengguna(){
 
     const response =
-        await fetch(BASE_URL_PENGGUNA);
+        await fetch(BASE_URL_PENGGUNA, {
+            credentials: "include"  // pastikan ini ada
+        });
 
     if(!response.ok){
         throw new Error(
@@ -224,7 +226,9 @@ async function changePagePengguna(page){
 // LOAD DATA LEVEL
 async function fetchDataLevel(){
 
-    const response = await fetch(BASE_URL_LEVEL);
+    const response = await fetch(BASE_URL_LEVEL, {
+        credentials: "include"  // pastikan ini ada
+    });
 
     if(!response.ok){
         throw new Error("Gagal mengambil data level");
@@ -535,6 +539,7 @@ async function simpanDataPengguna() {
         if(isEdit){
             const response = await fetch(`${BASE_URL_PENGGUNA}/${selectedPengguna}`, {
                 method: 'PUT',
+                credentials: "include",  // pastikan ini ada
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -552,6 +557,7 @@ async function simpanDataPengguna() {
         } else {
             const response = await fetch(BASE_URL_PENGGUNA, {
                 method: 'POST',
+                credentials: "include",  // pastikan ini ada
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -603,6 +609,7 @@ async function uploadGambarPengguna() {
             BASE_URL_UPLOAD_GAMBAR,
             {
                 method: "POST",
+                credentials: "include",  // pastikan ini ada
                 body: formData
             }
         );
@@ -627,7 +634,8 @@ async function hapusDataPengguna(id){
             await fetch(
                 `${BASE_URL_PENGGUNA}/${id}`,
                 {
-                    method: "DELETE"
+                    method: "DELETE",
+                    credentials: "include"  // pastikan ini ada
                 }
             );
 

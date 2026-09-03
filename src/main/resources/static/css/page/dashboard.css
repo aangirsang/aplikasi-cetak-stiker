@@ -10,26 +10,55 @@
 
 .dashboard .table-page-container{
     box-shadow: none;
+
+    /* BARU: biar container ini juga ikut flex dan mengisi sisa ruang */
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0; /* penting supaya overflow anak bisa bekerja di dalam flex */
 }
+
+.dashboard .tabel-page-card {
+    /* BARU: bagian inilah yang akan scroll/menyesuaikan tinggi */
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.dashboard .pagination {
+    /* tidak perlu flex:1, dia otomatis tetap di bawah karena sibling terakhir */
+    flex-shrink: 0;
+}
+
 
 .dashboard-umkm-order-bulanan {
     border-radius: var(--border-radius-1);
-    height: 47vh;
+
+    /* GANTI height: 47vh; menjadi flex proporsional */
+    flex: 1.2;   /* proporsi lebih besar dari line chart */
+    min-height: 0; /* penting supaya canvas Chart.js bisa resize dengan benar */
 }
 
 .dashboard-data-order-bulanan {
-    margin-top: 1.6rem;
+    /* margin-top diganti pakai gap di parent, hapus margin-top di sini */
     border-radius: var(--border-radius-1);
-    height: 38vh;
+
+    /* GANTI height: 38vh; menjadi flex proporsional */
+    flex: 1;
+    min-height: 0;
 }
 
 .dashboard-kanan > div {
-    background: var(--color-white) ;
+    background: var(--color-white);
     padding: var(--card-padding);
     border-radius: var(--card-border-radius);
     box-shadow: var(--box-shadow-button);
-
     transition: all 300ms ease;
+
+    /* BARU: supaya canvas di dalamnya bisa mengikuti tinggi card */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .dashboard-kanan > div:hover,
@@ -38,10 +67,29 @@
 }
 
 .dashboard-kiri {
-    background: var(--color-white) ;
+    background: var(--color-white);
     padding: var(--card-padding);
     padding-bottom: 1rem;
     border-radius: var(--card-border-radius);
     box-shadow: var(--box-shadow-button);
     transition: all 300ms ease;
+
+    /* BARU: jadikan flex column dengan tinggi mengikuti layar */
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 7rem); /* sesuaikan 4rem dengan total margin/header di luar dashboard */
+}
+
+.dashboard-kanan {
+    /* BARU: ikut tinggi row grid = tinggi dashboard-kiri */
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 1.6rem;
+}
+
+.chart-wrapper {
+    flex: 1;
+    min-height: 0;
+    position: relative; /* Chart.js responsive butuh parent relative */
 }

@@ -11,7 +11,7 @@
     width: 90rem;
     max-width: 90vw;
 
-    height: 58rem;
+    height: min(58rem, 90vh);
     max-height: 90vh;
 
     box-sizing: border-box;

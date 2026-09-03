@@ -2,6 +2,7 @@ package com.girsang.stiker.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -9,10 +10,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.web.cors.CorsConfigurationSource
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfig {
+class SecurityConfig(
+    private val corsConfigurationSource: CorsConfigurationSource
+) {
 
     @Bean
     fun authenticationManager(
@@ -20,7 +24,6 @@ class SecurityConfig {
     ): AuthenticationManager {
         return configuration.authenticationManager
     }
-
 
     @Bean
     fun passwordEncoder(): PasswordEncoder {
@@ -33,9 +36,13 @@ class SecurityConfig {
     ): SecurityFilterChain {
 
         http
+            .cors { it.configurationSource(corsConfigurationSource) }
+
             .csrf { it.disable() }
 
             .authorizeHttpRequests {
+
+                it.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                 it.requestMatchers(
                     "/",

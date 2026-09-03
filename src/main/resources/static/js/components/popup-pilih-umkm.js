@@ -148,7 +148,9 @@ async function loadTablePopupPilihUmkm(reload = false){
     }
 }
 async function fetchDataUmkm(){
-    const response = await fetch(`${BASE_URL_UMKM}/aktif`);
+    const response = await fetch(`${BASE_URL_UMKM}/aktif`, {
+        credentials: "include"  // pastikan ini ada
+    });
 
     if(!response.ok) {
         throw new Error ("Gagal mengambil data UMKM");
@@ -157,7 +159,9 @@ async function fetchDataUmkm(){
     return await response.json();
 }
 async function fetchDataUmkmPunyaStiker(){
-    const response = await fetch(`${BASE_URL_UMKM}/punya-stiker`);
+    const response = await fetch(`${BASE_URL_UMKM}/punya-stiker`,{
+        credentials: "include"  // pastikan ini ada
+    });
 
     if(!response.ok) {
         throw new Error ("Gagal mengambil data UMKM");

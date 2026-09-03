@@ -137,7 +137,7 @@ async function loadTabelDataPenyesuaian(reload = false) {
     }
 }
 async function fetchDataPenyesuaian() {
-    const response = await fetch(BASE_URL_PENYESUAIAN);
+    const response = await fetch(BASE_URL_PENYESUAIAN,{credentials: "include"});
 
     if(!response.ok){
         throw new Error("Gagal Memuat Data Penyesuaian!");
@@ -542,6 +542,7 @@ async function simpanDataPenyesuaian() {
         if(isEdit){
             const response = await fetch(`${BASE_URL_PENYESUAIAN}/${selectedPenyesuaian.id}`, {
                 method: "PUT",
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -551,6 +552,7 @@ async function simpanDataPenyesuaian() {
         }else{
             const response = await fetch(BASE_URL_PENYESUAIAN, {
                 method: "POST",
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/json"
                 },
@@ -576,7 +578,8 @@ async function hapusDataPenyesuaian(id) {
     showLoading("Menghapus Data Penyesuaian...");
     try {
         const response = await fetch(`${BASE_URL_PENYESUAIAN}/${id}`, {
-            method: "DELETE"
+            method: "DELETE",
+            credentials: "include"
         });
 
         if (await gagalHapus(response)) return;
@@ -608,6 +611,7 @@ async function uploadGambarPenyesuaian() {
             BASE_URL_UPLOAD_GAMBAR,
             {
                 method: "POST",
+                credentials: "include",
                 body: formData
             }
         );
@@ -643,7 +647,7 @@ async function fetchDownloadPenyesuaian(awal, akhir){
         tanggalAwal: awal,
         tanggalAkhir: akhir
     });
-    const response = await fetch(`${BASE_URL_PENYESUAIAN}/laporan?${params}`);
+    const response = await fetch(`${BASE_URL_PENYESUAIAN}/laporan?${params}`,{credentials: "include"});
 
     if(!response.ok){
         showToast("Gagal memuat data!!","error")

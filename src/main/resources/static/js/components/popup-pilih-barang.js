@@ -93,7 +93,7 @@ async function loadTablePopupPilihBarang(reload = false){
     }
 }
 async function fetchDataPilihBarang() {
-    const response = await fetch(`${BASE_URL_BARANG}`);
+    const response = await fetch(`${BASE_URL_BARANG}`,{credentials: "include"});
 
     if(!response.ok) {
         throw new Error ("Gagal mengambil data Barang");
