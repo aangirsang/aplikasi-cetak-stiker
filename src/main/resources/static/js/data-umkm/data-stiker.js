@@ -98,9 +98,7 @@ async function loadTabelDataStiker(reload = false) {
     }
 }
 async function fetchDataStiker() {
-    const response = await fetch(BASE_URL_STIKER,{
-        credentials: "include"  // pastikan ini ada
-    });
+    const response = await apiFetch(BASE_URL_STIKER);
 
     if(!response.ok){
         throw new Error("Gagal Memuat Data Stiker!");
@@ -274,9 +272,7 @@ async function destroyDataStiker() {
 
 // CRUD
 async function refreshDataStikerById(id) {
-    const response = await fetch(`${BASE_URL_STIKER}/${id}`,{
-        credentials: "include"  // pastikan ini ada
-    });
+    const response = await apiFetch(`${BASE_URL_STIKER}/${id}`);
 
     if (!response.ok) {
         throw new Error("Gagal mengambil data stiker terbaru");
@@ -310,9 +306,8 @@ function konfirmasiHapusDataStiker(id) {
 async function hapusDataStiker(id) {
     showLoading("Menghapus Data Stiker...");
     try {
-        const response = await fetch(`${BASE_URL_STIKER}/${id}`, {
-            method: "DELETE",
-            credentials: "include"  // pastikan ini ada
+        const response = await apiFetch(`${BASE_URL_STIKER}/${id}`, {
+            method: "DELETE"
         });
 
         if (await gagalHapus(response)) return;

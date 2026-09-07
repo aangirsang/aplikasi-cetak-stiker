@@ -3,6 +3,7 @@ package com.girsang.stiker.config
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -76,6 +77,26 @@ class SecurityConfig(
 
             .httpBasic {
                 it.disable()
+            }
+
+            .exceptionHandling { exceptions ->
+                exceptions
+                    // Belum login / token & session tidak valid -> 401
+                    .authenticationEntryPoint { request, response, _ ->
+                        response.status = HttpStatus.UNAUTHORIZED.value()
+                        response.contentType = "application/json"
+                        response.writer.write(
+                            """{"success":false,"message":"Belum login"}"""
+                        )
+                    }
+                    // Sudah login tapi role tidak cukup (mis. akses /admin/**) -> 403
+                    .accessDeniedHandler { request, response, _ ->
+                        response.status = HttpStatus.FORBIDDEN.value()
+                        response.contentType = "application/json"
+                        response.writer.write(
+                            """{"success":false,"message":"Tidak punya akses"}"""
+                        )
+                    }
             }
 
             .logout {

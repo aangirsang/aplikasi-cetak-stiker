@@ -1,6 +1,6 @@
-const BASE_URL = "http://localhost:8080/api" // UNTUK CODING/PENGEMBANG
+//const BASE_URL = "http://localhost:8080/api" // UNTUK CODING/PENGEMBANG
 
-//const BASE_URL = "/api" // UNTUK JARINGAN
+const BASE_URL = "/api" // UNTUK JARINGAN
 const BASE_URL_UPLOAD_GAMBAR = `${BASE_URL}/upload/gambar`
 const BASE_URL_UPLOAD_TIF = `${BASE_URL}/upload/tif`
 
@@ -25,6 +25,8 @@ const getValue = id => getEl(id).value.trim();
 
 const noImagePerson = "./assets/images/no-image-person.svg";
 const noImageStiker = "./assets/images/no-image-stiker.svg";
+
+let isLoginOverlayShown = false;
 
 function tandaiInvalid(el){
     el.classList.remove("error-validasi");
@@ -415,9 +417,7 @@ async function cetakTIFF(id) {
         // ==================================================
 
         const response =
-            await fetch(
-                `${BASE_URL_STIKER}/${id}`,{credentials: "include"}
-            );
+            await apiFetch(`${BASE_URL_STIKER}/${id}`);
 
 
         if (!response.ok) {
@@ -509,7 +509,7 @@ async function cetakTIFF(id) {
 
 
         const responseTiff =
-            await fetch(url,{credentials: "include"});
+            await apiFetch(url);
 
 
         if (!responseTiff.ok) {
@@ -981,13 +981,17 @@ function formatRupiah(angka){
 async function gagalHapus(response) {
     if (response.ok) return false;
 
-    const errorData = await response.json();
+    let message = "Gagal hapus data";
 
-    showToast(
-        `Gagal Hapus!!, ${errorData.error}` || "Gagal menghapus data",
-        "error"
-    );
+    try {
+        const errorData = await response.json();
+        message = errorData.message || errorData.error || message;
 
+    } catch {
+        message = await response.text();
+    }
+
+    showToast(message, "error");
     return true;
 }
 async function gagalSimpan(response) {
@@ -1006,24 +1010,43 @@ async function gagalSimpan(response) {
     return true;
 }
 
-async function fetchPartialHtml(path) {
-    const response = await fetch(path, { cache: "no-store" });
-    if (!response.ok) {
-        throw new Error(`Gagal memuat ${path} (status ${response.status})`);
+//CEK SESSION LOGIN
+async function apiFetch(url, options = {}) {
+    const finalOptions = {
+        ...options,
+        credentials: options.credentials || "include"
+    };
+
+    const response = await fetch(url, finalOptions);
+
+    if (response.status === 401 || response.status === 403) {
+        handleSessionExpired();
+
+        //showToast("Sesi Anda telah berakhir, silakan login kembali", "warning");
+        throw new Error("Unauthorized");
     }
 
-    let html = await response.text();
+    return response;
+}
 
-    console.log("RAW panjang:", html.length);
-    console.log("RAW ada popup-actions?", html.includes("popup-actions")); // ⬅️ BARU
+function handleSessionExpired() {
+    if (isLoginOverlayShown) return; // cegah trigger berkali-kali
+    isLoginOverlayShown = true;
 
-    html = html.replace(
-        /<!--\s*Code injected by live-server\s*-->[\s\S]*?<\/script>/gi,
-        ""
-    );
+    // Bersihkan sesi lama
+    localStorage.removeItem("currentUser");
+    penggunaAktif = null;
 
-    console.log("CLEANED panjang:", html.length);
-    console.log("CLEANED ada popup-actions?", html.includes("popup-actions")); // ⬅️ BARU
+    // Tampilkan overlay login (konsisten dengan login.js)
+    const loginOverlay = getEl("login-overlay");
+    if (loginOverlay) {
+        loginOverlay.classList.remove("hidden");
+        resetLoginForm();
+        resetSidebar();
+    }
 
-    return html;
+    const loginError = getEl("login-error");
+    if (loginError) {
+        loginError.innerText = "Sesi Anda telah berakhir, silakan login kembali";
+    }
 }

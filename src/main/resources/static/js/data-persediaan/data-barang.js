@@ -65,9 +65,7 @@ async function loadTabelDataBarang(reload = false) {
 
 }
 async function fetchDataBarang(){
-    const response = await fetch(BASE_URL_BARANG,{
-        credentials: "include"  // pastikan ini ada
-    });
+    const response = await apiFetch(BASE_URL_BARANG);
 
     if(!response.ok) {
         throw new Error ("Gagal mengambil data!!")
@@ -202,9 +200,8 @@ async function simpanDataBarang() {
     );
     try {
         if(isEditModeBarang) {
-            const response = await fetch(`${BASE_URL_BARANG}/${selectedBarang}`, {
+            const response = await apiFetch(`${BASE_URL_BARANG}/${selectedBarang}`, {
                 method: "PUT",
-                credentials: "include",  // pastikan ini ada
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -214,9 +211,8 @@ async function simpanDataBarang() {
             });
             if(await gagalSimpan(response)) return;
         } else {
-            const response = await fetch(`${BASE_URL_BARANG}`, {
+            const response = await apiFetch(`${BASE_URL_BARANG}`, {
                 method: "POST",
-                credentials: "include",  // pastikan ini ada
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -250,9 +246,8 @@ function konfirmasiHapusBarang(id) {
 async function hapusDataBarang(id) {
     showLoading("Menghapus Data Barang..")
     try {
-        const response = await fetch(`${BASE_URL_BARANG}/${id}`, {
-            method: "DELETE",
-            credentials: "include"  // pastikan ini ada
+        const response = await apiFetch(`${BASE_URL_BARANG}/${id}`, {
+            method: "DELETE"
         });
         if (await gagalHapus(response)) return;
 

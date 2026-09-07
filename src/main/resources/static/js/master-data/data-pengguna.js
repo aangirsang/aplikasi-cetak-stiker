@@ -111,9 +111,7 @@ async function loadTablePengguna(reload = false){
 async function fetchDataPengguna(){
 
     const response =
-        await fetch(BASE_URL_PENGGUNA, {
-            credentials: "include"  // pastikan ini ada
-        });
+        await apiFetch(BASE_URL_PENGGUNA);
 
     if(!response.ok){
         throw new Error(
@@ -226,9 +224,7 @@ async function changePagePengguna(page){
 // LOAD DATA LEVEL
 async function fetchDataLevel(){
 
-    const response = await fetch(BASE_URL_LEVEL, {
-        credentials: "include"  // pastikan ini ada
-    });
+    const response = await apiFetch(BASE_URL_LEVEL);
 
     if(!response.ok){
         throw new Error("Gagal mengambil data level");
@@ -537,9 +533,8 @@ async function simpanDataPengguna() {
 
     try {
         if(isEdit){
-            const response = await fetch(`${BASE_URL_PENGGUNA}/${selectedPengguna}`, {
+            const response = await apiFetch(`${BASE_URL_PENGGUNA}/${selectedPengguna}`, {
                 method: 'PUT',
-                credentials: "include",  // pastikan ini ada
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -555,9 +550,8 @@ async function simpanDataPengguna() {
 
             if(await gagalSimpan(response)) return
         } else {
-            const response = await fetch(BASE_URL_PENGGUNA, {
+            const response = await apiFetch(BASE_URL_PENGGUNA, {
                 method: 'POST',
-                credentials: "include",  // pastikan ini ada
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -605,11 +599,10 @@ async function uploadGambarPengguna() {
     );
 
     const response =
-        await fetch(
+        await apiFetch(
             BASE_URL_UPLOAD_GAMBAR,
             {
                 method: "POST",
-                credentials: "include",  // pastikan ini ada
                 body: formData
             }
         );
@@ -631,11 +624,10 @@ async function hapusDataPengguna(id){
     try {
 
         const response =
-            await fetch(
+            await apiFetch(
                 `${BASE_URL_PENGGUNA}/${id}`,
                 {
-                    method: "DELETE",
-                    credentials: "include"  // pastikan ini ada
+                    method: "DELETE"
                 }
             );
 

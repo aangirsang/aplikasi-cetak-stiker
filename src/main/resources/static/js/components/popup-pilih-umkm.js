@@ -7,6 +7,9 @@ let selectedPopupPilihUmkm = null;
 let cariKeywordPopupPilihUmkm = "";
 let sortDirectionPopupPilihUmkm = "asc";
 
+let idUmkm = "";
+let selectedUmkm = null;
+
 let adaStiker = false;
 
 let dataUmkm = [];
@@ -35,12 +38,15 @@ async function initPopupPilihUmkm() {
         await loadTablePopupPilihUmkm();
     });
 
-    document
-        .getElementById("batal-popup-pilih-umkm")
-        ?.addEventListener("click", () => {
-
+    getEl("batal-popup-pilih-umkm")
+        .addEventListener("click", () => {
             tutupPopupPilihUmkm();
         });
+
+    getEl("btn-pilih-umkm")
+        .addEventListener("click", () => {
+            pilihPopupUmkm(idUmkm);
+        })
 
 }
 
@@ -51,6 +57,7 @@ async function showPopupPilihUmkm(stiker= false, onSelect, selectedUmkm = null) 
     selectedPopupPilihUmkm = selectedUmkm;
 
     adaStiker = stiker;
+    idUmkm = "";
 
     // reset pencarian
     cariKeywordPopupPilihUmkm = "";
@@ -91,6 +98,9 @@ function tutupPopupPilihUmkm() {
         .classList.remove("show");
 }
 function pilihPopupUmkm(id){
+    if(!id) {
+        return showToast("Silahkan pilih data UMKM terlebih dahulu", "warning");
+    }
     const umkm = dataUmkm.find(item => item.id === id);
     if(!umkm) return;
 
@@ -109,6 +119,21 @@ function pilihPopupUmkm(id){
     }
 
     tutupPopupPilihUmkm();
+}
+
+function klikTabelPilihUmkm(id) {
+    idUmkm = id;
+
+    // hapus selected-row dari semua baris
+    document.querySelectorAll('.pilih-umkm-row').forEach(row => {
+        row.classList.remove('selected-row');
+    });
+
+    // tambahkan ke baris yang diklik
+    const row = document.querySelector(`.pilih-umkm-row[data-id="${id}"]`);
+    if (row) {
+        row.classList.add('selected-row');
+    }
 }
 
 // TABEL UMKM
@@ -148,9 +173,7 @@ async function loadTablePopupPilihUmkm(reload = false){
     }
 }
 async function fetchDataUmkm(){
-    const response = await fetch(`${BASE_URL_UMKM}/aktif`, {
-        credentials: "include"  // pastikan ini ada
-    });
+    const response = await apiFetch(`${BASE_URL_UMKM}/aktif`);
 
     if(!response.ok) {
         throw new Error ("Gagal mengambil data UMKM");
@@ -159,9 +182,7 @@ async function fetchDataUmkm(){
     return await response.json();
 }
 async function fetchDataUmkmPunyaStiker(){
-    const response = await fetch(`${BASE_URL_UMKM}/punya-stiker`,{
-        credentials: "include"  // pastikan ini ada
-    });
+    const response = await apiFetch(`${BASE_URL_UMKM}/punya-stiker`);
 
     if(!response.ok) {
         throw new Error ("Gagal mengambil data UMKM");
@@ -227,14 +248,11 @@ function renderTabelPopupPilihUmkm(data){
     });
 }
 function createRowPopupPilihUmkm(umkm){
-
-    const selected =
-        selectedPopupPilihUmkm &&
-        selectedPopupPilihUmkm.id === umkm.id;
-
     return `
         <tr
-            class="pilih-umkm-row ${selected ? "selected-row" : ""}"
+            class="pilih-umkm-row"
+            data-id="${umkm.id}"
+            onclick="klikTabelPilihUmkm('${umkm.id}')"
             ondblclick="pilihPopupUmkm('${umkm.id}')">
             <td>${umkm.namaUsaha}</td>
             <td>${umkm.namaPemilik}</td>
@@ -270,6 +288,7 @@ async function sortTablePopupPilihUmkm(field){
 
 window.initPopupPilihUmkm = initPopupPilihUmkm;
 window.showPopupPilihUmkm = showPopupPilihUmkm;
+window.klikTabelPilihUmkm = klikTabelPilihUmkm;
 window.pilihPopupUmkm = pilihPopupUmkm;
 window.changePagePopupPilihUmkm = changePagePopupPilihUmkm;
 window.sortTablePopupPilihUmkm = sortTablePopupPilihUmkm;

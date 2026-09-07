@@ -62,11 +62,28 @@
     height: 25rem;
 
     overflow-y: auto;
-    overflow-x: auto;
+    overflow-x: hidden;
 
     flex: 0 1 auto;
 
     min-height: 0;
+}
+
+.pilih-barang-row:hover td {
+    color: var(--color-primary);
+    background: var(--color-light);
+    transform: translateX(6px);
+}
+
+.pilih-barang-row.selected-row td {
+    color: var(--color-primary);
+    background: var(--color-light);
+    transform: translateX(6px);
+}
+
+.pilih-barang-row:not(.selected-row):hover td {
+    color: var(--color-primary);
+    transform: translateX(6px);
 }
 
 

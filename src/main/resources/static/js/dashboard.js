@@ -77,9 +77,7 @@ async function fetchTabelDashboard(){
     });
 
 
-    const response = await fetch(`${BASE_URL_ORDERAN}/tanggal?${params}`, {
-        credentials: "include"  // pastikan ini ada
-    });
+    const response = await apiFetch(`${BASE_URL_ORDERAN}/tanggal?${params}`);
 
     if(!response.ok){
         throw new Error("Gagal Memuat Data Tabel!");
@@ -229,9 +227,7 @@ async function loadDiagramBatang() {
         tanggalAkhir: akhir
     });
 
-    const response = await fetch(`${BASE_URL_ORDERAN}/laporan?${params}`, {
-        credentials: "include"  // pastikan ini ada
-    });
+    const response = await apiFetch(`${BASE_URL_ORDERAN}/laporan?${params}`);
 
     if (!response.ok) {
         return showToast("Gagal Memuat Data!!", "error");
@@ -308,9 +304,7 @@ async function loadDiagramGaris(){
         tanggalAkhir: akhir
     });
 
-    const response = await fetch(`${BASE_URL_ORDERAN}/rekap-bulanan?${params}`, {
-        credentials: "include"  // pastikan ini ada
-    });
+    const response = await apiFetch(`${BASE_URL_ORDERAN}/rekap-bulanan?${params}`);
 
     if (!response.ok) {
         return showToast("Gagal Memuat Data!!", "error");

@@ -17,31 +17,7 @@ document.addEventListener(
 
         try {
 
-            const response = await fetch(
-                `${BASE_URL}/auth/me`,
-                {
-                    credentials: "include"
-                }
-            );
-
-            if (!response.ok) {
-                showToast("Sesion Pengguna Habis!!", "warning")
-                penggunaAktif = null;
-
-                localStorage.removeItem(
-                    "currentUser"
-                );
-
-                loginOverlay.classList.remove("hidden");
-
-                content.innerHTML = "";
-
-                title.textContent = "Login";
-
-                resetLoginForm();
-
-                return;
-            }
+            const response = await apiFetch(`${BASE_URL}/auth/me`);
 
             const me = await response.json();
 
@@ -308,8 +284,8 @@ async function logout() {
 // ==============================
 function resetLoginForm() {
 
-    getEl("namaPengguna").value = "admin";
-    getEl("kataSandi").value = "admin123";
+    getEl("namaPengguna").value = "";
+    getEl("kataSandi").value = "";
 
     getEl("login-error")
         .textContent = "";

@@ -190,9 +190,7 @@ async function loadTabelDataPembelian(reload = false) {
     }
 }
 async function fetchDataPembelian() {
-    const response = await fetch(BASE_URL_PEMBELIAN,{
-        credentials: "include"  // pastikan ini ada
-    });
+    const response = await apiFetch(BASE_URL_PEMBELIAN);
 
     if(!response.ok){
         throw new Error("Gagal Memuat Data Pembelian!");
@@ -477,17 +475,15 @@ async function simpanDataPembelian(){
 
     try {
         if(isEditDataPembelian){
-            const response = await fetch(`${BASE_URL_PEMBELIAN}/${selectPembelian.id}`, {
+            const response = await apiFetch(`${BASE_URL_PEMBELIAN}/${selectPembelian.id}`, {
                 method: "PUT",
-                credentials: "include",  // pastikan ini ada
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(body)
             });
             if(await gagalSimpan(response)) return;
         } else {
-            const response = await fetch(`${BASE_URL_PEMBELIAN}`, {
+            const response = await apiFetch(`${BASE_URL_PEMBELIAN}`, {
                 method: "POST",
-                credentials: "include",  // pastikan ini ada
                 headers: {
                     "Content-Type": "application/json"
                 },
@@ -515,9 +511,8 @@ function konfirmasiHapusDataPembelian(id) {
 async function hapusDataPembelian(id) {
     showLoading("Menghapus Data Pembelian...");
     try {
-        const response = await fetch(`${BASE_URL_PEMBELIAN}/${id}`, {
-            method: "DELETE",
-            credentials: "include"
+        const response = await apiFetch(`${BASE_URL_PEMBELIAN}/${id}`, {
+            method: "DELETE"
         });
 
         if (await gagalHapus(response)) return;
@@ -550,9 +545,7 @@ async function fetchDownloadPembelian(awal, akhir) {
         tanggalAwal: awal,
         tanggalAkhir: akhir
     });
-    const response = await fetch(`${BASE_URL_PEMBELIAN}/laporan?${params}`,{
-        credentials: "include"
-    });
+    const response = await apiFetch(`${BASE_URL_PEMBELIAN}/laporan?${params}`);
 
     if(!response.ok){
         showToast("Gagal memuat data!!","error")

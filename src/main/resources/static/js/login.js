@@ -89,12 +89,7 @@ async function doLogin(e) {
         // LOGIN BERHASIL
         // ==========================================
 
-        const meResponse = await fetch(
-            `${BASE_URL}/auth/me`,
-            {
-                credentials: "include"
-            }
-        );
+        const meResponse = await apiFetch(`${BASE_URL}/auth/me`);
 
         if (!meResponse.ok) {
             return showToast(
@@ -116,6 +111,7 @@ async function doLogin(e) {
         resetLoginForm();
 
         loginOverlay.classList.add("hidden");
+        isLoginOverlayShown = false;
 
         await loadPage("dashboard");
 

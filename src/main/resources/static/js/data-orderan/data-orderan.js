@@ -206,9 +206,7 @@ async function bersihPopupDataOrderan() {
 async function getFaktur() {
     showLoading("Mengambil data faktur..")
     try {
-        const response = await fetch(`${BASE_URL_ORDERAN}/faktur`, {
-            credentials: "include"  // pastikan ini ada
-        });
+        const response = await apiFetch(`${BASE_URL_ORDERAN}/faktur`);
 
         if (!response.ok) {
             showToast("Gagal mengambil data faktur!!", "error");
@@ -438,9 +436,7 @@ async function loadTabelDataOrderan(reload = false) {
     }
 }
 async function fetchDataOrderan() {
-    const response = await fetch(BASE_URL_ORDERAN, {
-        credentials: "include"  // pastikan ini ada
-    });
+    const response = await apiFetch(BASE_URL_ORDERAN);
 
     if(!response.ok){
         throw new Error("Gagal Memuat Data Orderan!");
@@ -725,17 +721,15 @@ async function simpanDataOrderan(){
 
     try {
         if(isEdit) {
-            const response = await fetch(`${BASE_URL_ORDERAN}/${selectOrderan.id}`, {
+            const response = await apiFetch(`${BASE_URL_ORDERAN}/${selectOrderan.id}`, {
                 method: "PUT",
-                credentials: "include",  // pastikan ini ada
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(body)
             });
             if(await gagalSimpan(response)) return;
         } else {
-            const response = await fetch(BASE_URL_ORDERAN, {
+            const response = await apiFetch(BASE_URL_ORDERAN, {
                 method: "POST",
-                credentials: "include",  // pastikan ini ada
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(body)
             });
@@ -754,9 +748,8 @@ async function simpanDataOrderan(){
 async function hapusDataOrderan(id){
     showLoading("Menghapus Data Orderan...");
     try {
-        const response = await fetch(`${BASE_URL_ORDERAN}/${id}`, {
-            method: "DELETE",
-            credentials: "include"  // pastikan ini ada
+        const response = await apiFetch(`${BASE_URL_ORDERAN}/${id}`, {
+            method: "DELETE"
         });
         
         if(await gagalHapus(response)) return;
@@ -875,9 +868,7 @@ async function fetchDownloadOrderan(kategori, awal, akhir) {
         tanggalAkhir: akhir
     });
 
-    const response = await fetch(`${BASE_URL_ORDERAN}/laporan?${params}`,{
-        credentials: "include"  // pastikan ini ada
-    });
+    const response = await apiFetch(`${BASE_URL_ORDERAN}/laporan?${params}`);
 
     if(!response.ok){
         showToast("Gagal memuat data!!","error")

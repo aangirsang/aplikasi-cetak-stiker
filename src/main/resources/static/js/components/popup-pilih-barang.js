@@ -6,6 +6,8 @@ let callBackPilihBarang = null;
 let cariKeywordPopupPilihBarang = "";
 let sortDirectionPopupPilihBarang = "asc";
 
+let idBarang = "";
+
 let dataBarang = [];
 
 async function initPilihBarang() {
@@ -34,12 +36,15 @@ async function initPilihBarang() {
         await loadTablePopupPilihBarang();
     });
 
-    document
-        .getElementById("batal-popup-pilih-barang")
-        ?.addEventListener("click", () => {
-
+    getEl("pagination-popup-pilih-barang").style.display = "none";
+    getEl("batal-popup-pilih-barang")
+        .addEventListener("click", () => {
             tutupPopupPilihBarang();
         });
+    getEl("btn-popup-pilih-barang")
+        .addEventListener("click", async function(){
+            pilihPopupBarang(idBarang);
+        })
 }
 
 async function showPopupPilihBarang(onSelect) {
@@ -93,7 +98,7 @@ async function loadTablePopupPilihBarang(reload = false){
     }
 }
 async function fetchDataPilihBarang() {
-    const response = await fetch(`${BASE_URL_BARANG}`,{credentials: "include"});
+    const response = await apiFetch(`${BASE_URL_BARANG}`);
 
     if(!response.ok) {
         throw new Error ("Gagal mengambil data Barang");
@@ -146,11 +151,11 @@ function renderTabelPopupPilihBarang(data){
     });
 }
 function createRowPopupPilihBarang(barang){
-    const selected = null;
-
     return `
         <tr
-            class="pilih-barang-row ${selected ? "selected-row" : ""}"
+            class="pilih-barang-row"
+            data-id="${barang.id}"
+            onclick="klikTabelPilihBarang('${barang.id}')"
             ondblclick="pilihPopupBarang('${barang.id}')">
             <td>${barang.namaBarang}</td>
             <td>${barang.stokBarang}</td>
@@ -182,6 +187,9 @@ async function sortTablePopupPilihBarang(field){
 }
 
 function pilihPopupBarang(id){
+    if(!id) {
+        return showToast("Silahkan pilih data Barang terlebih dahulu", "warning");
+    }
     const barang = dataBarang.find(item => item.id === id);
     if(!barang) return;
 
@@ -193,7 +201,22 @@ function pilihPopupBarang(id){
 
     tutupPopupPilihBarang();
 }
+function klikTabelPilihBarang(id){
+    idBarang = id;
+
+    // hapus selected-row dari semua baris
+    document.querySelectorAll('.pilih-barang-row').forEach(row => {
+        row.classList.remove('selected-row');
+    });
+
+    // tambahkan ke baris yang diklik
+    const row = document.querySelector(`.pilih-barang-row[data-id="${id}"]`);
+    if (row) {
+        row.classList.add('selected-row');
+    }
+}
 
 window.initPilihBarang = initPilihBarang;
 window.showPopupPilihBarang = showPopupPilihBarang;
 window.pilihPopupBarang = pilihPopupBarang;
+window.klikTabelPilihBarang = klikTabelPilihBarang;

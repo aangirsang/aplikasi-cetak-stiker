@@ -42,9 +42,7 @@ async function bersihMasterData() {
 
 // LIST VIEW
 async function loadDataLevel() {
-    const response = await fetch(BASE_URL_LEVEL, {
-        credentials: "include"  // pastikan ini ada
-    })
+    const response = await apiFetch(BASE_URL_LEVEL)
     const data = await response.json();
     const levelList = document.getElementById("level-list")
 
@@ -72,9 +70,7 @@ async function loadDataLevel() {
     levelList.innerHTML = html;
 }
 async function loadDataKategori() {
-    const response = await fetch(BASE_URL_KATEGORI, {
-        credentials: "include"  // pastikan ini ada
-    })
+    const response = await apiFetch(BASE_URL_KATEGORI)
     const data = await response.json();
     const levelList = document.getElementById("kategori-list")
 
@@ -198,9 +194,8 @@ async function simpanMasterData() {
         if (popupState.mode === "level") {
 
             if (popupState.action === "create") {
-                const response = await fetch(BASE_URL_LEVEL, {
+                const response = await apiFetch(BASE_URL_LEVEL, {
                     method: "POST",
-                    credentials: "include",  // pastikan ini ada
                     headers: {
                         "Content-Type": "application/json"
                     },
@@ -212,9 +207,8 @@ async function simpanMasterData() {
                 if(await gagalSimpan(response)) return;
             } else {
                 const id = popupState.id;
-                const response = await fetch(`${BASE_URL_LEVEL}/${id}`, {
+                const response = await apiFetch(`${BASE_URL_LEVEL}/${id}`, {
                     method: "PUT",
-                    credentials: "include",  // pastikan ini ada
                     headers: {
                         "Content-Type": "application/json"
                     },
@@ -229,9 +223,8 @@ async function simpanMasterData() {
         } else if (popupState.mode === "kategori") {
 
             if (popupState.action === "create") {
-                const response = await fetch(BASE_URL_KATEGORI, {
+                const response = await apiFetch(BASE_URL_KATEGORI, {
                     method: "POST",
-                    credentials: "include",  // pastikan ini ada
                     headers: {
                         "Content-Type": "application/json"
                     },
@@ -243,9 +236,8 @@ async function simpanMasterData() {
                 if(await gagalSimpan(response)) return;
             } else {
                 const id = popupState.id;
-                const response = await fetch(`${BASE_URL_KATEGORI}/${id}`, {
+                const response = await apiFetch(`${BASE_URL_KATEGORI}/${id}`, {
                     method: "PUT",
-                    credentials: "include",  // pastikan ini ada
                     headers: {
                         "Content-Type": "application/json"
                     },
@@ -322,11 +314,10 @@ async function konfirmasiHapus() {
         if (deleteState.mode === "level") {
 
             const response =
-                await fetch(
+                await apiFetch(
                     `${BASE_URL_LEVEL}/${id}`,
                     {
-                        method: "DELETE",
-                        credentials: "include"  // pastikan ini ada
+                        method: "DELETE"
                     }
                 );
 
@@ -337,11 +328,10 @@ async function konfirmasiHapus() {
         ) {
 
             const response =
-                await fetch(
+                await apiFetch(
                     `${BASE_URL_KATEGORI}/${id}`,
                     {
-                        method: "DELETE",
-                        credentials: "include"  // pastikan ini ada
+                        method: "DELETE"
                     }
                 );
 

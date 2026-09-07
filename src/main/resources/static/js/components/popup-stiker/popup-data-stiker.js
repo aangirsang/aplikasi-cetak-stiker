@@ -118,9 +118,7 @@ async function showPopupStiker(id = null, onSaveSuccess = null) {
 
         isEditModeStiker = true;
 
-        const response = await fetch(`${BASE_URL_STIKER}/${id}`,{
-            credentials: "include"  // pastikan ini ada
-        })
+        const response = await apiFetch(`${BASE_URL_STIKER}/${id}`)
 
         if(!response.ok) return showToast("Gagal Memuat Data Stiker!!", "error")
 
@@ -240,11 +238,7 @@ document.addEventListener("click", e => {
 async function loadKodeStiker(umkmId) {
 
     try {
-        const response = await fetch(
-            `${BASE_URL_STIKER}/kode/${umkmId}`, {
-                credentials: "include"  // pastikan ini ada
-            }
-        );
+        const response = await apiFetch(`${BASE_URL_STIKER}/kode/${umkmId}`);
 
         if (!response.ok) {
             showToast("Gagal mengambil kode stiker");
@@ -1131,11 +1125,10 @@ async function uploadGambarStiker(){
     }
 
     const response =
-        await fetch(
+        await apiFetch(
             BASE_URL_UPLOAD_GAMBAR,
             {
                 method: "POST",
-                credentials: "include",  // pastikan ini ada
                 body: formData
             }
         );
@@ -1294,16 +1287,16 @@ async function stikerToBody() {
         layoutID: selectedPopupDataStiker?.layoutID ?? "",
         pathTIF: pathFile,
         kertas: selectedPopupDataStiker?.kertas ?? "",
-        lebarKertas: selectedPopupDataStiker?.lebarKertas ?? "",
-        tinggiKertas: selectedPopupDataStiker?.tinggiKertas ?? "",
-        offsetX: selectedPopupDataStiker?.offsetX ?? "",
-        offsetY: selectedPopupDataStiker?.offsetY ?? "",
-        width: selectedPopupDataStiker?.width ?? "",
-        height: selectedPopupDataStiker?.height ?? "",
-        dpiX: selectedPopupDataStiker?.dpiX ?? "",
-        dpiY: selectedPopupDataStiker?.dpiY ?? "",
-        imageWidthMM: selectedPopupDataStiker?.imageWidthMM ?? "",
-        imageHeightMM: selectedPopupDataStiker?.imageHeightMM ?? "",
+        lebarKertas: selectedPopupDataStiker?.lebarKertas ?? 0.0,
+        tinggiKertas: selectedPopupDataStiker?.tinggiKertas ?? 0.0,
+        offsetX: selectedPopupDataStiker?.offsetX ?? 0.0,
+        offsetY: selectedPopupDataStiker?.offsetY ?? 0.0,
+        width: selectedPopupDataStiker?.width ?? 0.0,
+        height: selectedPopupDataStiker?.height ?? 0.0,
+        dpiX: selectedPopupDataStiker?.dpiX ?? 0.0,
+        dpiY: selectedPopupDataStiker?.dpiY ?? 0.0,
+        imageWidthMM: selectedPopupDataStiker?.imageWidthMM ?? 0.0,
+        imageHeightMM: selectedPopupDataStiker?.imageHeightMM ?? 0.0
     };
 }
 async function simpanDataStiker() {
@@ -1320,18 +1313,16 @@ async function simpanDataStiker() {
 
     try {
         if(isEditModeStiker) {
-            const response = await fetch(`${BASE_URL_STIKER}/${selectedPopupDataStiker.id}`, {
+            const response = await apiFetch(`${BASE_URL_STIKER}/${selectedPopupDataStiker.id}`, {
                 method: "PUT",
-                credentials: "include",  // pastikan ini ada
                 headers: {"Content-type": "application/json"},
                 body: JSON.stringify(body)
             });
 
             if(await gagalSimpan(response)) return;
         } else {
-            const response = await fetch(BASE_URL_STIKER, {
+            const response = await apiFetch(BASE_URL_STIKER, {
                 method: "POST",
-                credentials: "include",  // pastikan ini ada
                 headers: {
                     "Content-Type": "application/json"
                 },
@@ -1380,11 +1371,10 @@ async function uploadFileTif(kodeStiker){
         `${kodeStiker}.webp`
     );
 
-    const response = await fetch(
+    const response = await apiFetch(
         BASE_URL_UPLOAD_TIF,
         {
             method:"POST",
-            credentials: "include",  // pastikan ini ada
             body:formData
         }
     );

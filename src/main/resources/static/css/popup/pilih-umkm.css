@@ -57,6 +57,18 @@
 
 .pilih-umkm-row:hover td {
     color: var(--color-primary);
+    background: var(--color-light);
+    transform: translateX(6px);
+}
+
+.pilih-umkm-row.selected-row td {
+    color: var(--color-primary);
+    background: var(--color-light);
+    transform: translateX(6px);
+}
+
+.pilih-umkm-row:not(.selected-row):hover td {
+    color: var(--color-primary);
     transform: translateX(6px);
 }
 

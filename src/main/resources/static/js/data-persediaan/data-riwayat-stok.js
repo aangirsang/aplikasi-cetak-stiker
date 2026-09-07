@@ -107,7 +107,7 @@ async function loadTabelDataRiwayatStok(reload = false) {
     }
 }
 async function fetchDataRiwayatStok() {
-    const response = await fetch(BASE_URL_RIWAYAT,{credentials: "include"});
+    const response = await apiFetch(BASE_URL_RIWAYAT);
 
     if(!response.ok){
         throw new Error("Gagal Memuat Data!!");
@@ -202,14 +202,6 @@ function createTabelRiwayatStok(item) {
             <td>${item.saldoAwal}</td>
             <td>${item.perubahan}</td>
             <td>${item.saldoAkhir}</td>
-            <td>
-                <div class="actions">
-                    <button
-                        onclick="event.stopPropagation(); showPopupDataRiwayat(${item.id})">
-                        <span class="material-symbols-sharp">eye_tracking</span>
-                    </button>
-                </div>
-            </td>
         </tr>
     `
 }

@@ -860,11 +860,7 @@ async function loadTiff(stiker) {
         ) {
 
             const responsewebp =
-                await fetch(
-                    `${url}.webp`,{
-                        credentials: "include"  // pastikan ini ada
-                    }
-                );
+                await apiFetch(`${url}.webp`);
 
             if (!responsewebp.ok) {
 
@@ -888,11 +884,7 @@ async function loadTiff(stiker) {
 
 
             const responsetif =
-                await fetch(
-                    `${url}.tif`,{
-                        credentials: "include"  // pastikan ini ada
-                    }
-                );
+                await apiFetch(`${url}.tif`);
 
             if (!responsetif.ok) {
 
@@ -1258,10 +1250,6 @@ async function hapus() {
     showLoading("Menghapus Data...");
 
     try {
-        // Kalau memang ada layoutID tersimpan di backend,
-        // panggil endpoint delete di sini (opsional, sesuai kebutuhanmu)
-        // if (id) { await fetch(`${BASE_URL_LAYOUT}/${id}`, { method: "DELETE" }); }
-
         selectedStiker.offsetX = 0;
         selectedStiker.offsetY = 0;
         selectedStiker.lebarKertas = 0;
@@ -2090,11 +2078,10 @@ async function uploadFileTif(kodeStiker){
         `${kodeStiker}.webp`
     );
 
-    const response = await fetch(
+    const response = await apiFetch(
         BASE_URL_UPLOAD_TIF,
         {
             method:"POST",
-            credentials: "include",  // pastikan ini ada
             body:formData
         }
     );
