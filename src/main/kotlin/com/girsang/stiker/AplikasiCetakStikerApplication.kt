@@ -10,6 +10,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.runApplication
 import java.awt.image.BufferedImage
 import javax.swing.JOptionPane
+import javax.swing.SwingUtilities
 
 @SpringBootApplication
 @ConfigurationPropertiesScan
@@ -96,6 +97,7 @@ private fun initSystemTray(
 
 	if (!SystemTray.isSupported()) {
 		println("System Tray tidak didukung")
+		showFallbackNotification()
 		return
 	}
 
@@ -158,14 +160,30 @@ private fun initSystemTray(
 	popup.add(keluar)
 
 	val trayIcon = TrayIcon(image, "Aplikasi Cetak Stiker", popup)
-
 	trayIcon.isImageAutoSize = true
 
 	tray.add(trayIcon)
 
-	trayIcon.displayMessage(
-		"Aplikasi Cetak Stiker",
-		"Server berhasil dijalankan",
-		TrayIcon.MessageType.INFO
-	)
+	// Beri jeda kecil supaya icon benar-benar teregister di tray
+	// sebelum balloon notification ditampilkan
+	Thread {
+		Thread.sleep(500)
+		trayIcon.displayMessage(
+			"Aplikasi Cetak Stiker",
+			"Server berhasil dijalankan di http://localhost:8080",
+			TrayIcon.MessageType.INFO
+		)
+	}.apply { isDaemon = true }.start()
+}
+
+private fun showFallbackNotification() {
+	// Fallback kalau tray tidak tersedia: tampilkan dialog non-blocking sebentar
+	SwingUtilities.invokeLater {
+		JOptionPane.showMessageDialog(
+			null,
+			"Server berhasil dijalankan di http://localhost:8080",
+			"Aplikasi Cetak Stiker",
+			JOptionPane.INFORMATION_MESSAGE
+		)
+	}
 }

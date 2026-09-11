@@ -4,7 +4,7 @@
 
 /*data-umkm.css*/
 .content-popup-data-umkm {
-    padding: var(--card-padding);
+    padding: .5rem 1.8rem;
     border-radius: 12px;
     background: var(--color-background);
 
@@ -12,7 +12,7 @@
     max-width: 90vw;
 
     height: 42rem;
-    max-height: 95vh;
+    max-height: 98vh;
 
     box-sizing: border-box;
     overflow-y: auto;
@@ -43,7 +43,7 @@
     margin-top: 1rem;
 
     background: var(--color-white) ;
-    padding: var(--card-padding);
+    padding: 1rem 1.8rem;
     border-radius: var(--card-border-radius);
     box-shadow: var(--box-shadow);
 

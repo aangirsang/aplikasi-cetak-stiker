@@ -10,7 +10,7 @@
 
     width: 60rem;
 
-    height: 50rem;
+    height: 45rem;
 
     max-height: 90vh;
 
@@ -63,14 +63,8 @@
 
     transition: all 300ms ease;
 
-    height: 6rem;
+    height: 4rem;
 
-    margin-bottom: 1rem;
-}
-
-#btn-popup-data-penyesuaian-barang{
-    width: 100%;
-    display: block;
 }
 
 .content-data-penyesuaian-bawah {
@@ -85,7 +79,7 @@
     display: flex;
     flex-direction: column;
 
-    height: 29rem;
+    height: 28rem;
 
     gap: 1rem;
     margin-top: 1rem;

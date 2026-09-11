@@ -2,20 +2,21 @@
    PILIH UMKM
    ========================================================= */
 
-/*popup-pilih-umkm.css*/
 .content-popup-pilih-umkm {
     padding: var(--card-padding);
     border-radius: 12px;
     background: var(--color-background);
 
     width: 80rem;
-    max-width: 90vw;
+    max-width: 95vw;
 
-    height: 51rem;
-    max-height: 90vh;
+    /* height tetap sebagai batas MAKSIMAL, bukan fixed */
+    max-height: 51rem;
+    /* fallback kalau layar lebih pendek dari 51rem */
+    height: min(51rem, 95vh);
 
     box-sizing: border-box;
-    overflow-y: auto;
+    overflow: hidden; /* jangan ada scroll di sini */
 
     display: flex;
     flex-direction: column;
@@ -28,11 +29,18 @@
     transform: translateY(0);
 }
 
-.content-popup-pilih-umkm .table-popup-pilih {
-    height: 40rem;
-    min-height: 20rem;
+/* form harus ikut jadi flex column supaya tinggi diteruskan ke child */
+#form-popup-pilih-umkm {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+}
 
-    flex: 1;
+.content-popup-pilih-umkm .table-popup-pilih {
+    /* hapus height: 40rem tetap, ganti jadi flexible */
+    flex: 1 1 auto;
+    min-height: 0; /* WAJIB, supaya boleh menyusut di dalam flex */
 
     display: flex;
     flex-direction: column;
@@ -42,18 +50,18 @@
 
     background: var(--color-white);
     box-shadow: none;
+    overflow: hidden; /* bukan tabel-nya yang scroll, tapi child-nya */
 }
 
 .tabel-card-popup-pilih-umkm {
-    height: 40rem;
+    /* hapus height: 40rem tetap */
+    flex: 1 1 auto;
+    min-height: 0; /* WAJIB juga di sini */
 
-    overflow-y: auto;
+    overflow-y: auto;   /* HANYA di sini overflow diizinkan */
     overflow-x: hidden;
-
-    flex: 0 1 auto;
-
-    min-height: 10rem;
 }
+
 
 .pilih-umkm-row:hover td {
     color: var(--color-primary);
@@ -73,7 +81,6 @@
 }
 
 #pagination-popup-pilih-umkm {
-    flex-shrink: 0;
-
+    flex-shrink: 0; /* biar pagination tidak ikut menyusut/hilang */
     padding-top: 0.75rem;
 }

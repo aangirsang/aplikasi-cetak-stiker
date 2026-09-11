@@ -333,6 +333,7 @@ async function tampilPopupPilihStiker(){
         stikerTerpilih = [...stikerDipilih];
 
         renderListStikerDataOrder();
+        updateTotalJumlahDataOrder();
     },selectUmkm, stikerTerpilih);
 }
 function hapusStikerDataOrder(id){

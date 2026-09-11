@@ -49,6 +49,7 @@ async function initDataPembelian(){
     getEl("btn-refresh-data-pembelian").addEventListener(
         "click",async () => {
             picker.clear();
+            getEl("txt-cari-data-pembelian").value = "";
             await loadTabelDataPembelian(true)
         });
 

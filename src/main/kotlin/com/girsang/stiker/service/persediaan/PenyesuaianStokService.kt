@@ -69,7 +69,7 @@ class PenyesuaianStokService(
 
     fun ubahData(id: String, request: PenyesuaianStokRequest): PenyesuaianStokResponse {
         val dataLama = repoPenyesuaian.findById(id)
-            .orElseThrow { throw IllegalArgumentException("Data ID ${request.dataPenggunaId} tidak ditemukan!!") }
+            .orElseThrow { throw IllegalArgumentException("Data Penyesuaian dengan ID $id tidak ditemukan!!") }
 
         val barang = repoBarang.findById(request.dataBarangId)
             .orElseThrow { throw IllegalArgumentException("Data ID ${request.dataBarangId} tidak ditemukan!!") }
@@ -93,11 +93,10 @@ class PenyesuaianStokService(
             barangId = dataLama.dataBarang.id,
             jumlahBaru = dataLama.selisih,
             pengguna = pengguna,
-            keterangan = "Edit Pembelian"
+            keterangan = "Edit Penyesuaian Stok"
         )
 
         return mapper.toResponse(simpanData)
-
     }
 
     fun hapusData(id: String) {

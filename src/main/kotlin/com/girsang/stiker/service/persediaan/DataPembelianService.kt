@@ -48,7 +48,7 @@ class DataPembelianService(
     fun simpan(request: PembelianRequest): PembelianResponse {
 
         val pengguna = repoPengguna.findById(request.dataPenggunaId)
-            .orElseThrow()
+            .orElseThrow { IllegalArgumentException("Data Pengguna dengan ID ${request.dataPenggunaId} tidak ditemukan!!") }
 
         val pembelian = DataPembelian(
             dataPengguna = pengguna,

@@ -97,18 +97,10 @@ class StokService(
         keterangan: String? = null
     ) {
 
-        println("Refrensi ID : $referensiId")
-        println("Barang ID : $barangId")
-        println("Ubah Riwayat")
-
         val riwayat = repoRiwayat.findByReferensiIdAndDataBarangId(
             referensiId,
             barangId
         ) ?: throw IllegalArgumentException("Riwayat tidak ditemukan")
-
-        println("Refrensi ID : $referensiId")
-        println("Barang ID : $barangId")
-        println("Ubah Riwayat")
 
         val barang = riwayat.dataBarang
 
@@ -119,7 +111,7 @@ class StokService(
         barang.stokBarang += jumlahBaru
 
         riwayat.perubahan = jumlahBaru
-        riwayat.tanggal = System.currentTimeMillis()
+        // tanggal TIDAK direset - tetap pakai tanggal transaksi asli
         riwayat.dataPengguna = pengguna
         riwayat.keterangan = keterangan
 
@@ -134,19 +126,10 @@ class StokService(
         barangId: String
     ) {
 
-        println("Refrensi ID : $referensiId")
-        println("Barang ID : $barangId")
-        println("Hapus Riwayat")
-
         val riwayat = repoRiwayat.findByReferensiIdAndDataBarangId(
             referensiId,
             barangId
         ) ?: throw IllegalArgumentException("Riwayat tidak ditemukan")
-
-        println("Refrensi ID : $referensiId")
-        println("Barang ID : $barangId")
-        println("Hapus Riwayat")
-
 
         val barang = riwayat.dataBarang
 

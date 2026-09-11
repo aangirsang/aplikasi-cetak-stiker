@@ -1,9 +1,4 @@
-/* =========================================================
-   BUTTONS
-   ========================================================= */
-
-/* ----------- BUTTON ----------- */
-button{
+button {
     color: var(--color-dark-variant);
     background: var(--color-white);
     border: var(--border-button);
@@ -15,7 +10,7 @@ button{
     justify-content: center;
 
     gap: 1rem;
-    box-shadow: var(--box-shadow-button);;
+    box-shadow: var(--box-shadow-button);
     transition: all 300ms ease;
 }
 
@@ -34,7 +29,19 @@ button:hover > span{
     color: var(--color-white);
 }
 
+/* hilangkan outline default browser saat diklik mouse */
+button:focus{
+    outline: none;
+}
+
+/* tapi tetap kasih indikator saat navigasi keyboard (Tab) - untuk aksesibilitas */
+button:focus-visible{
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
 .btn-disabled {
     cursor: not-allowed;
     opacity: 0.6;
+    pointer-events: none;
 }

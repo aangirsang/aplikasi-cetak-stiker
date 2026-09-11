@@ -813,11 +813,6 @@ async function loadTiff(stiker) {
                         );
                     }
 
-
-                    console.log(
-                        "Menggunakan selectedTifConvert"
-                    );
-
                     return;
                 }
 
@@ -831,10 +826,6 @@ async function loadTiff(stiker) {
 
                     gambar.src =
                         `${url}.webp`;
-
-                    console.log(
-                        "Menggunakan WEBP dari backend"
-                    );
 
                     return;
                 }
@@ -1223,8 +1214,6 @@ async function simpanLayout() {
         if (typeof layoutCloseCallback  === "function") {
             layoutCloseCallback (selectedStiker);
         }
-
-        console.log("Setelah Layout Disimpan: ", selectedStiker)
 
         closeLayout();
 

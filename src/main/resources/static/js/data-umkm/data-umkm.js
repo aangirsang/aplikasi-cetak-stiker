@@ -42,7 +42,6 @@ async function initDataUmkm(){
 
     document.removeEventListener("click", closeDetailUmkmOutside);
     document.addEventListener("click", closeDetailUmkmOutside);
-
 }
 
 // TABEL DATA UMKM

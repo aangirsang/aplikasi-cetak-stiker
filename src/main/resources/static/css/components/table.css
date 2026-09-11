@@ -73,6 +73,14 @@ table tbody td{
     cursor: pointer;
 }
 
+thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+
+    background: var(--color-white); /* wajib, biar teks di bawahnya tidak "tembus" pas discroll */
+}
+
 /*
 .selected-row{
     background:#e3f2fd;

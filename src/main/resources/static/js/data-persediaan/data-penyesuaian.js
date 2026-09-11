@@ -40,9 +40,6 @@ async function initDataPenyesuaian() {
         "click", () => simpanDataPenyesuaian()
     );
 
-    getEl("btn-popup-data-penyesuaian-barang").addEventListener(
-        "click", () => tampilPopupPilihBarang());
-
     getEl("popup-data-penyesuaian-stok-fisik")
         .addEventListener("input", hitungSelisih);
 
@@ -261,18 +258,15 @@ async function changePagePenyesuaian(page){
 }
 
 //POPUP DATA PENYESUAIAN
-function showPopupDataPenyesuaian(id = null) {
+async function showPopupDataPenyesuaian(id = null) {
     const popup = getEl("popup-data-penyesuaian");
     const title = getEl("popup-data-penyesuaian-title");
-    const btnBarang = getEl("btn-popup-data-penyesuaian-barang");
 
     bersihPopupDataPenyesuaian();
 
-    if(id) {
+    if (id) {
         isEdit = true;
 
-        btnBarang.disabled = true;
-        btnBarang.classList.add("btn-disabled");
         title.textContent = "Edit Data Penyesuaian"
 
         selectedPenyesuaian = dataPenyesuaian.find(item => item.id === id);
@@ -316,11 +310,20 @@ function showPopupDataPenyesuaian(id = null) {
                 : noImageStiker;
 
     } else {
-        btnBarang.disabled = false;
-        btnBarang.classList.remove("btn-disabled");
 
         title.textContent = "Tambah Data Penyesuaian"
         isEdit = false;
+
+        await showPopupPilihBarang(async (barang) => {
+            selectedBarang = barang;
+            getEl("popup-data-penyesuaian-nama-barang").value = barang.namaBarang;
+            getEl("popup-data-penyesuaian-stok-sistem").value = barang.stokBarang;
+            getEl("popup-data-penyesuaian-stok-fisik").value = 0;
+
+            hitungSelisih();
+            popup.classList.add("show");
+        });
+        return;
     }
 
     popup.classList.add("show");

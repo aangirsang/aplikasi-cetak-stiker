@@ -280,8 +280,6 @@ async function tampilPopupLayout(){
         statusLayout = true;
 
         isiDataStiker(selectedPopupDataStiker);
-
-        console.log("Data Stiker Setelah Layout:", selectedPopupDataStiker);
     });
 
 }
@@ -410,8 +408,6 @@ function tampilkanPreviewLayoutCetak(data) {
         gambar.style.display = "block";
 
         gambar.src = noImageStiker;
-
-        console.log("Tidak ada data layout/gambar, tampilkan noImageStiker 100% parent");
 
         return;
     }
@@ -907,11 +903,8 @@ function tampilkanPreviewLayoutCetak(data) {
     // =====================================================
     // MULAI LOAD
     // =====================================================
-    console.log("Status Layout: ", statusLayout)
-
     if(statusLayout){
         let objectUrl = null;
-        console.log("Status Tiff !data.selectedTifConvert: ", !data.selectedTifConvert)
 
         if (data.selectedTifConvert instanceof File) {
 
@@ -921,38 +914,23 @@ function tampilkanPreviewLayoutCetak(data) {
                 );
 
             gambar.src = objectUrl;
-
-            console.log("Menggunakan selectedTifConvert")
-
         } else if (typeof data.selectedTifConvert === "string") {
 
             gambar.src = data.selectedTifConvert;
-
-
-            console.log("Menggunakan selectedTifConvert String")
-
         }else {
             menggunakanNoImage = true;
 
             gambar.src = noImageStiker;
-
-            console.log("selectedTifConvert kosong setelah dihapus")
         }
     } else {
         if (urlGambar) {
 
             gambar.src = urlGambar;
-
-            console.log("Menggunakan data dari backend")
-
         } else {
 
             menggunakanNoImage = true;
 
             gambar.src = noImageStiker;
-
-            console.log("data backend kosong")
-
         }
     }
 
@@ -1308,9 +1286,6 @@ async function simpanDataStiker() {
     if (!validasiSimpanDataStiker()) return hideLoading();
 
     const body = await stikerToBody();
-
-    console.log("Data yang Disimpan:", body);
-
     try {
         if(isEditModeStiker) {
             const response = await apiFetch(`${BASE_URL_STIKER}/${selectedPopupDataStiker.id}`, {

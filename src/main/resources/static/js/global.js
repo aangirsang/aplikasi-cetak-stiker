@@ -1,6 +1,6 @@
-//const BASE_URL = "http://localhost:8080/api" // UNTUK CODING/PENGEMBANG
+const BASE_URL = "http://localhost:8080/api" // UNTUK CODING/PENGEMBANG
 
-const BASE_URL = "/api" // UNTUK JARINGAN
+//const BASE_URL = "/api" // UNTUK JARINGAN
 const BASE_URL_UPLOAD_GAMBAR = `${BASE_URL}/upload/gambar`
 const BASE_URL_UPLOAD_TIF = `${BASE_URL}/upload/tif`
 
