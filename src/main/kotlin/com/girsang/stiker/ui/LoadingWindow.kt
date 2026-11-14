@@ -30,7 +30,13 @@ class LoadingWindow {
         }
 
         val statusLabel = JLabel("Memulai aplikasi...", SwingConstants.CENTER).apply {
-            font = Font("Segoe Print", Font.PLAIN, 15)
+            font = Font("Comic Sans MS", Font.PLAIN, 15)
+            foreground = textColor
+            alignmentX = Component.CENTER_ALIGNMENT
+        }
+
+        val versionLabel = JLabel("v1.0.2", SwingConstants.CENTER).apply {
+            font = Font("Comic Sans MS", Font.PLAIN, 12)
             foreground = textColor
             alignmentX = Component.CENTER_ALIGNMENT
         }
@@ -58,6 +64,14 @@ class LoadingWindow {
 
         gbc.gridy = 3; gbc.insets = Insets(0, 0, 10, 0)
         centerPanel.add(statusLabel, gbc)
+
+        centerPanel.add(
+            Box.createVerticalStrut(40), // tinggi spasi kosong 15px
+            gbc
+        )
+
+        gbc.gridy = 4; gbc.insets = Insets(0, 0, 10, 0)
+        centerPanel.add(versionLabel, gbc)
 
         val progressBar = JProgressBar().apply {
             isIndeterminate = true

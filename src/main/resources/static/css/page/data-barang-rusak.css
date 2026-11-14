@@ -1,0 +1,88 @@
+.content-popup-barang-rusak{
+    padding: var(--card-padding);
+    border-radius: 12px;
+    background: var(--color-background);
+
+    width: 60rem;
+
+    height: 41rem;
+
+    max-height: 90vh;
+
+    box-sizing: border-box;
+    overflow-y: auto;
+
+    transform: translateY(-60px);
+    transition: transform .25s ease;
+}
+
+.popup.show .content-popup-barang-rusak {
+    transform: translateY(0);
+}
+
+.content-popup-barang-rusak-atas {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    background: var(--color-white) ;
+    padding: var(--card-padding);
+    border-radius: var(--border-radius-2);
+    box-shadow: var(--box-shadow);
+
+    transition: all 300ms ease;
+
+    height: 4rem;
+}
+
+.content-popup-barang-rusak-bawah {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.6rem;
+    align-items: stretch;
+}
+
+.content-popup-barang-rusak-bawah-kiri,
+.content-popup-barang-rusak-bawah-kanan {
+    display: flex;
+    flex-direction: column;
+
+    height: 28rem;
+
+    gap: 1rem;
+    margin-top: 1rem;
+
+    background: var(--color-white);
+    padding: var(--card-padding);
+
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--box-shadow);
+
+    transition: all 300ms ease;
+    box-sizing: border-box;
+}
+
+.data-barang-rusak .image-box{
+    width: 100%;
+    height: 21rem; /* ukuran tetap */
+
+    background: red;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    overflow: hidden;
+
+    border-radius: var(--border-radius-2);
+    background: var(--color-white);
+
+    flex-shrink: 0; /* cegah mengecil */
+    cursor: pointer;
+}
+
+.data-barang-rusak .image-box img{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}

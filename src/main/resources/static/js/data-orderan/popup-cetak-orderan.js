@@ -23,7 +23,7 @@ function showPopupCetakOrderan(orderan) {
     selectOrderan = orderan;
     selectRincian = orderan.rincian
     getEl("popup-cetak-orderan-title")
-        .textContent = `Cetak Orderan ${orderan.namaUmkm}`;
+        .textContent = `Cetak Orderan`;
 
     getEl("popup-cetak-orderan-faktur")
         .textContent = orderan.faktur;

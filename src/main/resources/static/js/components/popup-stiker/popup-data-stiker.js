@@ -27,6 +27,8 @@ let pathFile = ""
 
 let statusLayout = false;
 
+let kodeDiedit = false;
+
 async function initPopupDataStiker() {
     // cek agar tidak dimuat dua kali
     if(getEl("popup-data-stiker")){
@@ -59,6 +61,13 @@ async function initPopupDataStiker() {
 
     getEl("btn-popup-data-stiker-simpan").addEventListener(
         "click", () => simpanDataStiker());
+
+    getEl("popup-data-stiker-kode").addEventListener("input", function () {
+        kodeDiedit = true;
+        getEl("popup-data-stiker-kode-counter").textContent = `${this.value.length}/27`;
+    });
+
+    getEl("popup-data-stiker-nama").addEventListener("input", setKode);
 
     // GAMBAR
     getEl("popup-data-stiker-file-input-1")
@@ -100,6 +109,8 @@ async function showPopupStiker(id = null, onSaveSuccess = null) {
 
     bersihPopupDataStiker();
 
+    kodeDiedit = false
+
     if(id === null){
         await showPopupPilihUmkm(false, async (umkm) => {
                 selectedUmkm = umkm;
@@ -127,6 +138,7 @@ async function showPopupStiker(id = null, onSaveSuccess = null) {
         //isiDataUmkm(selectedCariUmkm);
 
         isiDataStiker(selectedPopupDataStiker);
+        console.log(selectedPopupDataStiker);
 
         popupTitle.textContent = `Edit Data Stiker: ${selectedUmkm.namaPemilik} - ${selectedUmkm.namaUsaha}`;
     }
@@ -136,6 +148,10 @@ async function showPopupStiker(id = null, onSaveSuccess = null) {
 }
 function isiDataStiker(stiker) {
     showLoading("Memuat Data Stiker...");
+
+    console.log(stiker);
+
+    kodeDiedit = true;
 
     selectedBarang = {
         id: stiker.barangId,
@@ -161,6 +177,7 @@ function isiDataStiker(stiker) {
     getEl("popup-data-stiker-barang").value = selectedBarang.namaBarang;
 
     setKodeStiker(stiker.kodeStiker);
+    console.log(stiker.kodeStiker);
 
     const statusRadio =
         document.querySelector(
@@ -264,7 +281,6 @@ async function tampilPopupPilihBarang(){
         getEl("popup-data-stiker-barang").value = barang.namaBarang;
     });
 }
-
 async function tampilPopupLayout(){
 
     if(!selectedPopupDataStiker){
@@ -332,12 +348,10 @@ function bersihPopupDataStiker() {
 }
 function setKodeStiker(kode){
     const inputKode = document.getElementById("popup-data-stiker-kode");
-    const counter = document.getElementById("popup-data-stiker-kode-counter");
 
     inputKode.value = kode;
-    counter.textContent = `${kode.length}/20`;
+    setKode();
 }
-
 function tampilkanPreviewLayoutCetak(data) {
 
     const container =
@@ -935,7 +949,6 @@ function tampilkanPreviewLayoutCetak(data) {
     }
 
 }
-
 function lihatPreviewLayoutTif() {
 
     const gambar =
@@ -977,6 +990,23 @@ function lihatPreviewLayoutTif() {
 
     showPopupLihatGambar();
 }
+function setKode() {
+    if (kodeDiedit) return;
+
+
+    const inputKode = getEl("popup-data-stiker-kode");
+    const inputNama = getEl("popup-data-stiker-nama");
+    const counter = getEl("popup-data-stiker-kode-counter");
+
+    const nama = inputNama.value.trim();
+    const kode = nama
+        ? `${selectedUmkm.namaUsaha}-${nama}`
+        : "";
+
+    inputKode.value = kode.substring(0, 27);
+    counter.textContent = `${inputKode.value.length}/27`;
+}
+
 
 
 // GAMBAR
@@ -1286,6 +1316,7 @@ async function simpanDataStiker() {
     if (!validasiSimpanDataStiker()) return hideLoading();
 
     const body = await stikerToBody();
+    console.log(body);
     try {
         if(isEditModeStiker) {
             const response = await apiFetch(`${BASE_URL_STIKER}/${selectedPopupDataStiker.id}`, {
@@ -1328,7 +1359,6 @@ async function simpanDataStiker() {
         hideLoading();
     }
 }
-
 async function uploadFileTif(kodeStiker){
 
 

@@ -1,7 +1,9 @@
 package com.girsang.stiker.model.mapper
 
+import com.girsang.stiker.model.dto.response.BarangRusakResponse
 import com.girsang.stiker.model.dto.response.PenyesuaianStokResponse
 import com.girsang.stiker.model.dto.response.RiwayatStokResponse
+import com.girsang.stiker.model.entity.DataBarangRusak
 import com.girsang.stiker.model.entity.DataPenyesuaianStok
 import com.girsang.stiker.model.entity.DataRiwayatStok
 import org.springframework.stereotype.Component
@@ -39,6 +41,19 @@ class DataBarangMapper {
             selisih = entity.selisih,
             pathGambar = entity.pathGambar,
             alasan = entity.alasan
+        )
+    }
+    fun toResponse(entity: DataBarangRusak): BarangRusakResponse {
+        return BarangRusakResponse(
+            id = entity.id,
+            idPengguna = entity.dataPengguna.id,
+            namaPengguna = entity.dataPengguna.namaPengguna,
+            idBarang = entity.dataBarang.id,
+            namaBarang = entity.dataBarang.namaBarang,
+            tanggal = entity.tanggal,
+            jumlah = entity.jumlah,
+            catatan = entity.catatan,
+            pathGambar = entity.pathGambar
         )
     }
 }

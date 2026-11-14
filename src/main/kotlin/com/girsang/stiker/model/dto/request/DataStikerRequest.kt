@@ -4,6 +4,7 @@ data class DataStikerRequest(
     var umkmId: String,
     var barangId: String,
     var namaStiker: String,
+    var kodeStiker: String,
     var panjang: Double = 0.0,
     var lebar: Double = 0.0,
     var catatan: String? = "-",

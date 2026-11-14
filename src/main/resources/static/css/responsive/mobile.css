@@ -614,7 +614,23 @@
         max-height: none;
     }
 
+    #popup-data-pembelian-title,
+    #popup-data-penyesuaian-title,
+    #popup-data-stiker-title,
+    #title-popup-data-orderan,
+    #data-order-umkm,
+    #popup-cetak-orderan-title,
+    #popup-cetak-orderan-umkm {
+        margin-bottom: 1rem;
+        font-size: 0.87rem;
+    }
 
+    .content-data-penyesuaian-atas,
+    .form-data-atas,
+    .form-data-order-atas,
+    .popup-cetak-orderan-atas {
+        padding: 0 .5rem;
+    }
 
 
     /* =====================================================
@@ -626,8 +642,8 @@
         width: 95vw;
         max-width: 95vw;
 
-        height: 90vh;
-        max-height: 90vh;
+        height: 95vh;
+        max-height: 98vh;
 
         overflow-y: auto;
     }
@@ -698,7 +714,8 @@
         width: 95vw;
         max-width: 95vw;
 
-        max-height: 94vh;
+        height: 94vh;
+        max-height: 98vh;
 
         overflow-y: auto;
     }
@@ -732,7 +749,8 @@
         width: 95vw;
         max-width: 95vw;
 
-        max-height: 94vh;
+        height: 98vh;
+        max-height: 98vh;
 
         overflow-y: auto;
     }
@@ -772,10 +790,11 @@
 
     .content-popup-data-pengguna {
 
-        width: 95vw;
-        max-width: 95vw;
+        width: 97vw;
+        max-width: 97vw;
 
-        max-height: 94vh;
+        height: 96vh;
+        max-height: 98vh;
 
         overflow-y: auto;
     }
@@ -823,7 +842,7 @@
         max-width: 96vw;
 
         height: 94vh;
-        max-height: 94vh;
+        max-height: 98vh;
 
         padding: 1rem;
 
@@ -890,7 +909,7 @@
         max-width: 98vw;
 
         height: 96vh;
-        max-height: 96vh;
+        max-height: 98vh;
     }
 
 
@@ -1003,6 +1022,29 @@
         overflow-y: auto;
     }
 
+    /* =====================================================
+    POPUP
+    ===================================================== */
+
+    .popup-content-pilih-umkm,
+    .content-popup-pilih-barang,
+    .popup-content-pilih-stiker,
+    .popup-content-lihat-stiker,
+    .content-popup-data-pembelian,
+    .content-popup-data-penyesuaian,
+    .content-popup-data-umkm,
+    .content-popup-data-stiker,
+    .content-popup-data-order,
+    .content-popup-cetak-orderan {
+
+        width: 97vw;
+        max-width: 97vw;
+
+        height: 96vh;
+        max-height: 98vh;
+
+        padding: 0.75rem;
+    }
 
     /* =====================================================
        POPUP ACTIONS
@@ -1081,6 +1123,13 @@
     }
 
 
+
+    #data-order-umkm,
+    #popup-cetak-orderan-umkm {
+        display: none;
+    }
+
+
     /* =====================================================
        MENU BUTTON
        ===================================================== */
@@ -1122,7 +1171,7 @@
         max-width: 97vw;
 
         height: 96vh;
-        max-height: 90vh;
+        max-height: 98vh;
 
         padding: 0.75rem;
     }

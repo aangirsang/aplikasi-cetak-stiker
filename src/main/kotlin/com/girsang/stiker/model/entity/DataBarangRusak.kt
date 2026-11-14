@@ -14,10 +14,15 @@ class DataBarangRusak (
     @Id
     var id: String = "",
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(nullable = false)
+    var dataPengguna: DataPengguna,
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     var dataBarang: DataBarang,
 
+    var tanggal: Long,
     var jumlah: Long,
 
     @field:NotBlank(message = "Catatan tidak boleh kosong")

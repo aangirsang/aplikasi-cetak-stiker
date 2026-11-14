@@ -1,0 +1,126 @@
+<div class="data-barang-rusak">
+    <div class="search-bar-date">
+        <div class="search-box">
+            <span class="material-symbols-sharp">search</span>
+            <label>
+                <input
+                        type="text"
+                        id="txt-cari-data-barang-rusak"
+                        placeholder="Cari Data Barang Rusak">
+            </label>
+        </div>
+        <!-- RANGE TANGGAL -->
+        <div class="date-range-box">
+
+            <span class="material-symbols-sharp">calendar_month</span>
+
+            <input
+                    type="text"
+                    id="cari-range-tanggal-data-barang-rusak"
+                    placeholder="Pilih rentang tanggal">
+
+        </div>
+        <div class="search-bar-buttons">
+            <button class="add-btn" id="btn-refresh-data-barang-rusak">
+                <span class="material-symbols-sharp">autorenew</span>
+            </button>
+            <button class="add-btn" id="btn-tambah-data-barang-rusak">
+                <span class="material-symbols-sharp">add</span>
+            </button>
+            <button class="add-btn" id="btn-download-data-barang-rusak">
+                <span class="material-symbols-sharp">download</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-page-container">
+        <div class="tabel-page-card">
+            <table class="tbl-data">
+                <thead>
+                <tr>
+                    <th onclick="sortTabelBarangRusak('tanggal')">Tanggal</th>
+                    <th onclick="sortTabelBarangRusak('namaPengguna')">User</th>
+                    <th onclick="sortTabelBarangRusak('namaBarang')">Nama Barang</th>
+                    <th onclick="sortTabelBarangRusak('jumlah')">Jumlah</th>
+                    <th onclick="sortTabelBarangRusak('catatan')">Catatan</th>
+                </tr>
+                </thead>
+                <tbody id="tbl-body-data-barang-rusak"></tbody>
+            </table>
+        </div>
+        <div id="pagination" class="pagination"></div>
+    </div>
+
+    <!--POPUP BARANG RUSAK -->
+    <div id="popup-barang-rusak" class="popup">
+        <div class="content-popup-barang-rusak">
+            <form id="form-barang-rusak">
+                <div class="content-popup-barang-rusak-atas">
+                    <div class="content-popup-barang-rusak-atas-kiri">
+                        <h2 id="popup-barang-rusak-title">Data Barang Rusak</h2>
+                    </div>
+                    <div class="content-popup-barang-rusak-atas-kanan">
+                        <label id="popup-barang-rusak-tanggal">Tanggal Orderan</label>
+                    </div>
+                </div>
+                <div class="content-popup-barang-rusak-bawah">
+                    <div class="content-popup-barang-rusak-bawah-kiri">
+                        <div class="input-group">
+                            <input
+                                    type="text"
+                                    id="popup-barang-rusak-nama-barang"
+                                    placeholder=" "
+                                    autocomplete="off" readonly>
+
+                            <label for="popup-barang-rusak-nama-barang">
+                                Nama Barang
+                            </label>
+                        </div>
+                        <div class="input-group">
+                            <input
+                                    type="number"
+                                    id="popup-barang-rusak-jumlah"
+                                    placeholder=" "
+                                    min="0"
+                                    step="1"
+                                    autocomplete="off">
+
+                            <label for="popup-barang-rusak-jumlah">
+                                Jumlah
+                            </label>
+                        </div>
+                        <div class="textarea-group">
+                            <textarea
+                                    id="popup-barang-rusak-catatan"
+                                    placeholder=" "
+                                    rows="5"></textarea>
+
+                            <label for="popup-barang-rusak-catatan">
+                                Keterangan
+                            </label>
+                        </div>
+                    </div>
+                    <div class="content-popup-barang-rusak-bawah-kanan">
+                        <!-- Preview -->
+                        <div class="image-box">
+                            <img id="popup-barang-rusak-preview-image" alt="Foto Penyesuaian">
+                        </div>
+
+                        <!-- Tombol Cari -->
+                        <button type="button" id="btn-popup-barang-rusak-cari-gambar">Cari Gambar</button>
+
+                        <!-- Input File -->
+                        <div class="input-file">
+                            <input type="file" id="popup-barang-rusak-file-input" accept="image/*" hidden>
+                        </div>
+                    </div>
+                </div>
+                <div class="popup-actions">
+                    <button type="button" id="btn-popup-barang-rusak-simpan">Simpan</button>
+                    <button type="button" id="btn-popup-barang-rusak-batal">Batal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

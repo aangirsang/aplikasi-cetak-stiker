@@ -66,7 +66,7 @@ class DataStikerService(
         // 🔹 Buat entity DataStiker dari DTO
         val stiker = DataStiker(
             dataUmkm = umkmEntity,
-            kodeStiker = kode,
+            kodeStiker = request.kodeStiker,
             namaStiker = request.namaStiker,
             panjang = request.panjang,
             lebar = request.lebar,
@@ -110,6 +110,7 @@ class DataStikerService(
 
         stiker.apply {
             stiker.dataUmkm = umkmEntity
+            stiker.kodeStiker = request.kodeStiker
             stiker.namaStiker = request.namaStiker
             stiker.panjang = request.panjang
             stiker.lebar = request.lebar

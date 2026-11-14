@@ -1,6 +1,10 @@
-const BASE_URL = "http://localhost:8080/api" // UNTUK CODING/PENGEMBANG
+const BASE_URL = (() => {
+    const { hostname, port } = window.location;
+    const isLocalDev = hostname === "localhost" || hostname === "127.0.0.1";
+    // sesuaikan port preview/dev sesuai kebutuhan, mis. IntelliJ preview
+    return isLocalDev ? "http://localhost:8080/api" : "/api";
+})();
 
-//const BASE_URL = "/api" // UNTUK JARINGAN
 const BASE_URL_UPLOAD_GAMBAR = `${BASE_URL}/upload/gambar`
 const BASE_URL_UPLOAD_TIF = `${BASE_URL}/upload/tif`
 
@@ -9,6 +13,7 @@ const BASE_URL_LEVEL = `${BASE_URL}/data-level`;
 const BASE_URL_KATEGORI = `${BASE_URL}/data-kategori`;
 
 const BASE_URL_BARANG = `${BASE_URL}/data-barang`;
+const BASE_URL_BARANG_RUSAK = `${BASE_URL}/data-barang-rusak`;
 const BASE_URL_PEMBELIAN = `${BASE_URL}/data-pembelian`;
 const BASE_URL_RIWAYAT = `${BASE_URL_BARANG}/riwayat-stok`;
 const BASE_URL_PENYESUAIAN = `${BASE_URL}/penyesuaian-stok`;

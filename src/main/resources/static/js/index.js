@@ -71,6 +71,7 @@ async function loadPage(page) {
         "data-persediaan/data-pembelian": "Data Pembelian",
         "data-persediaan/data-penyesuaian": "Data Penyesuaian",
         "data-persediaan/data-barang": "Data Barang",
+        "data-persediaan/data-barang-rusak": "Data Barang Rusak",
         "data-persediaan/data-riwayat-stok": "Riwayat Stok",
         "data-umkm/data-umkm": "Data UMKM",
         "data-umkm/data-stiker": "Data Stiker",
@@ -92,7 +93,7 @@ async function loadPage(page) {
             <div class="card">
                 <h2>Error</h2>
                 <p>Halaman gagal dimuat</p>
-                <p>${e.message}</p>
+                <p>HTTP ${response.status}</p>
             </div>
             `;
 
@@ -130,6 +131,8 @@ async function loadPage(page) {
             initDataRiwayatStok,
             "data-persediaan/data-penyesuaian":
             initDataPenyesuaian,
+            "data-persediaan/data-barang-rusak":
+            initDataBarangRusak,
             "data-umkm/data-umkm":
             initDataUmkm,
             "data-umkm/data-stiker":
@@ -138,7 +141,7 @@ async function loadPage(page) {
             initDataOrderan
         };
 
-        pageHandlers[page]?.();
+        await pageHandlers[page]?.();
 
     } catch (e) {
         console.error(e);
@@ -284,8 +287,8 @@ async function logout() {
 // ==============================
 function resetLoginForm() {
 
-    getEl("namaPengguna").value = "";
-    getEl("kataSandi").value = "";
+    getEl("namaPengguna").value = "admin";
+    getEl("kataSandi").value = "admin123";
 
     getEl("login-error")
         .textContent = "";
