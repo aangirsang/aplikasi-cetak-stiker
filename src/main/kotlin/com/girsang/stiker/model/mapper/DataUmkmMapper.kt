@@ -45,6 +45,7 @@
                 alamat = stiker.dataUmkm.alamat,
                 kodeStiker = stiker.kodeStiker,
                 namaStiker = stiker.namaStiker,
+                namaAnyCut = stiker.namaAnycut ?:"-",
                 panjang = stiker.panjang,
                 lebar = stiker.lebar,
                 ukuran = "${formatAngka(stiker.panjang)} X ${formatAngka(stiker.lebar)}",

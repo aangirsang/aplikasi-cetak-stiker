@@ -68,6 +68,7 @@ class DataStikerService(
             dataUmkm = umkmEntity,
             kodeStiker = request.kodeStiker,
             namaStiker = request.namaStiker,
+            namaAnycut = request.namaAnyCut,
             panjang = request.panjang,
             lebar = request.lebar,
             catatan = request.catatan,
@@ -112,6 +113,7 @@ class DataStikerService(
             stiker.dataUmkm = umkmEntity
             stiker.kodeStiker = request.kodeStiker
             stiker.namaStiker = request.namaStiker
+            stiker.namaAnycut = request.namaAnyCut
             stiker.panjang = request.panjang
             stiker.lebar = request.lebar
             stiker.catatan = request.catatan

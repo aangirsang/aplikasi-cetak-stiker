@@ -1,35 +1,30 @@
-function showToast(
-    message,
-    type = "success",
-    duration = 5000
-){
+function showToast(message, type = "success", duration = 5000) {
+    const container = document.getElementById("toast-container");
 
-    const container =
-        document.getElementById(
-            "toast-container"
-        );
+    const toast = document.createElement("div");
+    toast.className = `toast ${type}`;
 
-    const toast =
-        document.createElement("div");
+    const teks = document.createElement("span");
+    teks.className = "toast-message";
+    teks.textContent = message;
 
-    toast.className =
-        `toast ${type}`;
+    const tombolTutup = document.createElement("button");
+    tombolTutup.type = "button";
+    tombolTutup.className = "toast-close";
+    tombolTutup.setAttribute("aria-label", "Tutup");
+    tombolTutup.innerHTML = "&times;";
 
-    toast.textContent =
-        message;
+    toast.append(teks, tombolTutup);
+    container.appendChild(toast);
 
-    container.appendChild(
-        toast
-    );
+    let timer;
 
-    setTimeout(() => {
+    function tutup() {
+        clearTimeout(timer);
+        toast.style.animation = "toastOut 0.3s ease forwards";
+        setTimeout(() => toast.remove(), 300);
+    }
 
-        toast.style.animation =
-            "toastOut 0.3s ease forwards";
-
-        setTimeout(() => {
-            toast.remove();
-        }, 300);
-
-    }, duration);
+    tombolTutup.addEventListener("click", tutup);
+    timer = setTimeout(tutup, duration);
 }

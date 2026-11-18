@@ -62,9 +62,9 @@ async function initPopupDataStiker() {
     getEl("btn-popup-data-stiker-simpan").addEventListener(
         "click", () => simpanDataStiker());
 
-    getEl("popup-data-stiker-kode").addEventListener("input", function () {
+    getEl("popup-data-stiker-kode-anycut").addEventListener("input", function () {
         kodeDiedit = true;
-        getEl("popup-data-stiker-kode-counter").textContent = `${this.value.length}/27`;
+        getEl("popup-data-stiker-kode-counter-anycut").textContent = `${this.value.length}/27`;
     });
 
     getEl("popup-data-stiker-nama").addEventListener("input", setKode);
@@ -138,7 +138,6 @@ async function showPopupStiker(id = null, onSaveSuccess = null) {
         //isiDataUmkm(selectedCariUmkm);
 
         isiDataStiker(selectedPopupDataStiker);
-        console.log(selectedPopupDataStiker);
 
         popupTitle.textContent = `Edit Data Stiker: ${selectedUmkm.namaPemilik} - ${selectedUmkm.namaUsaha}`;
     }
@@ -148,8 +147,6 @@ async function showPopupStiker(id = null, onSaveSuccess = null) {
 }
 function isiDataStiker(stiker) {
     showLoading("Memuat Data Stiker...");
-
-    console.log(stiker);
 
     kodeDiedit = true;
 
@@ -177,7 +174,6 @@ function isiDataStiker(stiker) {
     getEl("popup-data-stiker-barang").value = selectedBarang.namaBarang;
 
     setKodeStiker(stiker.kodeStiker);
-    console.log(stiker.kodeStiker);
 
     const statusRadio =
         document.querySelector(
@@ -994,17 +990,12 @@ function setKode() {
     if (kodeDiedit) return;
 
 
-    const inputKode = getEl("popup-data-stiker-kode");
     const inputNama = getEl("popup-data-stiker-nama");
-    const counter = getEl("popup-data-stiker-kode-counter");
 
     const nama = inputNama.value.trim();
     const kode = nama
         ? `${selectedUmkm.namaUsaha}-${nama}`
         : "";
-
-    inputKode.value = kode.substring(0, 27);
-    counter.textContent = `${inputKode.value.length}/27`;
 }
 
 
@@ -1197,12 +1188,17 @@ function initDragDrop(index){
 
 // CRUD
 function validasiSimpanDataStiker() {
-    let valid = true
+    let valid = true;
 
-    if(!getValue("popup-data-stiker-nama")){
-        tandaiInvalid(getEl("popup-data-stiker-nama"));
-        valid = false;
-    }
+    [
+        "popup-data-stiker-nama",
+        "popup-data-stiker-kode-anycut"
+    ].forEach(id => {
+        if(!getValue(id)){
+            tandaiInvalid(getEl(id));
+            valid = false;
+        }
+    });
 
     [
         "popup-data-stiker-panjang",
@@ -1316,7 +1312,6 @@ async function simpanDataStiker() {
     if (!validasiSimpanDataStiker()) return hideLoading();
 
     const body = await stikerToBody();
-    console.log(body);
     try {
         if(isEditModeStiker) {
             const response = await apiFetch(`${BASE_URL_STIKER}/${selectedPopupDataStiker.id}`, {

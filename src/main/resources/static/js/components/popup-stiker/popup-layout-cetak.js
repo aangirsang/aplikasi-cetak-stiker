@@ -619,6 +619,8 @@ function resetSemuaLayout() {
 // Membuka data stiker
 async function loadTiff(stiker) {
 
+    console.log(stiker)
+
     const pathGambar =
         stiker.pathTIF;
 

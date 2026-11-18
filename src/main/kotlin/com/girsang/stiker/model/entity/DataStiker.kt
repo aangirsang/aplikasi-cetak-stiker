@@ -25,6 +25,9 @@ class DataStiker(
     @Column(nullable = false, unique = true)
     var kodeStiker: String = "",
 
+    @Column(unique = true)
+    var namaAnycut: String? = null,
+    
     @field:NotBlank(message = "Nama stiker tidak boleh kosong")
     @Column(nullable = false)
     var namaStiker: String,
