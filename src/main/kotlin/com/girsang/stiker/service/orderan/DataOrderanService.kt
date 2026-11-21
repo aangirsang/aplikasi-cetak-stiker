@@ -36,7 +36,7 @@ class DataOrderanService(
 
     @Transactional(readOnly = true)
     fun semuaOrderan(): List<DataOrderanResponse> =
-        repoOrder.findAll().map { mapper.toResponse(it) }
+        repoOrder.findAllLengkap().map { mapper.toResponse(it) }
 
     @Transactional(readOnly = true)
     fun semuaTabelOrderan(): List<DataTabelOrderanResponse> =

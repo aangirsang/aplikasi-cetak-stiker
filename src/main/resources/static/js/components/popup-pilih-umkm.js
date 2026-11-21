@@ -48,6 +48,22 @@ async function initPopupPilihUmkm() {
             pilihPopupUmkm(idUmkm);
         })
 
+    // Hapus Pencarian
+    const inputCariUmkm = getEl("cari-popup-pilih-umkm");
+    const tombolHapusCari = getEl("hapus-cari-popup-pilih-umkm");
+
+    function updateTombolHapusCari() {
+        tombolHapusCari.hidden = inputCariUmkm.value === "";
+    }
+
+    inputCariUmkm.addEventListener("input", updateTombolHapusCari);
+
+    tombolHapusCari.addEventListener("click", () => {
+        inputCariUmkm.value = "";
+        inputCariUmkm.dispatchEvent(new Event("input", { bubbles: true })); // picu pencarian ulang
+        inputCariUmkm.focus();
+    });
+
 }
 
 async function showPopupPilihUmkm(stiker= false, onSelect, selectedUmkm = null) {
@@ -87,9 +103,17 @@ async function showPopupPilihUmkm(stiker= false, onSelect, selectedUmkm = null) 
 
     await loadTablePopupPilihUmkm(true);
 
+
     document
         .getElementById("popup-pilih-umkm")
         .classList.add("show");
+
+
+    setTimeout(() => {
+        const input = getEl("cari-popup-pilih-umkm");
+        input.focus();
+        input.select();
+    }, 50);
 }
 function tutupPopupPilihUmkm() {
 

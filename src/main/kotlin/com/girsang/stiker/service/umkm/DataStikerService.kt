@@ -43,9 +43,10 @@ class DataStikerService(
     }
 
     fun simpan(request: DataStikerRequest): DataStikerResponse {
-        println(request)
-        println("pathCDR = ${request.pathTIF}")
 
+        val namaAnycut = request.namaAnycut.trim().takeIf { it.isNotEmpty() }
+
+        validasiDuplikat(namaAnycut)
 
         val barang = repoBarang.findById(request.barangId)
             .orElseThrow { throw IllegalArgumentException("Data Barang dengan ID ${request.barangId} tidak ditemukan!!") }
@@ -68,7 +69,7 @@ class DataStikerService(
             dataUmkm = umkmEntity,
             kodeStiker = request.kodeStiker,
             namaStiker = request.namaStiker,
-            namaAnycut = request.namaAnyCut,
+            namaAnycut = request.namaAnycut,
             panjang = request.panjang,
             lebar = request.lebar,
             catatan = request.catatan,
@@ -96,6 +97,10 @@ class DataStikerService(
         println("       Data Request: $request")
         val stiker = repoStiker.findById(id).orElseThrow { NoSuchElementException("Stiker tidak ditemukan") }
 
+        val namaAnycut = request.namaAnycut.trim().takeIf { it.isNotEmpty() }
+
+        validasiDuplikat(namaAnycut, id)
+
         val layout = repoLayout.findByDataStikerId(stiker.id)
 
         val barang = repoBarang.findById(request.barangId)
@@ -113,7 +118,7 @@ class DataStikerService(
             stiker.dataUmkm = umkmEntity
             stiker.kodeStiker = request.kodeStiker
             stiker.namaStiker = request.namaStiker
-            stiker.namaAnycut = request.namaAnyCut
+            stiker.namaAnycut = request.namaAnycut
             stiker.panjang = request.panjang
             stiker.lebar = request.lebar
             stiker.catatan = request.catatan
@@ -181,6 +186,20 @@ class DataStikerService(
             .orElseThrow { NoSuchElementException("UMKM tidak ditemukan") }
         val tahunShort = LocalDate.now().year % 100
         return generateKodeStiker(umkm.namaUsaha, tahunShort)
+    }
+
+    private fun validasiDuplikat(namaAnycut: String?, idSaatIni: String? = null) {
+
+        if (namaAnycut != null) {
+            val namaDuplikat = if (idSaatIni == null)
+                repoStiker.existsByNamaAnycutIgnoreCase(namaAnycut)
+            else
+                repoStiker.existsByNamaAnycutIgnoreCaseAndIdNot(namaAnycut, idSaatIni)
+
+            if (namaDuplikat) {
+                throw IllegalArgumentException("Nama AnyCut '$namaAnycut' sudah digunakan")
+            }
+        }
     }
 
     fun cariStiker(namaStiker: String?, namaUsaha: String?): List<DataStiker> {

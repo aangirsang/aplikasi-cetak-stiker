@@ -63,13 +63,23 @@ async function initDataOrderan() {
     getEl("btn-popup-download-data-orderan-batal")
         .addEventListener("click",  () => closePopupDownloadOrderan());
 
-    getEl("txt-cari-data-orderan")
-        .addEventListener("input", async function() {
-            cariDataOrderan = this.value.trim().toLowerCase();
+    function debounce(fn, delay = 300) {
+        let timer;
+        return (...args) => {
+            clearTimeout(timer);
+            timer = setTimeout(() => fn(...args), delay);
+        };
+    }
+
+    getEl("txt-cari-data-orderan").addEventListener(
+        "input",
+        debounce(async (e) => {
+            cariDataOrderan = e.target.value.trim().toLowerCase();
             currentPageOrderan = 1;
             openedDetailOrderanId = null;
             await loadTabelDataOrderan();
-        })
+        }, 300)
+    );
 
     const picker = flatpickr("#cari-range-tanggal-data-orderan", {
         locale: "id",
@@ -382,58 +392,46 @@ async function lihatStikerOrderan(id){
 }
 
 //TABEL
+function siapkanPencarian(data) {
+    data.forEach(o => {
+        o._cari = [
+            o.namaPengguna,
+            o.namaUmkm,
+            o.faktur,
+            formatTanggal(o.tanggal),
+            o.totalStiker,
+            ...(o.rincian || []).map(r => `${r.namaStiker} ${r.kodeStiker} ${r.ukuranStiker}`)
+        ].join(" ").toLowerCase();
+
+        const hari = new Date(o.tanggal);
+        hari.setHours(0, 0, 0, 0);
+        o._hari = hari.getTime();
+    });
+    return data;
+}
 async function loadTabelDataOrderan(reload = false) {
-
-    const totalStart = performance.now();
-
-    showLoading("Memuat Data Orderan..");
+    if (reload) showLoading("Memuat Data Orderan..");
 
     try {
-
-        let start = performance.now();
-
         if (reload) {
-            dataOrderan = await fetchDataOrderan();
+            dataOrderan = siapkanPencarian(await fetchDataOrderan());
             cariDataOrderan = "";
             tanggalAwalOrderan = "";
             tanggalAkhirOrderan = "";
         }
 
-        start = performance.now();
-        const filtered = getFilterDataOrderan();
+        const filtered  = getFilterDataOrderan();
+        const sorted    = getsortedDataOrderan(filtered);
+        const paginated = getPaginatedData(sorted, currentPageOrderan, rowsPerPageOrderan);
 
-        start = performance.now();
-        const sorted = getsortedDataOrderan(filtered);
-
-        start = performance.now();
-        const paginated = getPaginatedData(
-            sorted,
-            currentPageOrderan,
-            rowsPerPageOrderan
-        );
-
-        start = performance.now();
         renderTabelOrderan(paginated);
+        loadPagination("pagination", filtered.length, currentPageOrderan, rowsPerPageOrderan, changePageOrderan);
 
-        start = performance.now();
-        loadPagination(
-            "pagination",
-            filtered.length,
-            currentPageOrderan,
-            rowsPerPageOrderan,
-            changePageOrderan
-        );
-
-    } catch(error) {
-
+    } catch (error) {
         console.error(error);
-        showToast(error, "error");
-        dataOrderan = [];
-
+        showToast(error.message, "error");
     } finally {
-
-        hideLoading();
-
+        if (reload) hideLoading();
     }
 }
 async function fetchDataOrderan() {
@@ -446,51 +444,24 @@ async function fetchDataOrderan() {
     return await response.json();
 }
 function getFilterDataOrderan() {
-    return dataOrderan.filter(orderan => {
+    const keyword = cariDataOrderan;
 
-        const keyword = cariDataOrderan;
-        const tanggal = formatTanggal(orderan.tanggal).toLowerCase();
+    // hitung batas tanggal SEKALI, bukan per baris
+    let awal = null, akhir = null;
+    if (tanggalAwalOrderan || tanggalAkhirOrderan) {
+        const a = new Date(tanggalAwalOrderan || tanggalAkhirOrderan);
+        a.setHours(0, 0, 0, 0);
+        awal = a.getTime();
 
-        // =====================
-        // Filter tanggal
-        // =====================
+        const b = new Date(tanggalAkhirOrderan || tanggalAwalOrderan);
+        b.setHours(23, 59, 59, 999);
+        akhir = b.getTime();
+    }
 
-        const tanggalOrder = new Date(orderan.tanggal);
-        tanggalOrder.setHours(0, 0, 0, 0);
-
-        let cocokTanggal = true;
-
-        if (tanggalAwalOrderan || tanggalAkhirOrderan) {
-
-            const awal = new Date(tanggalAwalOrderan || tanggalAkhirOrderan);
-            awal.setHours(0, 0, 0, 0);
-
-            const akhir = new Date(tanggalAkhirOrderan || tanggalAwalOrderan);
-            akhir.setHours(23, 59, 59, 999);
-
-            cocokTanggal =
-                tanggalOrder >= awal &&
-                tanggalOrder <= akhir;
-        }
-
-        // =====================
-        // Filter keyword
-        // =====================
-
-        const cocokKeyword =
-            orderan.namaPengguna.toLowerCase().includes(keyword) ||
-            orderan.namaUmkm.toLowerCase().includes(keyword) ||
-            orderan.faktur.toLowerCase().includes(keyword) ||
-            tanggal.includes(keyword) ||
-            orderan.totalStiker.toString().includes(keyword) ||
-            orderan.rincian.some(rinci =>
-                rinci.namaStiker.toLowerCase().includes(keyword) ||
-                rinci.kodeStiker.toLowerCase().includes(keyword) ||
-                rinci.ukuranStiker.toLowerCase().includes(keyword)
-            );
-
-        return cocokKeyword && cocokTanggal;
-    });
+    return dataOrderan.filter(o =>
+        (awal === null || (o._hari >= awal && o._hari <= akhir)) &&
+        (!keyword || o._cari.includes(keyword))
+    );
 }
 function getsortedDataOrderan(data) {
     return [...data].sort((a, b) => {

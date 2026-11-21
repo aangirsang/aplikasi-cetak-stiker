@@ -1,6 +1,7 @@
 package com.girsang.stiker.repository
 
 import com.girsang.stiker.model.entity.DataStiker
+import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
@@ -9,6 +10,11 @@ import org.springframework.stereotype.Repository
 @Repository
 interface DataStikerRepository: JpaRepository <DataStiker, String> {
 
+    @EntityGraph(attributePaths = ["dataUmkm", "dataBarang", "layoutCetak"])
+    override fun findAll(): List<DataStiker>
+
+    fun existsByNamaAnycutIgnoreCase(namaAnycut: String): Boolean
+    fun existsByNamaAnycutIgnoreCaseAndIdNot(namaAnycut: String, id: String): Boolean
 
     fun findByDataUmkmId(umkmId: String): List<DataStiker>
 

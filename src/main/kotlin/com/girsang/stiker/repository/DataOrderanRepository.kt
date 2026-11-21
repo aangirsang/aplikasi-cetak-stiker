@@ -2,14 +2,32 @@ package com.girsang.stiker.repository
 
 import com.girsang.stiker.model.dto.response.download.orderan.RekapOrderanBulananResponse
 import com.girsang.stiker.model.entity.DataOrderan
+import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 
 interface DataOrderanRepository: JpaRepository<DataOrderan, String> {
+
+    @EntityGraph(attributePaths = ["dataPengguna", "dataPengguna.dataLevel", "dataUMKM"])
+    override fun findAll(): List<DataOrderan>
+
+    @EntityGraph(attributePaths = [
+        "dataPengguna", "dataPengguna.dataLevel", "dataUMKM",
+        "rincian", "rincian.dataStiker", "rincian.dataStiker.dataUmkm",
+        "rincian.dataStiker.dataBarang", "rincian.dataStiker.layoutCetak"
+    ])
+    @Query("select o from DataOrderan o")
+    fun findAllLengkap(): List<DataOrderan>
+
         fun findTopByFakturStartingWithOrderByFakturDesc(
         prefix: String
     ): DataOrderan?
 
+    @EntityGraph(attributePaths = [
+        "dataPengguna", "dataPengguna.dataLevel", "dataUMKM",
+        "rincian", "rincian.dataStiker", "rincian.dataStiker.dataUmkm",
+        "rincian.dataStiker.dataBarang", "rincian.dataStiker.layoutCetak"
+    ])
     @Query("""
         SELECT o
         FROM DataOrderan o

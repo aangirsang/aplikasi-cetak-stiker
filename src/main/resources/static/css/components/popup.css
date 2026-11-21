@@ -12,12 +12,13 @@
     align-items: center;
 
     background: rgba(0,0,0,0.5);
-
     z-index: 1000;
 
     opacity: 0;
     visibility: hidden;
-    transition: opacity .25s ease, visibility .25s ease;
+
+    /* saat menutup: tunggu fade selesai baru sembunyikan */
+    transition: opacity .25s ease, visibility 0s linear .25s;
 }
 
 .popup.active{
@@ -27,6 +28,9 @@
 .popup.show{
     opacity: 1;
     visibility: visible;
+
+    /* saat membuka: visibility langsung berubah */
+    transition: opacity .25s ease, visibility 0s;
 }
 
 .popup-actions{

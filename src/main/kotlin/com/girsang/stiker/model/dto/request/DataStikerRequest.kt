@@ -5,7 +5,7 @@ data class DataStikerRequest(
     var barangId: String,
     var namaStiker: String,
     var kodeStiker: String,
-    var namaAnyCut: String,
+    var namaAnycut: String,
     var panjang: Double = 0.0,
     var lebar: Double = 0.0,
     var catatan: String? = "-",
@@ -28,4 +28,4 @@ data class DataStikerRequest(
     var imageWidthMM: Double = 0.0,
     var imageHeightMM: Double = 0.0,
 
-)
+    )

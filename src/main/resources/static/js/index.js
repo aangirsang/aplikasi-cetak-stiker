@@ -11,29 +11,9 @@ const menuItems = document.querySelectorAll(
 // ==============================
 // INISIALISASI
 // ==============================
-document.addEventListener(
-    "DOMContentLoaded",
-    async () => {
-
-        try {
-
-            const response = await apiFetch(`${BASE_URL}/auth/me`);
-
-            const me = await response.json();
-
-            penggunaAktif = me.data;
-
-            updateProfile(me.data);
-
-            loginOverlay.classList.add("hidden");
-
-            await loadPage("dashboard");
-
-        } catch (e) {
-            console.error(e);
-        }
-    }
-);
+// Pengecekan sesi saat halaman dibuka dilakukan oleh cekSesi() di login.js.
+// Jangan dipanggil lagi di sini, supaya /auth/me dan dashboard
+// tidak dimuat dua kali.
 
 // ==============================
 // MENU AKTIF
@@ -56,13 +36,20 @@ menuItems.forEach(item => {
 // ==============================
 // NAVIGASI HALAMAN
 // ==============================
+let tokenHalaman = 0; // mencegah dua pemuatan halaman saling menimpa
+
 async function loadPage(page) {
 
     if (!penggunaAktif) {
+        tampilkanLogin();
         return;
     }
 
+    // setiap pemanggilan baru membatalkan pemanggilan lama yang belum selesai
+    const token = ++tokenHalaman;
+
     await destroyCurrentPage();
+    if (token !== tokenHalaman) return;
 
     const pageTitles = {
         dashboard: "Aplikasi Cetak",
@@ -87,6 +74,8 @@ async function loadPage(page) {
             }
         );
 
+        if (token !== tokenHalaman) return;
+
         if (!response.ok) {
 
             content.innerHTML = `
@@ -104,18 +93,14 @@ async function loadPage(page) {
 
         }
 
-        content.innerHTML =
-            await response.text();
+        const html = await response.text();
+        if (token !== tokenHalaman) return;
+
+        content.innerHTML = html;
 
         title.textContent =
             pageTitles[page]
             ?? "Aplikasi Cetak Stiker";
-
-        /*
-        document.title =
-            title.textContent;
-
-         */
 
         const pageHandlers = {
             dashboard: initDashboard,
@@ -167,6 +152,12 @@ async function destroyCurrentPage() {
 
     if (typeof destroyTabelDashboard === "function")
         await destroyTabelDashboard();
+
+    // hancurkan semua chart supaya tidak menumpuk di memori
+    // dan canvas tidak pernah "already in use"
+    if (typeof Chart !== "undefined" && Chart.instances) {
+        Object.values(Chart.instances).forEach(chart => chart.destroy());
+    }
 }
 
 // ==============================
@@ -218,25 +209,34 @@ function updateProfile(user) {
         ? `${BASE_URL}${user.pathGambar}`
         : noImagePerson;
 
-    document.getElementById("profile-container").innerHTML = `
+    const container = document.getElementById("profile-container");
+
+    // struktur saja lewat innerHTML; teks dari database diisi lewat
+    // textContent supaya nama berisi tanda < > tidak dibaca sebagai HTML
+    container.innerHTML = `
         <div class="profile">
 
             <div class="info">
-                <p><b>${user.namaLengkap}</b></p>
-                <small class="text-muted">
-                    ${user.level}
-                </small>
+                <p><b class="profile-nama"></b></p>
+                <small class="text-muted profile-level"></small>
             </div>
 
             <div class="profile-photo">
-                <img
-                    src="${imageUrl}"
-                    alt="profile"
-                    onerror="this.onerror=null; this.src='${noImagePerson}'">
+                <img alt="profile">
             </div>
 
         </div>
     `;
+
+    container.querySelector(".profile-nama").textContent = user.namaLengkap ?? "";
+    container.querySelector(".profile-level").textContent = user.level ?? "";
+
+    const img = container.querySelector("img");
+    img.onerror = () => {
+        img.onerror = null;
+        img.src = noImagePerson;
+    };
+    img.src = imageUrl;
 }
 
 // ==============================
@@ -245,41 +245,28 @@ function updateProfile(user) {
 async function logout() {
 
     try {
-
-        await fetch(
-            "/api/auth/logout",
-            {
-                method: "POST"
-            }
-        );
-
+        const response = await apiFetch(`${BASE_URL}/auth/logout`, {
+            method: "POST",
+            skipAuthRedirect: true
+        });
+        if (!response.ok) console.error("Logout gagal:", response.status);
     } catch (e) {
         console.error(e);
     }
 
-    localStorage.removeItem(
-        "currentUser"
-    );
-
-    penggunaAktif = null;
-
-    resetSidebar();
+    await destroyCurrentPage();
 
     document
-        .getElementById(
-            "profile-container"
-        )
+        .getElementById("profile-container")
         .innerHTML = "";
 
     content.innerHTML = "";
 
     title.textContent = "Login";
 
-    loginOverlay.classList.remove(
-        "hidden"
-    );
-
-    resetLoginForm();
+    // membersihkan localStorage, penggunaAktif, sidebar, form login,
+    // lalu menampilkan overlay login
+    tampilkanLogin();
 }
 
 // ==============================
@@ -287,8 +274,9 @@ async function logout() {
 // ==============================
 function resetLoginForm() {
 
-    getEl("namaPengguna").value = "admin";
-    getEl("kataSandi").value = "admin123";
+    // jangan isi kata sandi bawaan di form login
+    getEl("namaPengguna").value = "";
+    getEl("kataSandi").value = "";
 
     getEl("login-error")
         .textContent = "";
@@ -306,4 +294,11 @@ window.updateProfile = updateProfile;
 window.logout = logout;
 window.resetLoginForm = resetLoginForm;
 window.resetSidebar = resetSidebar;
-window.penggunaAktif = penggunaAktif;
+
+// window.penggunaAktif harus selalu sama dengan variabel di file ini.
+// "window.penggunaAktif = penggunaAktif" hanya menyalin nilai awalnya (null).
+Object.defineProperty(window, "penggunaAktif", {
+    get: () => penggunaAktif,
+    set: (nilai) => { penggunaAktif = nilai; },
+    configurable: true
+});

@@ -212,6 +212,12 @@ async function destroyTabelDashboard() {
 }
 
 // DIAGRAM
+function buatChart(canvasId, config) {
+    const lama = Chart.getChart(canvasId);
+    if (lama) lama.destroy();
+
+    return new Chart(document.getElementById(canvasId), config);
+}
 async function loadDiagramBatang() {
     const sekarang = new Date();
     const satuBulanSebelum = new Date(sekarang);
@@ -247,9 +253,7 @@ async function loadDiagramBatang() {
 
     const values = topData.map(item => item.jumlah);
 
-    const barCtx = document.getElementById("barChart");
-
-    umkmChart = new Chart(barCtx, {
+    umkmChart = buatChart("barChart", {
         type: "bar",
         data: {
             labels,
@@ -324,12 +328,13 @@ async function loadDiagramGaris(){
     );
 
     const valuesOrderan = dataRekap.map(item => item.jumlah);
-    orderChart = new Chart(lineCtx, {
-        type: 'line',
+
+    orderChart = buatChart("lineChart", {
+        type: "line",
         data: {
             labels: bulans,
             datasets: [{
-                label: 'Pesanan',
+                label: "Pesanan",
                 data: valuesOrderan,
                 fill: false,
                 tension: 0.3

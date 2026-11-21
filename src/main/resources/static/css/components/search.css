@@ -86,6 +86,36 @@
     box-sizing: border-box;
 }
 
+.search-clear {
+    background: none;
+    border: none;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.6;
+    flex-shrink: 0;
+    transition: background .2s, opacity .2s;
+}
+
+.search-clear:hover {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.search-clear .material-symbols-sharp {
+    font-size: 18px;
+}
+
+.search-clear[hidden] {
+    display: none;
+}
+
 .search-bar-date {
     display: grid;
     grid-template-columns: 300px 1fr auto;

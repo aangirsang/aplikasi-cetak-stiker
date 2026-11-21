@@ -168,6 +168,7 @@ function isiDataStiker(stiker) {
 
     getEl("popup-data-stiker-kode").value = stiker.kodeStiker;
     getEl("popup-data-stiker-nama").value = stiker.namaStiker;
+    getEl("popup-data-stiker-kode-anycut").value = stiker.namaAnycut;
     getEl("popup-data-stiker-panjang").value = stiker.panjang;
     getEl("popup-data-stiker-lebar").value = stiker.lebar;
     getEl("popup-data-stiker-catatan").value = stiker.catatan;
@@ -326,6 +327,7 @@ function bersihPopupDataStiker() {
     [
         "popup-data-stiker-kode",
         "popup-data-stiker-nama",
+        "popup-data-stiker-kode-anycut",
         "popup-data-stiker-panjang",
         "popup-data-stiker-lebar",
         "popup-data-stiker-catatan",
@@ -1230,6 +1232,7 @@ async function stikerToBody() {
 
     const kodeStiker = getValue("popup-data-stiker-kode")
     const namaStiker = getValue("popup-data-stiker-nama")
+    const namaAnycut = getValue("popup-data-stiker-kode-anycut")
     const panjangStiker = getValue("popup-data-stiker-panjang")
     const lebarStiker = getValue("popup-data-stiker-lebar")
     const catatanStiker = getValue("popup-data-stiker-catatan")
@@ -1281,6 +1284,7 @@ async function stikerToBody() {
         barangId: selectedBarang?.id ?? null,
         kodeStiker,
         namaStiker,
+        namaAnycut,
         panjang: panjangStiker,
         lebar: lebarStiker,
         catatan: catatanStiker,

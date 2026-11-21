@@ -3,12 +3,22 @@ package com.girsang.stiker.repository
 import com.girsang.stiker.model.dto.response.download.orderan.RekapStikerResponse
 import com.girsang.stiker.model.dto.response.download.orderan.RekapUmkmResponse
 import com.girsang.stiker.model.entity.DataOrderanRinci
+import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 
 interface DataOrderanRinciRepository: JpaRepository<DataOrderanRinci, String> {
 
-    fun findByDataOrderanId(orderId: String): List<DataOrderanRinci>
+    @EntityGraph(attributePaths = [
+        "dataOrderan", "dataOrderan.dataPengguna", "dataOrderan.dataUMKM",
+        "dataStiker", "dataStiker.dataUmkm", "dataStiker.dataBarang", "dataStiker.layoutCetak"
+    ])
+    override fun findAll(): List<DataOrderanRinci>
+
+    @EntityGraph(attributePaths = [
+        "dataStiker", "dataStiker.dataUmkm", "dataStiker.dataBarang", "dataStiker.layoutCetak"
+    ])
+    fun findByDataOrderanId(idOrder: String): List<DataOrderanRinci>
 
     @Query("""
         SELECT r

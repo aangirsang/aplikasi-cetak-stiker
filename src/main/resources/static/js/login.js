@@ -1,29 +1,42 @@
 const loginOverlay = getEl("login-overlay");
-let currentUser;
 
-try {
+    async function cekSesi() {
+        // tampilkan cepat dari cache supaya tidak berkedip
+        let cache = null;
+        try { cache = JSON.parse(localStorage.getItem("currentUser")); } catch {}
 
-    currentUser = JSON.parse(
-        localStorage.getItem("currentUser")
-    );
+        if (cache) {
+            updateProfile(cache);
+            penggunaAktif = cache;
+            loginOverlay.classList.add("hidden");
+        }
 
-} catch (e) {
+        // verifikasi ke server
+        try {
+            const response = await apiFetch(`${BASE_URL}/auth/me`, { skipAuthRedirect: true });
 
-    currentUser = null;
+            if (response.ok) {
+                const me = await response.json();
+                penggunaAktif = me.data;
+                localStorage.setItem("currentUser", JSON.stringify(me.data));
+                updateProfile(me.data);
+                loginOverlay.classList.add("hidden");
+                await loadPage("dashboard");
+                return;
+            }
+        } catch (e) {
+            console.error(e);
+        }
 
-}
+        // sesi tidak valid
+        localStorage.removeItem("currentUser");
+        penggunaAktif = null;
+        resetLoginForm();
+        loginOverlay.classList.remove("hidden");
+    }
 
-if (currentUser) {
-    updateProfile(currentUser);
-    penggunaAktif = currentUser;
-
-    loginOverlay.classList.add("hidden");
-
-    await statusServer();
-} else {
-    resetLoginForm();
-    await statusServer();
-}
+await cekSesi();
+await statusServer();
 
 getEl("form-login").addEventListener("submit", doLogin);
 

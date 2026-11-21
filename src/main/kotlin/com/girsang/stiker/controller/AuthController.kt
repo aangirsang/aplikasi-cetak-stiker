@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse
 import jakarta.servlet.http.HttpSession
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.authentication.AnonymousAuthenticationToken
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -77,16 +78,21 @@ class AuthController(
     }
 
     @GetMapping("/me")
-    fun me(
-        authentication: Authentication
-    ): ResponseEntity<Any> {
+    fun me(authentication: Authentication?): ResponseEntity<Any> {
 
-        val pengguna =
-            repoPengguna
-                .findByNamaPengguna(
-                    authentication.name
-                )
-                ?: return ResponseEntity.notFound().build()
+        if (authentication == null ||
+            !authentication.isAuthenticated ||
+            authentication is AnonymousAuthenticationToken
+        ) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                mapOf("success" to false, "message" to "Belum login")
+            )
+        }
+
+        val pengguna = repoPengguna.findByNamaPengguna(authentication.name)
+            ?: return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                mapOf("success" to false, "message" to "Pengguna tidak ditemukan")
+            )
 
         return ResponseEntity.ok(
             mapOf(

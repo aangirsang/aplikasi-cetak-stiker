@@ -1017,41 +1017,49 @@ async function gagalSimpan(response) {
 
 //CEK SESSION LOGIN
 async function apiFetch(url, options = {}) {
+    const { skipAuthRedirect = false, ...fetchOptions } = options;
+
     const finalOptions = {
-        ...options,
-        credentials: options.credentials || "include"
+        ...fetchOptions,
+        credentials: fetchOptions.credentials || "include"
     };
 
     const response = await fetch(url, finalOptions);
 
-    if (response.status === 401 || response.status === 403) {
+    if ((response.status === 401 || response.status === 403) && !skipAuthRedirect) {
         handleSessionExpired();
 
         //showToast("Sesi Anda telah berakhir, silakan login kembali", "warning");
-        throw new Error("Unauthorized");
+        throw new Error("Sesi Anda telah berakhir, silahkan login kembali");
     }
 
     return response;
 }
 
-function handleSessionExpired() {
-    if (isLoginOverlayShown) return; // cegah trigger berkali-kali
+function tampilkanLogin(pesan = "") {
     isLoginOverlayShown = true;
 
-    // Bersihkan sesi lama
     localStorage.removeItem("currentUser");
     penggunaAktif = null;
 
-    // Tampilkan overlay login (konsisten dengan login.js)
     const loginOverlay = getEl("login-overlay");
     if (loginOverlay) {
-        loginOverlay.classList.remove("hidden");
         resetLoginForm();
         resetSidebar();
+        loginOverlay.classList.remove("hidden");
     }
 
     const loginError = getEl("login-error");
     if (loginError) {
-        loginError.innerText = "Sesi Anda telah berakhir, silakan login kembali";
+        loginError.innerText = pesan;
     }
+
+    setTimeout(() => getEl("namaPengguna")?.focus(), 100);
 }
+
+function handleSessionExpired() {
+    if (isLoginOverlayShown) return; // cegah trigger berkali-kali
+    tampilkanLogin("Sesi Anda telah berakhir, silakan login kembali");
+}
+
+class SessionExpiredError extends Error {}

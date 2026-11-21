@@ -40,10 +40,12 @@ aside .top {
     display: flex;
     align-items: center;
     gap: .4rem;
+    margin-left: 1rem;
 }
 
 .logo img {
     height: 4rem;
+    margin-top: 1rem;
 }
 
 .logo h1 {

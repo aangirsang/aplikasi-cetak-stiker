@@ -1,5 +1,6 @@
 package com.girsang.stiker.config
 
+import jakarta.servlet.http.HttpServletResponse
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
@@ -102,8 +103,13 @@ class SecurityConfig(
             .logout {
                 it.logoutUrl("/api/auth/logout")
                     .invalidateHttpSession(true)
-                    .deleteCookies("JSESSIONID")
+                    .clearAuthentication(true)
+                    .deleteCookies("JSESSIONID", "token")   // ganti "token" dengan nama cookie Anda
+                    .logoutSuccessHandler { _, response, _ ->
+                        response.status = HttpServletResponse.SC_OK
+                    }
             }
+
 
         return http.build()
     }

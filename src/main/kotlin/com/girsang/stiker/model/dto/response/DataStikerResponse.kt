@@ -15,7 +15,7 @@ data class DataStikerResponse(
     var stokBarang: Long,
     var kodeStiker: String = "",
     var namaStiker: String = "",
-    var namaAnyCut: String = "",
+    var namaAnycut: String = "",
     var panjang: Double = 0.0,
     var lebar: Double = 0.0,
     var ukuran: String = "",
