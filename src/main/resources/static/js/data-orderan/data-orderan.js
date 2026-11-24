@@ -4,7 +4,7 @@ let currentPageOrderan = 1;
 let cariDataOrderan = "";
 let tanggalAwalOrderan = "";
 let tanggalAkhirOrderan = "";
-const rowsPerPageOrderan = 12;
+let rowsPerPageOrderan = 12;
 
 let pickerDownload = "";
 let tanggalAwalDownloadOrderan = "";
@@ -27,6 +27,16 @@ let rincian = [];
 
 async function initDataOrderan() {
 
+    function debounce(fn, delay = 300) {
+        let timer;
+        return (...args) => {
+            clearTimeout(timer);
+            timer = setTimeout(() => fn(...args), delay);
+        };
+    }
+
+    dataOrderan = null; // buang data dari kunjungan sebelumnya
+
     await initPopupLoading();
     await initPopupHapus();
     await initPopupPilihUmkm();
@@ -36,40 +46,47 @@ async function initDataOrderan() {
 
     await loadTabelDataOrderan(true);
 
+    // observer dipasang SETELAH data dimuat, pada card milik halaman ini
+    const card = getEl("tbl-body-data-orderan").closest(".tabel-page-card");
+    const observer = new ResizeObserver(debounce(() => {
+        // halaman sudah diganti: lepas sendiri
+        if (!card.isConnected) {
+            observer.disconnect();
+            return;
+        }
+        if (!dataOrderan) return;
+        if (hitungRowsPerPageOrderan() !== rowsPerPageOrderan) {
+            renderHalamanOrderan();
+        }
+    }, 150));
+    observer.observe(card);
+
     getEl("btn-refresh-data-orderan")
-        .addEventListener("click",  async () => {
+        .addEventListener("click", async () => {
             await loadTabelDataOrderan(true);
             picker.clear();
         });
 
     getEl("btn-tambah-data-orderan")
-        .addEventListener("click",  () => showPopupOrderan());
+        .addEventListener("click", () => showPopupOrderan());
 
     getEl("btn-download-data-orderan")
-        .addEventListener("click",  () => showPopupDownloadOrderan());
+        .addEventListener("click", () => showPopupDownloadOrderan());
 
     getEl("btn-batal-data-order")
         .addEventListener("click", closePopupOrderan);
 
     getEl("btn-stiker-data-order")
-        .addEventListener("click",  () => tampilPopupPilihStiker());
+        .addEventListener("click", () => tampilPopupPilihStiker());
 
     getEl("btn-simpan-data-order")
-        .addEventListener("click",  () => simpanDataOrderan());
+        .addEventListener("click", () => simpanDataOrderan());
 
     getEl("btn-popup-download-data-orderan-download")
-        .addEventListener("click",  () => downloadDataOrderan());
+        .addEventListener("click", () => downloadDataOrderan());
 
     getEl("btn-popup-download-data-orderan-batal")
-        .addEventListener("click",  () => closePopupDownloadOrderan());
-
-    function debounce(fn, delay = 300) {
-        let timer;
-        return (...args) => {
-            clearTimeout(timer);
-            timer = setTimeout(() => fn(...args), delay);
-        };
-    }
+        .addEventListener("click", () => closePopupDownloadOrderan());
 
     getEl("txt-cari-data-orderan").addEventListener(
         "input",
@@ -86,7 +103,6 @@ async function initDataOrderan() {
         mode: "range",
         dateFormat: "d F Y",
         async onClose(selectedDates) {
-
             if (selectedDates.length === 2) {
                 tanggalAwalOrderan = selectedDates[0];
                 tanggalAkhirOrderan = selectedDates[1];
@@ -102,19 +118,16 @@ async function initDataOrderan() {
         mode: "range",
         dateFormat: "d F Y",
         async onClose(selectedDates) {
-
             if (selectedDates.length === 2) {
-                tanggalAwalDownloadOrderan= selectedDates[0];
+                tanggalAwalDownloadOrderan = selectedDates[0];
                 tanggalAkhirDownloadOrderan = selectedDates[1];
             }
         }
     });
 
-
     document.removeEventListener("click", closeDetailOrderanOutside);
     document.addEventListener("click", closeDetailOrderanOutside);
 }
-
 // POPUP
 async function showPopupOrderan(id = null) {
     const popup = getEl("popup-data-orderan")
@@ -420,12 +433,7 @@ async function loadTabelDataOrderan(reload = false) {
             tanggalAkhirOrderan = "";
         }
 
-        const filtered  = getFilterDataOrderan();
-        const sorted    = getsortedDataOrderan(filtered);
-        const paginated = getPaginatedData(sorted, currentPageOrderan, rowsPerPageOrderan);
-
-        renderTabelOrderan(paginated);
-        loadPagination("pagination", filtered.length, currentPageOrderan, rowsPerPageOrderan, changePageOrderan);
+        renderHalamanOrderan();
 
     } catch (error) {
         console.error(error);
@@ -497,12 +505,48 @@ function getsortedDataOrderan(data) {
         return sortDirectionOrderan === "asc" ? result : -result;
     })
 }
+function hitungRowsPerPageOrderan() {
+    const tbody = getEl("tbl-body-data-orderan");
+    const card  = tbody?.closest(".tabel-page-card");
+    if (!card) return rowsPerPageOrderan; // halaman sudah tidak ada
+
+    const thead = card.querySelector("thead");
+    const row   = tbody.querySelector("tr");
+
+    // ukur baris asli kalau ada, kalau belum pakai 2.8rem (sesuai CSS td)
+    const remPx = parseFloat(getComputedStyle(document.documentElement).fontSize);
+    const rowHeight = row ? row.getBoundingClientRect().height : remPx * 2.8;
+
+    const available = card.clientHeight - (thead ? thead.offsetHeight : 0);
+    return Math.max(1, Math.floor(available / rowHeight));
+}
+function renderHalamanOrderan(ukurUlang = true) {
+    if (!getEl("tbl-body-data-orderan")) return; // halaman sudah ditinggalkan
+
+    const filtered = getFilterDataOrderan();
+    const sorted   = getsortedDataOrderan(filtered);
+
+    rowsPerPageOrderan = hitungRowsPerPageOrderan();
+
+    const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPageOrderan));
+    if (currentPageOrderan > totalPages) currentPageOrderan = totalPages;
+
+    const paginated = getPaginatedData(sorted, currentPageOrderan, rowsPerPageOrderan);
+
+    renderTabelOrderan(paginated);
+    loadPagination("pagination", filtered.length, currentPageOrderan, rowsPerPageOrderan, changePageOrderan);
+
+    // sekarang baris asli sudah ada, cek apakah ukurannya beda dari perkiraan
+    if (ukurUlang && hitungRowsPerPageOrderan() !== rowsPerPageOrderan) {
+        renderHalamanOrderan(false);
+    }
+}
 function renderTabelOrderan(data) {
     const tbody = getEl("tbl-body-data-orderan");
+    if (!tbody) return;
 
     tbody.innerHTML = data.map(item => {
         const isOpened = openedDetailOrderanId === item.id;
-
         return createTabelOrderan(item, isOpened);
     }).join("");
 }

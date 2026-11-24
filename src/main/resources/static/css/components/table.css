@@ -46,7 +46,6 @@ table {
 }
 
 .tabel-page-card {
-    /* BARU: bagian inilah yang akan scroll/menyesuaikan tinggi */
     flex: 1;
     min-height: 0;
     overflow-y: auto;
