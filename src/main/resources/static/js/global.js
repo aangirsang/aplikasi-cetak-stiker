@@ -31,6 +31,11 @@ const getValue = id => getEl(id).value.trim();
 const noImagePerson = "./assets/images/no-image-person.svg";
 const noImageStiker = "./assets/images/no-image-stiker.svg";
 
+
+const BREAKPOINT_RESPONSIVE = 650;
+const ROWS_TETAP_RESPONSIVE = 12;
+
+
 let isLoginOverlayShown = false;
 
 function tandaiInvalid(el){
@@ -1014,6 +1019,45 @@ async function gagalSimpan(response) {
     showToast(message, "error");
     return true;
 }
+
+//OTOMATIS JUMLAH BARIS
+function modeResponsive() {
+    return window.matchMedia(`(max-width: ${BREAKPOINT_RESPONSIVE}px)`).matches;
+}
+function hitungRowsPerPage(tbodyId, fallback = 10) {
+    // layar kecil: tinggi card mengikuti isi, jangan diukur
+    if (modeResponsive()) return ROWS_TETAP_RESPONSIVE;
+
+    const tbody = getEl(tbodyId);
+    const card  = tbody?.closest(".tabel-page-card");
+    if (!card) return fallback; // halaman sudah tidak ada
+
+    const thead = card.querySelector("thead");
+    const row   = tbody.querySelector("tr");
+
+    // ukur baris asli kalau ada, kalau belum pakai 2.8rem (sesuai CSS td)
+    const remPx = parseFloat(getComputedStyle(document.documentElement).fontSize);
+    const rowHeight = row ? row.getBoundingClientRect().height : remPx * 2.8;
+
+    const available = card.clientHeight - (thead ? thead.offsetHeight : 0);
+    return Math.max(1, Math.floor(available / rowHeight));
+}
+function pasangResizeTabel(tbodyId, { siap, rowsSaatIni, render }) {
+    const card = getEl(tbodyId)?.closest(".tabel-page-card");
+    if (!card) return;
+
+    let timer;
+    const observer = new ResizeObserver(() => {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            if (!card.isConnected) { observer.disconnect(); return; } // halaman diganti
+            if (!siap()) return;
+            if (hitungRowsPerPage(tbodyId) !== rowsSaatIni()) render();
+        }, 150);
+    });
+    observer.observe(card);
+}
+
 
 //CEK SESSION LOGIN
 async function apiFetch(url, options = {}) {

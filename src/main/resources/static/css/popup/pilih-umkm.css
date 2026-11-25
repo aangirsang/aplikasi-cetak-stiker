@@ -59,7 +59,6 @@
     min-height: 0; /* WAJIB juga di sini */
 
     overflow-y: auto;   /* HANYA di sini overflow diizinkan */
-    overflow-x: hidden;
 }
 
 

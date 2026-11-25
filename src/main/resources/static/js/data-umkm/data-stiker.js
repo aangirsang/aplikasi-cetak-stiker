@@ -1,6 +1,6 @@
 let currentPageStiker = 1;
 let cariDataStiker = "";
-const rowsPerPageStiker = 12;
+let rowsPerPageStiker = 12;
 
 let sortFieldDataStiker = "";
 let sortDirectionStiker = "";
@@ -14,6 +14,8 @@ let selectedUmkm = null;
 
 async function initDataStiker() {
 
+    dataStiker = null;
+
     await initPopupDataStiker();
     await initPopupLoading();
     await loadTabelDataStiker(true);
@@ -21,8 +23,17 @@ async function initDataStiker() {
     await initPopupHapus();
     await initPopupLayoutCetak();
 
+    pasangResizeTabel("tbl-body-data-stiker", {
+        siap:        () => !!dataStiker,
+        rowsSaatIni: () => rowsPerPageStiker,
+        render:      () => renderHalamanStiker()
+    });
+
     getEl("btn-refresh-data-stiker").addEventListener("" +
-        "click", () => loadTabelDataStiker(true));
+        "click", () => {
+        loadTabelDataStiker(true);
+        tombolHapusCari.hidden;
+    });
 
     getEl("btn-tambah-data-stiker").addEventListener("" +
         "click", () => showPopupStiker(null, async () => {
@@ -41,30 +52,63 @@ async function initDataStiker() {
         await loadTabelDataStiker();
     });
 
+    // Hapus Pencarian
+    const inputCariStiker = getEl("search-stiker");
+    const tombolHapusCari = getEl("hapus-cari-data-stiker");
+
+    function updateTombolHapusCari() {
+        tombolHapusCari.hidden = inputCariStiker.value === "";
+    }
+
+    inputCariStiker.addEventListener("input", updateTombolHapusCari);
+
+    tombolHapusCari.addEventListener("click", () => {
+        inputCariStiker.value = "";
+        inputCariStiker.dispatchEvent(new Event("input", { bubbles: true })); // picu pencarian ulang
+        inputCariStiker.focus();
+    });
+
     document.removeEventListener("click", closeDetailStikerOutside);
     document.addEventListener("click", closeDetailStikerOutside);
 }
 
 // TABEL DATA STIKER
+function renderHalamanStiker(ukurUlang = true) {
+    if (!getEl("tbl-body-data-stiker")) return; // halaman sudah ditinggalkan
+
+    const filtered = getFilterDataStiker();
+    const sorted   = getsortedDataStiker(filtered);
+
+    rowsPerPageStiker = hitungRowsPerPage("tbl-body-data-stiker");
+
+    // jaga agar halaman tidak melebihi total halaman
+    const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPageStiker));
+    if (currentPageStiker > totalPages) currentPageStiker = totalPages;
+
+    const paginated = getPaginatedData(sorted, currentPageStiker, rowsPerPageStiker);
+
+    renderTabelStiker(paginated);
+    loadPagination("pagination", filtered.length, currentPageStiker, rowsPerPageStiker, changePageStiker);
+
+    // baris asli sudah ada, cek apakah ukurannya beda dari perkiraan
+    if (ukurUlang && hitungRowsPerPage("tbl-body-data-stiker") !== rowsPerPageStiker) {
+        renderHalamanStiker(false);
+    }
+}
 async function loadTabelDataStiker(reload = false) {
-    showLoading("Memuat Data Stiker..");
+    // loading hanya saat ambil data; sort, filter, dan ganti halaman cukup lokal
+    if (reload) showLoading("Memuat Data Stiker..");
+
     try {
         if (reload) {
             dataStiker = await fetchDataStiker();
 
             dataStiker.sort((a, b) => {
-                // 1. Nama Usaha
-                const usaha = a.namaUsaha.localeCompare(b.namaUsaha, "id", {
-                    sensitivity: "base"
-                });
+                const usaha = a.namaUsaha.localeCompare(b.namaUsaha, "id", { sensitivity: "base" });
                 if (usaha !== 0) return usaha;
 
-                // 2. Status (true dulu, false terakhir dalam nama usaha yang sama)
-                if (a.status !== b.status) {
-                    return b.status - a.status;
-                }
+                if (a.status !== b.status) return b.status - a.status;
 
-                // 3. Kode Stiker
                 return a.kodeStiker.localeCompare(b.kodeStiker, "id", {
                     numeric: true,
                     sensitivity: "base"
@@ -77,24 +121,14 @@ async function loadTabelDataStiker(reload = false) {
             cari.focus();
         }
 
-        const filtered = await getFilterDataStiker();
-        const sorted = await getsortedDataStiker(filtered);
-        const paginated = getPaginatedData(sorted, currentPageStiker, rowsPerPageStiker)
+        renderHalamanStiker();
 
-        renderTabelStiker(paginated);
-        loadPagination(
-            "pagination",
-            filtered.length,
-            currentPageStiker,
-            rowsPerPageStiker,
-            changePageStiker
-        );
-    } catch(error){
+    } catch (error) {
         console.error(error);
-        showToast(error, "error")
+        showToast(error.message, "error"); // pakai .message, bukan objek error
         dataStiker = [];
     } finally {
-        hideLoading();
+        if (reload) hideLoading();
     }
 }
 async function fetchDataStiker() {
@@ -150,10 +184,10 @@ function getsortedDataStiker(data) {
 }
 function renderTabelStiker(data) {
     const tbody = getEl("tbl-body-data-stiker");
+    if (!tbody) return;
 
     tbody.innerHTML = data.map(item => {
         const isOpened = openedDetailStikerId === item.id;
-
         return createTabelStiker(item, isOpened);
     }).join("");
 }

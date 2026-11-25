@@ -125,9 +125,26 @@ async function initDataOrderan() {
         }
     });
 
+    // Hapus Pencarian
+    const inputCariOrder = getEl("txt-cari-data-orderan");
+    const tombolHapusCari = getEl("hapus-cari-data-orderan");
+
+    function updateTombolHapusCari() {
+        tombolHapusCari.hidden = inputCariOrder.value === "";
+    }
+
+    inputCariOrder.addEventListener("input", updateTombolHapusCari);
+
+    tombolHapusCari.addEventListener("click", () => {
+        inputCariOrder.value = "";
+        inputCariOrder.dispatchEvent(new Event("input", { bubbles: true })); // picu pencarian ulang
+        inputCariOrder.focus();
+    });
+
     document.removeEventListener("click", closeDetailOrderanOutside);
     document.addEventListener("click", closeDetailOrderanOutside);
 }
+
 // POPUP
 async function showPopupOrderan(id = null) {
     const popup = getEl("popup-data-orderan")
@@ -431,6 +448,8 @@ async function loadTabelDataOrderan(reload = false) {
             cariDataOrderan = "";
             tanggalAwalOrderan = "";
             tanggalAkhirOrderan = "";
+            getEl("txt-cari-data-orderan").value = "";
+            getEl("txt-cari-data-orderan").focus();
         }
 
         renderHalamanOrderan();
@@ -505,15 +524,18 @@ function getsortedDataOrderan(data) {
         return sortDirectionOrderan === "asc" ? result : -result;
     })
 }
+
 function hitungRowsPerPageOrderan() {
+    // layar kecil: tinggi tidak terkunci, jangan diukur
+    if (modeResponsive()) return ROWS_TETAP_RESPONSIVE;
+
     const tbody = getEl("tbl-body-data-orderan");
     const card  = tbody?.closest(".tabel-page-card");
-    if (!card) return rowsPerPageOrderan; // halaman sudah tidak ada
+    if (!card) return rowsPerPageOrderan;
 
     const thead = card.querySelector("thead");
     const row   = tbody.querySelector("tr");
 
-    // ukur baris asli kalau ada, kalau belum pakai 2.8rem (sesuai CSS td)
     const remPx = parseFloat(getComputedStyle(document.documentElement).fontSize);
     const rowHeight = row ? row.getBoundingClientRect().height : remPx * 2.8;
 
@@ -532,6 +554,12 @@ function renderHalamanOrderan(ukurUlang = true) {
     if (currentPageOrderan > totalPages) currentPageOrderan = totalPages;
 
     const paginated = getPaginatedData(sorted, currentPageOrderan, rowsPerPageOrderan);
+
+    const totalOrder = filtered.length;
+    const totalCetak = filtered.reduce((sum, item) => sum + (Number(item.totalStiker) || 0), 0);
+
+    getEl("order-count").textContent = `Total Order: ${totalOrder} Order`;
+    getEl("print-count").textContent = `Total Cetak: ${totalCetak} Lembar`;
 
     renderTabelOrderan(paginated);
     loadPagination("pagination", filtered.length, currentPageOrderan, rowsPerPageOrderan, changePageOrderan);

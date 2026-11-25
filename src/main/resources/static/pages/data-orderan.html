@@ -6,6 +6,9 @@
             <label>
                 <input type="text" id="txt-cari-data-orderan" placeholder="Cari Data Orderan">
             </label>
+            <button type="button" id="hapus-cari-data-orderan" class="search-clear" aria-label="Hapus pencarian" hidden>
+                <span class="material-symbols-sharp">close</span>
+            </button>
         </div>
         <!-- RANGE TANGGAL -->
         <div class="date-range-box">
@@ -46,7 +49,11 @@
                 <tbody id="tbl-body-data-orderan"></tbody>
             </table>
         </div>
-        <div id="pagination" class="pagination"></div>
+        <div id="pagination-bar" class="pagination-bar">
+            <div id="order-count" class="pagination-info pagination-left">Total order: 0</div>
+            <div id="pagination" class="pagination"></div>
+            <div id="print-count" class="pagination-info pagination-right">Total cetak: 0</div>
+        </div>
     </div>
     <!-- POPUP ORDERAN -->
     <div class="popup" id="popup-data-orderan">

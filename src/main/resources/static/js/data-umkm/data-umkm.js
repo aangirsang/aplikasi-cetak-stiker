@@ -1,7 +1,7 @@
 
 let currentPageUmkm = 1;
 let cariDataUmkm = "";
-const rowsPerPageUmkm = 12;
+let rowsPerPageUmkm = 12;
 
 let sortFieldDataUmkm = "";
 let sortDirectionUmkm = "";
@@ -15,6 +15,7 @@ let isEditModeUmkm = false;
 let openedDetailUmkmId = null;
 
 async function initDataUmkm(){
+    dataUmkm = null;
     bersihPopupDataUmkm();
 
     await loadTableDataUmkm(true);
@@ -22,8 +23,17 @@ async function initDataUmkm(){
     await initPopupHapus();
     await initPopupLoading();
 
+    pasangResizeTabel("tbl-body-data-umkm", {
+        siap:        () => !!dataUmkm,
+        rowsSaatIni: () => rowsPerPageUmkm,
+        render:      () => renderHalamanUmkm()
+    });
+
     getEl("btn-refresh-data-umkm").addEventListener(
-        "click", () => loadTableDataUmkm(true));
+        "click", () => {
+            loadTableDataUmkm(true);
+            tombolHapusCari.hidden;
+        });
     getEl("btn-tambah-data-umkm").addEventListener(
         "click", () => showPopupUmkm());
     getEl("btn-download-data-umkm").addEventListener(
@@ -40,8 +50,48 @@ async function initDataUmkm(){
         await loadTableDataUmkm();
     });
 
+    // Hapus Pencarian
+    const inputCariUmkm = getEl("txt-cari-data-umkm");
+    const tombolHapusCari = getEl("hapus-cari-data-Umkm");
+
+    function updateTombolHapusCari() {
+        tombolHapusCari.hidden = inputCariUmkm.value === "";
+    }
+
+    inputCariUmkm.addEventListener("input", updateTombolHapusCari);
+
+    tombolHapusCari.addEventListener("click", () => {
+        inputCariUmkm.value = "";
+        inputCariUmkm.dispatchEvent(new Event("input", { bubbles: true })); // picu pencarian ulang
+        inputCariUmkm.focus();
+    });
+
     document.removeEventListener("click", closeDetailUmkmOutside);
     document.addEventListener("click", closeDetailUmkmOutside);
+}
+
+
+function renderHalamanUmkm(ukurUlang = true) {
+    if (!getEl("tbl-body-data-umkm")) return; // halaman sudah ditinggalkan
+
+    const filtered = getFilterDataUmkm();
+    const sorted   = getSortedDataUmkm(filtered);
+
+    rowsPerPageUmkm = hitungRowsPerPage("tbl-body-data-umkm");
+
+    // jaga agar halaman tidak melebihi total halaman
+    const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPageUmkm));
+    if (currentPageUmkm > totalPages) currentPageUmkm = totalPages;
+
+    const paginated = getPaginatedData(sorted, currentPageUmkm, rowsPerPageUmkm);
+
+    renderTableUmkm(paginated);
+    loadPagination("pagination", filtered.length, currentPageUmkm, rowsPerPageUmkm, changePageUmkm);
+
+    // baris asli sudah ada, cek apakah ukurannya beda dari perkiraan
+    if (ukurUlang && hitungRowsPerPage("tbl-body-data-umkm") !== rowsPerPageUmkm) {
+        renderHalamanUmkm(false);
+    }
 }
 
 // TABEL DATA UMKM
@@ -51,17 +101,9 @@ async function loadTableDataUmkm(reload = false){
             dataUmkm = await fetchDataUmkm();
 
             dataUmkm.sort((a, b) => {
-                // Status true lebih dulu
-                if (a.status !== b.status) {
-                    return b.status - a.status;
-                }
-
-                // Nama pemilik A-Z
-                return a.namaPemilik.localeCompare(b.namaPemilik, "id", {
-                    sensitivity: "base"
-                });
+                if (a.status !== b.status) return b.status - a.status;
+                return a.namaPemilik.localeCompare(b.namaPemilik, "id", { sensitivity: "base" });
             });
-
 
             cariDataUmkm = "";
 
@@ -70,21 +112,10 @@ async function loadTableDataUmkm(reload = false){
             cari.focus();
         }
 
-        const filtered = getFilterDataUmkm();
-        const sorted = getSortedDataUmkm(filtered);
-        const paginated = getPaginatedData(sorted, currentPageUmkm, rowsPerPageUmkm)
-
-        renderTableUmkm(paginated);
-        loadPagination(
-            "pagination",
-            filtered.length,
-            currentPageUmkm,
-            rowsPerPageUmkm,
-            changePageUmkm
-        );
+        renderHalamanUmkm();
 
     } catch(error){
-        showToast(error, "error")
+        showToast(error.message, "error"); // pakai .message, bukan objek error
         dataUmkm = [];
     }
 }
@@ -142,10 +173,10 @@ function getSortedDataUmkm(data){
 }
 function renderTableUmkm(data){
     const tbody = getEl("tbl-body-data-umkm");
+    if (!tbody) return;
 
     tbody.innerHTML = data.map(item => {
         const isOpened = openedDetailUmkmId === item.id;
-
         return createRowUmkm(item, isOpened);
     }).join("");
 }
@@ -237,7 +268,6 @@ async function toggleDetailUmkm(id){
         });
     }, 50);
 }
-
 async function closeDetailUmkmOutside(event){
     if(event.target.closest(".umkm-row, .detail-table")) return;
     if(openedDetailUmkmId === null) return;

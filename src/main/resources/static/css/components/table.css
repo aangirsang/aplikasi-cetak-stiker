@@ -49,6 +49,7 @@ table {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 table {
@@ -132,9 +133,14 @@ thead th {
 }
 
 .cell-panjang {
-    width: 25rem;
-    white-space: normal;
-    overflow-wrap: break-word;
+    /*width: 25rem;*/
+    /*white-space: normal;*/
+    /*overflow-wrap: break-word;*/
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 18rem; /* sesuaikan */
 }
 
 .cell-alamat {

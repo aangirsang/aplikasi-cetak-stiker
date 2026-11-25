@@ -3,13 +3,35 @@
    ========================================================= */
 
 /* ----------------- PAGINATION ----------------- */
-.pagination {
-    display: flex;
+.pagination-bar {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-areas: "area-order area-pages area-print";
     align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
     gap: 10px;
     margin-top: 0.5rem;
+}
+
+.pagination-left {
+    grid-area: area-order;
+    justify-self: start;
+    text-align: left;
+}
+
+.pagination {
+    grid-area: area-pages;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.pagination-right {
+    grid-area: area-print;
+    justify-self: end;
+    text-align: right;
 }
 
 /* BUTTON */

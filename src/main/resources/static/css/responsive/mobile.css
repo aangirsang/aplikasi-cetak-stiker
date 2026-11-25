@@ -365,7 +365,8 @@
        TABLE
        ===================================================== */
 
-    .table-page-container {
+    .table-page-container,
+    .table-popup-pilih {
 
         width: 100%;
 
@@ -397,6 +398,7 @@
 
 
     .table-page-container table,
+    .table-popup-pilih table,
     .tabel-page-card table {
 
         width: 100%;
@@ -418,6 +420,13 @@
     /* =====================================================
        PAGINATION
        ===================================================== */
+    .pagination-bar {
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas:
+            "area-pages area-pages"
+            "area-order area-print";
+        row-gap: 8px;
+    }
 
     .pagination {
 
