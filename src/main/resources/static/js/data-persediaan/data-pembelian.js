@@ -160,7 +160,7 @@ async function tampilPopupPilihBarang() {
 
 // TABEL
 async function loadTabelDataPembelian(reload = false) {
-    showLoading("Memuat Data Pembelian..");
+    await showLoading("Memuat Data Pembelian..");
     try {
         if(reload){
             dataPembelian = await fetchDataPembelian();
@@ -187,7 +187,7 @@ async function loadTabelDataPembelian(reload = false) {
         showToast(error, "error")
         dataPembelian = [];
     } finally {
-        hideLoading();
+        await hideLoading();
     }
 }
 async function fetchDataPembelian() {
@@ -469,10 +469,10 @@ async function simpanDataPembelian(){
             jumlah: item.jumlah
         }))
     };
-    showLoading(
+    await showLoading(
         isEditDataPembelian
-        ? "Mengubah Data Pembelian..."
-        : "Menyimpan Data Pembelian...");
+            ? "Mengubah Data Pembelian..."
+            : "Menyimpan Data Pembelian...");
 
     try {
         if(isEditDataPembelian){
@@ -497,7 +497,7 @@ async function simpanDataPembelian(){
     } catch (e) {
         showToast(e.message, "error");
     } finally {
-        hideLoading();
+        await hideLoading();
     }
 }
 function konfirmasiHapusDataPembelian(id) {
@@ -510,7 +510,7 @@ function konfirmasiHapusDataPembelian(id) {
     });
 }
 async function hapusDataPembelian(id) {
-    showLoading("Menghapus Data Pembelian...");
+    await showLoading("Menghapus Data Pembelian...");
     try {
         const response = await apiFetch(`${BASE_URL_PEMBELIAN}/${id}`, {
             method: "DELETE"
@@ -523,7 +523,7 @@ async function hapusDataPembelian(id) {
     } catch (e){
         showToast(e.message, "error");
     } finally {
-        hideLoading();
+        await hideLoading();
     }
 }
 
@@ -555,7 +555,7 @@ async function fetchDownloadPembelian(awal, akhir) {
     return await response.json();
 }
 async function downloadDataPembelian(){
-    showLoading("Download Data Pembelian..");
+    await showLoading("Download Data Pembelian..");
 
     let awal = "";
     let akhir = "";
@@ -624,7 +624,7 @@ async function downloadDataPembelian(){
         console.error(error);
         showToast(error, "error")
     } finally {
-        hideLoading();
+        await hideLoading();
     }
 }
 

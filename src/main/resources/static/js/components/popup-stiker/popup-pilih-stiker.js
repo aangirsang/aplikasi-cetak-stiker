@@ -78,7 +78,7 @@ function tutupPopupPilihStiker() {
 }
 
 async function loadTablePopupStiker(reload = false){
-    showLoading("Memuat data stiker..")
+    await showLoading("Memuat data stiker..")
 
     try{
         if(reload){
@@ -93,7 +93,7 @@ async function loadTablePopupStiker(reload = false){
         showToast(error, "error")
         daftarStiker = [];
     } finally {
-        hideLoading();
+        await hideLoading();
     }
 }
 async function fetchDataStiker(umkm) {

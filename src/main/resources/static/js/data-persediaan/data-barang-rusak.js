@@ -60,7 +60,7 @@ async function initDataBarangRusak() {
 }
 //TABEL DATA
 async function loadTabelDataBarangRusak(reload = false) {
-    showLoading("Memuat Data Barang Rusak..");
+    await showLoading("Memuat Data Barang Rusak..");
     try {
         if(reload){
             getEl("cari-range-tanggal-data-barang-rusak").value = "";
@@ -87,7 +87,7 @@ async function loadTabelDataBarangRusak(reload = false) {
         showToast(error, "error")
         dataBarangRusak = [];
     } finally {
-        hideLoading();
+        await hideLoading();
     }
 }
 async function fetchDataBarangRusak() {
@@ -244,7 +244,7 @@ async function showPopupDataBarangRusak(id = null) {
         const previewImage =
             getEl("popup-barang-rusak-preview-image");
 
-        showLoading("Memuat Gambar...");
+        await showLoading("Memuat Gambar...");
 
         previewImage.onload = () => {
             hideLoading();
@@ -352,7 +352,7 @@ async function simpanDataBarangRusak() {
     console.log(isEdit);
     console.log(selectedBarangRusak);
 
-    showLoading(
+    await showLoading(
         isEdit
             ? "Mengubah Data Barang Rusak..."
             : "Menyimpan Data Barang Rusak..."
@@ -400,11 +400,11 @@ async function simpanDataBarangRusak() {
     } catch (e) {
         showToast(e.message, "error");
     } finally {
-        hideLoading();
+        await hideLoading();
     }
 }
 async function hapusDataBarangRusak(id) {
-    showLoading("Menghapus Data Penyesuaian...");
+    await showLoading("Menghapus Data Penyesuaian...");
     try {
         const response = await apiFetch(`${BASE_URL_BARANG_RUSAK}/${id}`, {
             method: "DELETE"
@@ -417,7 +417,7 @@ async function hapusDataBarangRusak(id) {
     } catch (e){
         showToast(e.message, "error");
     } finally {
-        hideLoading();
+        await hideLoading();
     }
 }
 async function uploadGambarBarangRusak() {
@@ -497,7 +497,7 @@ async function handlePreviewGambar(event) {
 
     try {
 
-        showLoading("Memuat Gambar...");
+        await showLoading("Memuat Gambar...");
 
         const webpFile =
             await convertToWebp(
@@ -536,7 +536,7 @@ async function handlePreviewGambar(event) {
 
     } catch(error){
 
-        hideLoading();
+        await hideLoading();
 
         showToast(
             "Gagal memproses gambar",

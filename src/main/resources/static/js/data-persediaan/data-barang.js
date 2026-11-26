@@ -193,7 +193,7 @@ async function simpanDataBarang() {
 
     const namaBarang = getValue("popup-data-barang-input")
 
-    showLoading(
+    await showLoading(
         isEditModeBarang
             ? "Mengubah Data Pengguna..."
             : "Menyimpan Data Pengguna..."
@@ -231,7 +231,7 @@ async function simpanDataBarang() {
     } catch (e) {
         showToast(e.message, "error");
     } finally {
-        hideLoading();
+        await hideLoading();
     }
 }
 function konfirmasiHapusBarang(id) {
@@ -244,7 +244,7 @@ function konfirmasiHapusBarang(id) {
     });
 }
 async function hapusDataBarang(id) {
-    showLoading("Menghapus Data Barang..")
+    await showLoading("Menghapus Data Barang..")
     try {
         const response = await apiFetch(`${BASE_URL_BARANG}/${id}`, {
             method: "DELETE"
@@ -256,7 +256,7 @@ async function hapusDataBarang(id) {
     } catch (e){
         showToast(e.message, "error");
     } finally {
-        hideLoading();
+        await hideLoading();
     }
 }
 

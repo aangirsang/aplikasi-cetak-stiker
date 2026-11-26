@@ -312,7 +312,7 @@ function showPopupPengguna(id = null){
 
     popup.classList.add("show");
 }
-function isiPopupDataPengguna(data){
+async function isiPopupDataPengguna(data){
 
     pathGambarLama = data.pathGambar ?? "";
 
@@ -341,7 +341,7 @@ function isiPopupDataPengguna(data){
     const previewImage =
         getEl("popup-data-pengguna-preview-image");
 
-    showLoading("Memuat Gambar...");
+    await showLoading("Memuat Gambar...");
 
     previewImage.onload = () => {
         hideLoading();
@@ -525,7 +525,7 @@ async function simpanDataPengguna() {
         pathGambar = await uploadGambarPengguna();
     }
 
-    showLoading(
+    await showLoading(
         isEdit
             ? "Mengubah Data Pengguna..."
             : "Menyimpan Data Pengguna..."
@@ -620,7 +620,7 @@ async function uploadGambarPengguna() {
 }
 async function hapusDataPengguna(id){
 
-    showLoading("Menghapus Data Pengguna...");
+    await showLoading("Menghapus Data Pengguna...");
     try {
 
         const response =
@@ -703,7 +703,7 @@ async function handlePreviewGambar(event) {
 
     try {
 
-        showLoading("Memuat Gambar...");
+        await showLoading("Memuat Gambar...");
 
         const webpFile =
             await convertToWebp(

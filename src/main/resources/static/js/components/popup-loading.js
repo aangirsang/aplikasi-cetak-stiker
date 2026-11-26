@@ -1,51 +1,32 @@
-let popupLoadingInitialized = false;
+    let popupLoadingPromise = null;
 
-async function initPopupLoading(){
-
-    if(popupLoadingInitialized){
-        return;
+    function initPopupLoading() {
+        if (!popupLoadingPromise) {
+            popupLoadingPromise = (async () => {
+                const response = await fetch("pages/popup/popup-loading.html");
+                const html = await response.text();
+                document.body.insertAdjacentHTML("beforeend", html);
+            })();
+        }
+        return popupLoadingPromise;
     }
 
-    const response =
-        await fetch(
-            "pages/popup/popup-loading.html"
-        );
+    async function showLoading(text = "Memproses Data...") {
+        await initPopupLoading();
+        getEl("popup-loading-text").textContent = text;
+        getEl("popup-loading").classList.add("show");
+    }
 
-    const html =
-        await response.text();
+    async function hideLoading() {
+        await initPopupLoading();
+        getEl("popup-loading").classList.remove("show");
+    }
 
-    document.body.insertAdjacentHTML(
-        "beforeend",
-        html
-    );
+    window.initPopupLoading =
+        initPopupLoading;
 
-    popupLoadingInitialized = true;
-}
+    window.showLoading =
+        showLoading;
 
-function showLoading(
-    text = "Memproses Data..."
-){
-    getEl(
-        "popup-loading-text"
-    ).textContent = text;
-
-    getEl(
-        "popup-loading"
-    ).classList.add("show");
-}
-
-function hideLoading(){
-
-    getEl(
-        "popup-loading"
-    ).classList.remove("show");
-}
-
-window.initPopupLoading =
-    initPopupLoading;
-
-window.showLoading =
-    showLoading;
-
-window.hideLoading =
-    hideLoading;
+    window.hideLoading =
+        hideLoading;

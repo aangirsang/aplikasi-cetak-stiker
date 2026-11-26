@@ -164,7 +164,7 @@ function klikTabelPilihUmkm(id) {
 
 async function loadTablePopupPilihUmkm(reload = false){
 
-    showLoading("Memuat Data UMKM..");
+    await showLoading("Memuat Data UMKM..");
 
     try {
 
@@ -193,7 +193,7 @@ async function loadTablePopupPilihUmkm(reload = false){
         showToast(error, "error")
         dataUmkm = [];
     } finally {
-        hideLoading();
+        await hideLoading();
     }
 }
 async function fetchDataUmkm(){

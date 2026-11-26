@@ -69,7 +69,7 @@ function tutupPopupPilihBarang() {
 
 async function loadTablePopupPilihBarang(reload = false){
 
-    showLoading("Memuat Data Barang..");
+    await showLoading("Memuat Data Barang..");
 
     try {
 
@@ -94,7 +94,7 @@ async function loadTablePopupPilihBarang(reload = false){
         showToast(error, "error")
         dataBarang = [];
     } finally {
-        hideLoading();
+        await hideLoading();
     }
 }
 async function fetchDataPilihBarang() {

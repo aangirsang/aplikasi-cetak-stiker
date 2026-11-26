@@ -103,7 +103,7 @@ async function initDataPenyesuaian() {
 
 //TABEL DATA
 async function loadTabelDataPenyesuaian(reload = false) {
-    showLoading("Memuat Data Penyesuaian..");
+    await showLoading("Memuat Data Penyesuaian..");
     try {
         if(reload){
             getEl("cari-range-tanggal-data-penyesuaian").value = "";
@@ -130,7 +130,7 @@ async function loadTabelDataPenyesuaian(reload = false) {
         showToast(error, "error")
         dataPenyesuaian = [];
     } finally {
-        hideLoading();
+        await hideLoading();
     }
 }
 async function fetchDataPenyesuaian() {
@@ -293,7 +293,7 @@ async function showPopupDataPenyesuaian(id = null) {
         const previewImage =
             getEl("popup-data-penyesuaian-preview-image");
 
-        showLoading("Memuat Gambar...");
+        await showLoading("Memuat Gambar...");
 
         previewImage.onload = () => {
             hideLoading();
@@ -422,7 +422,7 @@ async function handlePreviewGambar(event) {
 
     try {
 
-        showLoading("Memuat Gambar...");
+        await showLoading("Memuat Gambar...");
 
         const webpFile =
             await convertToWebp(
@@ -461,7 +461,7 @@ async function handlePreviewGambar(event) {
 
     } catch(error){
 
-        hideLoading();
+        await hideLoading();
 
         showToast(
             "Gagal memproses gambar",
@@ -526,7 +526,7 @@ async function simpanDataPenyesuaian() {
         pathGambar = await uploadGambarPenyesuaian();
     }
 
-    showLoading(
+    await showLoading(
         isEdit
             ? "Mengubah Data Pengguna..."
             : "Menyimpan Data Pengguna..."
@@ -572,11 +572,11 @@ async function simpanDataPenyesuaian() {
     } catch (e) {
         showToast(e.message, "error");
     } finally {
-        hideLoading();
+        await hideLoading();
     }
 }
 async function hapusDataPenyesuaian(id) {
-    showLoading("Menghapus Data Penyesuaian...");
+    await showLoading("Menghapus Data Penyesuaian...");
     try {
         const response = await apiFetch(`${BASE_URL_PENYESUAIAN}/${id}`, {
             method: "DELETE"
@@ -589,7 +589,7 @@ async function hapusDataPenyesuaian(id) {
     } catch (e){
         showToast(e.message, "error");
     } finally {
-        hideLoading();
+        await hideLoading();
     }
 }
 async function uploadGambarPenyesuaian() {
@@ -655,7 +655,7 @@ async function fetchDownloadPenyesuaian(awal, akhir){
     return await response.json();
 }
 async function downloadDataPenyesuaian(){
-    showLoading("Download Data Penyesuaian Stok...");
+    await showLoading("Download Data Penyesuaian Stok...");
 
     let awal = "";
     let akhir = "";

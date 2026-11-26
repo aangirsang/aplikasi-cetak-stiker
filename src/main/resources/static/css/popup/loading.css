@@ -1,11 +1,7 @@
-/* =========================================================
-   LOADING
-   ========================================================= */
-
-/*popup-loading.css*/
 .popup-loading{
     position: fixed;
     inset: 0;
+    z-index: 99999;
 
     display: flex;
     justify-content: center;
@@ -15,10 +11,7 @@
 
     opacity: 0;
     visibility: hidden;
-
-    transition: .2s;
-
-    z-index: 99999;
+    transition: opacity .2s ease, visibility .2s;
 }
 
 .popup-loading.show{
@@ -27,25 +20,22 @@
 }
 
 .popup-loading-content{
-    background: white;
-
     min-width: 240px;
-
     padding: 20px;
-
-    border-radius: 12px;
 
     display: flex;
     align-items: center;
     gap: 15px;
 
+    background: #fff;
+    border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0,0,0,.15);
 
-    transform: translateY(-60px);
+    transform: translateY(-20px);
     transition: transform .25s ease;
 }
 
-.popup.show .popup-loading-content{
+.popup-loading.show .popup-loading-content{
     transform: translateY(0);
 }
 
@@ -56,23 +46,22 @@
 }
 
 .loading-spinner{
+    flex-shrink: 0;
     width: 28px;
     height: 28px;
 
     border: 3px solid #e5e5e5;
-    border-top: 3px solid #2d8cff;
-
+    border-top-color: #2d8cff;
     border-radius: 50%;
 
-    animation: spin .8s linear infinite;
+    animation: loading-spin .8s linear infinite;
+    will-change: transform;
 }
 
-@keyframes spin{
-    from{
-        transform: rotate(0deg);
-    }
+@keyframes loading-spin{
+    to{ transform: rotate(360deg); }
+}
 
-    to{
-        transform: rotate(360deg);
-    }
+@media (prefers-reduced-motion: reduce){
+    .loading-spinner{ animation-duration: 2s; }
 }

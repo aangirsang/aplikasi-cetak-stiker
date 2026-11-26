@@ -12,6 +12,7 @@ const loginOverlay = getEl("login-overlay");
         }
 
         // verifikasi ke server
+        await showLoading("Memuat Data..");
         try {
             const response = await apiFetch(`${BASE_URL}/auth/me`, { skipAuthRedirect: true });
 
@@ -26,6 +27,8 @@ const loginOverlay = getEl("login-overlay");
             }
         } catch (e) {
             console.error(e);
+        } finally {
+            await hideLoading();
         }
 
         // sesi tidak valid
@@ -35,7 +38,11 @@ const loginOverlay = getEl("login-overlay");
         loginOverlay.classList.remove("hidden");
     }
 
-await cekSesi();
+(async () => {
+    await initPopupLoading();
+    await cekSesi();
+})();
+
 await statusServer();
 
 getEl("form-login").addEventListener("submit", doLogin);

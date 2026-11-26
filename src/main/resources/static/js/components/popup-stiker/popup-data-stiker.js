@@ -145,8 +145,8 @@ async function showPopupStiker(id = null, onSaveSuccess = null) {
 
     popup.classList.add("show");
 }
-function isiDataStiker(stiker) {
-    showLoading("Memuat Data Stiker...");
+async function isiDataStiker(stiker) {
+    await showLoading("Memuat Data Stiker...");
 
     kodeDiedit = true;
 
@@ -161,7 +161,8 @@ function isiDataStiker(stiker) {
         namaUsaha: stiker.namaUsaha,
         namaPemilik: stiker.namaPemilik,
         noTelpon: stiker.noTelpon,
-        alamat: stiker.alamat};
+        alamat: stiker.alamat
+    };
 
     pathGambarLama[1] = stiker.pathGambar1 ?? "";
     pathGambarLama[2] = stiker.pathGambar2 ?? "";
@@ -181,7 +182,7 @@ function isiDataStiker(stiker) {
             `input[name="popup-data-stiker-status"][value="${stiker.status}"]`
         );
 
-    if(statusRadio){
+    if (statusRadio) {
         statusRadio.checked = true;
     }
 
@@ -1038,7 +1039,7 @@ async function handlePreviewGambar(event, index) {
 
     try {
 
-        showLoading("Memuat Gambar...");
+        await showLoading("Memuat Gambar...");
 
         const webpFile =
             await convertToWebp(
@@ -1065,7 +1066,7 @@ async function handlePreviewGambar(event, index) {
             );
     } catch(error){
 
-        hideLoading();
+        await hideLoading();
 
         showToast(
             "Gagal memproses gambar",
@@ -1308,7 +1309,7 @@ async function stikerToBody() {
     };
 }
 async function simpanDataStiker() {
-    showLoading(
+    await showLoading(
         isEditModeStiker
             ? "Mengubah Data Stiker..."
             : "Menyimpan Data Stiker..."
@@ -1355,7 +1356,7 @@ async function simpanDataStiker() {
     } catch (e) {
         showToast(e.message, "error");
     } finally {
-        hideLoading();
+        await hideLoading();
     }
 }
 async function uploadFileTif(kodeStiker){

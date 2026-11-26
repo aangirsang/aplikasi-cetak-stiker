@@ -73,7 +73,7 @@ async function initDataRiwayatStok() {
 // TABEL
 async function loadTabelDataRiwayatStok(reload = false) {
 
-    showLoading("Memuat Data..");
+    await showLoading("Memuat Data..");
     try {
         if(reload) {
 
@@ -292,7 +292,7 @@ function getDataRiwayatStok(data, tanggalAwal, tanggalAkhir) {
     URL.revokeObjectURL(url);
 }
 async function downloadDataRiwayatStok(){
-    showLoading("Download Data Riwayat Stok...");
+    await showLoading("Download Data Riwayat Stok...");
     try {
         const data = await fetchDataRiwayatStok()
 

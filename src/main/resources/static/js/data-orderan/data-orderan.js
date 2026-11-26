@@ -244,7 +244,7 @@ async function bersihPopupDataOrderan() {
     isEdit = false;
 }
 async function getFaktur() {
-    showLoading("Mengambil data faktur..")
+    await showLoading("Mengambil data faktur..")
     try {
         const response = await apiFetch(`${BASE_URL_ORDERAN}/faktur`);
 
@@ -260,7 +260,7 @@ async function getFaktur() {
     } catch (e) {
         showToast(e.message, "error");
     } finally {
-        hideLoading();
+        await hideLoading();
     }
 }
 function renderListStikerDataOrder(){
@@ -440,7 +440,7 @@ function siapkanPencarian(data) {
     return data;
 }
 async function loadTabelDataOrderan(reload = false) {
-    if (reload) showLoading("Memuat Data Orderan..");
+    if (reload) await showLoading("Memuat Data Orderan..");
 
     try {
         if (reload) {
@@ -458,7 +458,7 @@ async function loadTabelDataOrderan(reload = false) {
         console.error(error);
         showToast(error.message, "error");
     } finally {
-        if (reload) hideLoading();
+        if (reload) await hideLoading();
     }
 }
 async function fetchDataOrderan() {
@@ -758,7 +758,7 @@ async function simpanDataOrderan(){
         }))
     };
 
-    showLoading(
+    await showLoading(
         isEdit
             ? "Mengubah Data Pembelian..."
             : "Menyimpan Data Pembelian...");
@@ -786,11 +786,11 @@ async function simpanDataOrderan(){
     } catch (e) {
         showToast(e.message, "error");
     } finally {
-        hideLoading();
+        await hideLoading();
     }
 }
 async function hapusDataOrderan(id){
-    showLoading("Menghapus Data Orderan...");
+    await showLoading("Menghapus Data Orderan...");
     try {
         const response = await apiFetch(`${BASE_URL_ORDERAN}/${id}`, {
             method: "DELETE"
@@ -803,7 +803,7 @@ async function hapusDataOrderan(id){
     } catch (e){
         showToast(e.message, "error");
     } finally {
-        hideLoading();
+        await hideLoading();
     }
 }
 function konfirmasiHapusDataOrderan(id) {
@@ -933,7 +933,7 @@ function validasiDownload(){
 }
 async function downloadDataOrderan() {
     if (!validasiDownload()) return;
-    showLoading("Download Data Orderan..");
+    await showLoading("Download Data Orderan..");
 
     let namaFile = "";
     let header = [];
@@ -1048,7 +1048,7 @@ async function downloadDataOrderan() {
         console.error(error);
         showToast(error, "error")
     } finally {
-        hideLoading();
+        await hideLoading();
     }
 
 }

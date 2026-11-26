@@ -187,7 +187,7 @@ async function simpanMasterData() {
 
     const nama = popupInput.value.trim();
 
-    showLoading("Menyimpan Data..");
+    await showLoading("Menyimpan Data..");
 
     try {
 
@@ -307,7 +307,7 @@ function hapusKategori(id, nama) {
 async function konfirmasiHapus() {
     const id = deleteState.id;
 
-    showLoading("Menghapus Data..");
+    await showLoading("Menghapus Data..");
 
     try {
 

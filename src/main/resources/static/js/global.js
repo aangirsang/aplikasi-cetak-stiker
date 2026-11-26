@@ -411,512 +411,236 @@ async function convertTifToWebp(file) {
 }
 
 // CETAK TIFF
+// Beri browser kesempatan menggambar frame sebelum kerja berat
+const nextPaint = () =>
+    new Promise(resolve =>
+        requestAnimationFrame(() => setTimeout(resolve, 0))
+    );
+
+async function loadingStep(text) {
+    await showLoading(text);
+    await nextPaint();
+}
+
+class CetakError extends Error {}
+
+const canvasToBlob = canvas =>
+    new Promise((resolve, reject) =>
+        canvas.toBlob(
+            blob => blob ? resolve(blob) : reject(new CetakError("Gagal membuat gambar PNG")),
+            "image/png"
+        )
+    );
+
+// Tunggu sampai halaman cetak benar-benar siap (bukan about:blank)
+function waitForPrintDoc(win, timeout = 10000) {
+    return new Promise((resolve, reject) => {
+        const start = Date.now();
+        const timer = setInterval(() => {
+            try {
+                const doc = win.document;
+                if (doc.readyState === "complete" && doc.getElementById("print-image")) {
+                    clearInterval(timer);
+                    return resolve(doc);
+                }
+            } catch (e) { /* belum siap */ }
+
+            if (Date.now() - start > timeout) {
+                clearInterval(timer);
+                reject(new CetakError("Halaman cetak gagal dimuat"));
+            }
+        }, 50);
+    });
+}
+
 async function cetakTIFF(id) {
-
-    // ==================================================
-    // SHOW LOADING
-    // ==================================================
-
-    showLoading("Menyiapkan cetakan...");
-
+    let blobUrl = null;
 
     try {
+        await loadingStep("Menyiapkan cetakan...");
 
-        // ==================================================
-        // LOAD DATA STIKER
-        // ==================================================
+        // ---------- LOAD DATA STIKER ----------
+        const response = await apiFetch(`${BASE_URL_STIKER}/${id}`);
+        if (!response.ok) throw new CetakError("Gagal mencetak TIFF");
 
-        const response =
-            await apiFetch(`${BASE_URL_STIKER}/${id}`);
+        const stiker = await response.json();
+        if (!stiker) throw new CetakError("Data stiker tidak tersedia");
+        if (!stiker.pathTIF) throw new CetakError("File TIFF tidak tersedia");
 
-
-        if (!response.ok) {
-
-            hideLoading();
-
-            return showToast(
-                "Gagal mencetak TIFF",
-                "error"
-            );
+        if (!(stiker.lebarKertas > 0) || !(stiker.tinggiKertas > 0)) {
+            throw new CetakError("Ukuran kertas tidak valid");
         }
 
+        // ---------- DPI ----------
+        const dpiX = stiker.dpiX > 0 ? stiker.dpiX : 300;
+        const dpiY = stiker.dpiY > 0 ? stiker.dpiY : 300;
+        const mmToPxX = mm => mm * dpiX / 25.4;
+        const mmToPxY = mm => mm * dpiY / 25.4;
 
-        const stiker =
-            await response.json();
+        // ---------- DOWNLOAD TIFF ----------
+        await loadingStep("Memuat file TIFF...");
 
-        // ==================================================
-        // VALIDASI
-        // ==================================================
+        const url = BASE_URL + encodeURI(stiker.pathTIF) + ".tif";
+        const responseTiff = await apiFetch(url);
+        if (!responseTiff.ok) throw new CetakError("File TIFF tidak ditemukan");
 
-        if (!stiker) {
-            hideLoading();
+        const buffer = await responseTiff.arrayBuffer();
 
-            return showToast(
-                "Data stiker tidak tersedia",
-                "error"
-            );
+        // ---------- DECODE TIFF ----------
+        await loadingStep("Memproses gambar TIFF...");
+
+        const ifds = UTIF.decode(buffer);
+        if (!ifds || ifds.length === 0) throw new CetakError("TIFF tidak dapat dibaca");
+
+        const ifd = ifds[0];
+        UTIF.decodeImage(buffer, ifd);
+
+        const tifWidth = ifd.width;
+        const tifHeight = ifd.height;
+
+        await nextPaint(); // beri jeda paint di antara dua tahap berat
+
+        const rgba = UTIF.toRGBA8(ifd);
+        if (!rgba || rgba.length === 0) throw new CetakError("Gagal membaca pixel TIFF");
+
+        // ---------- GEOMETRI (semua dibulatkan ke pixel utuh) ----------
+        const paperWidthPx  = Math.round(mmToPxX(stiker.lebarKertas));
+        const paperHeightPx = Math.round(mmToPxY(stiker.tinggiKertas));
+
+        const tifLeft = Math.round(mmToPxX(stiker.offsetX || 0));
+        const tifTop  = Math.round(mmToPxY(stiker.offsetY || 0));
+
+        const cropLeft   = Math.max(0, tifLeft);
+        const cropTop    = Math.max(0, tifTop);
+        const cropRight  = Math.min(paperWidthPx,  tifLeft + tifWidth);
+        const cropBottom = Math.min(paperHeightPx, tifTop + tifHeight);
+
+        if (cropRight <= cropLeft || cropBottom <= cropTop) {
+            throw new CetakError("Gambar TIFF berada di luar area kertas");
         }
 
+        const cropWidth  = cropRight - cropLeft;
+        const cropHeight = cropBottom - cropTop;
+        const sourceX = cropLeft - tifLeft;
+        const sourceY = cropTop - tifTop;
 
-        if (!stiker.pathTIF) {
-            hideLoading();
+        // ---------- CANVAS ----------
+        await loadingStep("Menyiapkan gambar cetak...");
 
-            return showToast(
-                "File TIFF tidak tersedia",
-                "error"
-            );
-        }
+        const printCanvas = document.createElement("canvas");
+        printCanvas.width = cropWidth;
+        printCanvas.height = cropHeight;
 
+        const printCtx = printCanvas.getContext("2d");
+        printCtx.imageSmoothingEnabled = false;
 
-        if (
-            stiker.lebarKertas <= 0 ||
-            stiker.tinggiKertas <= 0
-        ) {
-            hideLoading();
-
-            return showToast(
-                "Ukuran kertas tidak valid",
-                "error"
-            );
-
-        }
-
-
-        // ==================================================
-        // DPI
-        // ==================================================
-
-        const dpiX =
-            stiker.dpiX > 0
-                ? stiker.dpiX
-                : 300;
-
-
-        const dpiY =
-            stiker.dpiY > 0
-                ? stiker.dpiY
-                : 300;
-
-
-        // ==================================================
-        // URL TIFF
-        // ==================================================
-
-        const url =
-            BASE_URL +
-            encodeURI(
-                stiker.pathTIF
-            ) +
-            ".tif";
-
-        // ==================================================
-        // DOWNLOAD TIFF
-        // ==================================================
-
-        showLoading(
-            "Memuat file TIFF..."
+        // Pakai buffer yang sama (tanpa menyalin ratusan MB)
+        const imageData = new ImageData(
+            new Uint8ClampedArray(rgba.buffer, rgba.byteOffset, rgba.length),
+            tifWidth,
+            tifHeight
         );
 
-
-        const responseTiff =
-            await apiFetch(url);
-
-
-        if (!responseTiff.ok) {
-            hideLoading();
-
-            return showToast(
-                "File TIFF tidak ditemukan",
-                "error"
-            );
-        }
-
-
-        const buffer =
-            await responseTiff.arrayBuffer();
-
-
-        // ==================================================
-        // DECODE TIFF
-        // ==================================================
-
-        showLoading(
-            "Memproses gambar TIFF..."
-        );
-
-
-        const ifds =
-            UTIF.decode(
-                buffer
-            );
-
-
-        if (
-            !ifds ||
-            ifds.length === 0
-        ) {
-            hideLoading();
-
-            return showToast(
-                "TIFF tidak dapat dibaca",
-                "error"
-            );
-        }
-
-
-        const ifd =
-            ifds[0];
-
-
-        // ==================================================
-        // DECODE IMAGE
-        // ==================================================
-
-        UTIF.decodeImage(
-            buffer,
-            ifd
-        );
-
-
-        const tifWidth =
-            ifd.width;
-
-
-        const tifHeight =
-            ifd.height;
-
-        // ==================================================
-        // RGBA
-        // ==================================================
-
-        const rgba =
-            UTIF.toRGBA8(
-                ifd
-            );
-
-
-        if (
-            !rgba ||
-            rgba.length === 0
-        ) {
-            hideLoading();
-
-            return showToast(
-                "Gagal membaca pixel TIFF",
-                "error"
-            );
-        }
-
-
-        // ==================================================
-        // UKURAN KERTAS PIXEL
-        // ==================================================
-
-        const paperWidthPx =
-            Math.round(
-                stiker.lebarKertas *
-                dpiX /
-                25.4
-            );
-
-
-        const paperHeightPx =
-            Math.round(
-                stiker.tinggiKertas *
-                dpiY /
-                25.4
-            );
-
-        // ==================================================
-        // OFFSET PIXEL
-        // ==================================================
-
-        const offsetXPx =
-            stiker.offsetX *
-            dpiX /
-            25.4;
-
-
-        const offsetYPx =
-            stiker.offsetY *
-            dpiY /
-            25.4;
-
-
-        // ==================================================
-        // BATAS TIFF
-        // ==================================================
-
-        const tifLeft =
-            offsetXPx;
-
-
-        const tifTop =
-            offsetYPx;
-
-
-        const tifRight =
-            offsetXPx +
-            tifWidth;
-
-
-        const tifBottom =
-            offsetYPx +
-            tifHeight;
-
-
-        // ==================================================
-        // INTERSECTION
-        // ==================================================
-
-        const cropLeft =
-            Math.max(
-                0,
-                tifLeft
-            );
-
-
-        const cropTop =
-            Math.max(
-                0,
-                tifTop
-            );
-
-
-        const cropRight =
-            Math.min(
-                paperWidthPx,
-                tifRight
-            );
-
-
-        const cropBottom =
-            Math.min(
-                paperHeightPx,
-                tifBottom
-            );
-
-
-        // ==================================================
-        // VALIDASI
-        // ==================================================
-
-        if (
-            cropRight <= cropLeft ||
-            cropBottom <= cropTop
-        ) {
-            hideLoading();
-
-            return showToast(
-                "Gambar TIFF berada di luar area kertas",
-                "error"
-            );
-        }
-
-
-        // ==================================================
-        // CROP SIZE
-        // ==================================================
-
-        const cropWidth =
-            Math.round(
-                cropRight -
-                cropLeft
-            );
-
-
-        const cropHeight =
-            Math.round(
-                cropBottom -
-                cropTop
-            );
-
-
-        // ==================================================
-        // SOURCE POSITION
-        // ==================================================
-
-        const sourceX =
-            Math.round(
-                cropLeft -
-                tifLeft
-            );
-
-
-        const sourceY =
-            Math.round(
-                cropTop -
-                tifTop
-            );
-
-        // ==================================================
-        // CANVAS
-        // ==================================================
-
-        showLoading(
-            "Menyiapkan gambar cetak..."
-        );
-
-
-        const printCanvas =
-            document.createElement(
-                "canvas"
-            );
-
-
-        printCanvas.width =
-            cropWidth;
-
-
-        printCanvas.height =
-            cropHeight;
-
-
-        const printCtx =
-            printCanvas.getContext(
-                "2d"
-            );
-
-
-        // ==================================================
-        // MATIKAN SMOOTHING
-        // ==================================================
-
-        printCtx.imageSmoothingEnabled =
-            false;
-
-
-        // ==================================================
-        // IMAGE DATA
-        // ==================================================
-
-        const imageData =
-            new ImageData(
-                new Uint8ClampedArray(
-                    rgba
-                ),
-                tifWidth,
-                tifHeight
-            );
-
-
-        // ==================================================
-        // COPY PIXEL
-        // ==================================================
-
+        // Hanya salin area yang terlihat di kertas
         printCtx.putImageData(
             imageData,
-            -sourceX,
-            -sourceY
+            -sourceX, -sourceY,
+            sourceX, sourceY, cropWidth, cropHeight
         );
 
+        // ---------- PNG (async, tanpa base64) ----------
+        await loadingStep("Menyiapkan halaman cetak...");
 
-        // ==================================================
-        // UKURAN FISIK GAMBAR
-        // ==================================================
+        const blob = await canvasToBlob(printCanvas);
+        blobUrl = URL.createObjectURL(blob);
 
-        const imageWidthMM =
-            cropWidth *
-            25.4 /
-            dpiX;
+        // bebaskan memori canvas
+        printCanvas.width = printCanvas.height = 0;
 
+        const imageWidthMM  = cropWidth  * 25.4 / dpiX;
+        const imageHeightMM = cropHeight * 25.4 / dpiY;
 
-        const imageHeightMM =
-            cropHeight *
-            25.4 /
-            dpiY;
-
-        // ==================================================
-        // CONVERT PNG
-        // ==================================================
-
-        showLoading(
-            "Menyiapkan halaman cetak..."
-        );
-
-
-        const pngData =
-            printCanvas.toDataURL(
-                "image/png"
-            );
-
-
-        // ==================================================
-        // OPEN PRINT WINDOW
-        // ==================================================
-
-        const printWindow = window.open(
-            "./cetak-tif/print-tiff.html",
-            "_blank"
-        );
-
-        printWindow.onload = () => {
-
-            const doc = printWindow.document;
-
-            doc.title = `${stiker.namaUsaha} - ${stiker.namaStiker}`;
-
-            // ukuran kertas
-            const style = doc.createElement("style");
-
-            style.innerHTML = `
-        @page{
-            size:${stiker.lebarKertas}mm ${stiker.tinggiKertas}mm;
-            margin:0;
+        // ---------- BUKA HALAMAN CETAK ----------
+        const printWindow = window.open("./cetak-tif/print-tiff.html", "_blank");
+        if (!printWindow) {
+            throw new CetakError("Popup diblokir browser. Izinkan popup untuk situs ini.");
         }
 
-        html,
-        body,
-        .print-page{
+        const doc = await waitForPrintDoc(printWindow);
 
-            width:${stiker.lebarKertas}mm;
-            height:${stiker.tinggiKertas}mm;
-        }
+        doc.title = `${stiker.namaUsaha} - ${stiker.namaStiker}`;
 
-        #print-image{
+        const style = doc.createElement("style");
+        style.textContent = `
+            @page { size: ${stiker.lebarKertas}mm ${stiker.tinggiKertas}mm; margin: 0; }
 
-            left:${cropLeft * 25.4 / dpiX}mm;
-            top:${cropTop * 25.4 / dpiY}mm;
+            html, body, .print-page {
+                width: ${stiker.lebarKertas}mm;
+                height: ${stiker.tinggiKertas}mm;
+            }
 
-            width:${imageWidthMM}mm;
-            height:${imageHeightMM}mm;
-        }
-    `;
+            #print-image {
+                left: ${cropLeft * 25.4 / dpiX}mm;
+                top: ${cropTop * 25.4 / dpiY}mm;
+                width: ${imageWidthMM}mm;
+                height: ${imageHeightMM}mm;
+            }
+            
+            #print-label {
+                position: absolute;
+                left: 3mm;
+                bottom: 3mm;
+                max-width: calc(${stiker.lebarKertas}mm - 6mm);
+                font: 300 3.5mm/1.2 Arial, sans-serif;
+                color: #888888FF;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                z-index: 10;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        `;
+        doc.head.appendChild(style);
 
-            doc.head.appendChild(style);
+        // ---------- GAMBAR ----------
+        const img = doc.getElementById("print-image");
+        img.src = blobUrl;
 
-            doc.getElementById("print-image").src = pngData;
+        // ---------- LABEL POJOK KIRI BAWAH ----------
+        const namaAnycut = stiker.namaAnycut ?? "";
+        const teksLabel = ["Rumah BUMN Batu Bara: ", stiker.namaUsaha, " - ", stiker.namaStiker, namaAnycut !== "" ? `(${namaAnycut})` : ""]
+            .filter(Boolean)
+            .join("  ");
 
-            setTimeout(() => {
+        const label = doc.createElement("div");
+        label.id = "print-label";
+        label.textContent = teksLabel;
+        img.parentNode.appendChild(label);
 
-                printWindow.focus();
-                printWindow.print();
+        // tunggu gambar benar-benar ter-decode
+        try { await img.decode(); } catch (e) { /* tetap lanjut */ }
 
-            }, 500);
+        const urlToRevoke = blobUrl;
+        printWindow.addEventListener("afterprint", () => URL.revokeObjectURL(urlToRevoke));
+        blobUrl = null; // sudah diserahkan ke afterprint
 
-        };
+        printWindow.focus();
+        printWindow.setTimeout(() => printWindow.print(), 0);
 
-
-        // ==================================================
-        // SELESAI
-        // ==================================================
-
-        hideLoading();
-
-
-        showToast(
-            "Halaman cetak siap",
-            "success"
-        );
-
+        showToast("Halaman cetak siap", "success");
 
     } catch (error) {
+        console.error("Gagal mencetak TIFF:", error);
 
-        console.error(
-            "Gagal mencetak TIFF:",
-            error
+        showToast(
+            error instanceof CetakError ? error.message : "Terjadi kesalahan saat mencetak TIFF",
+            "error"
         );
 
+    } finally {
+        if (blobUrl) URL.revokeObjectURL(blobUrl);
+        await hideLoading();
     }
 }
 

@@ -988,7 +988,7 @@ async function showPopupLayoutCetak(stiker, onClose) {
 
     resizeCanvas();
 
-    showLoading(
+    await showLoading(
         "Menampilkan gambar..."
     );
 
@@ -1006,7 +1006,7 @@ async function showPopupLayoutCetak(stiker, onClose) {
 
     } finally {
 
-        hideLoading();
+        await hideLoading();
     }
 }
 function closeLayout() {
@@ -1185,7 +1185,7 @@ function updatePaper() {
 // SIMPAN
 async function simpanLayout() {
 
-    showLoading(
+    await showLoading(
         "Menyimpan Data Stiker..."
     );
 
@@ -1231,14 +1231,14 @@ async function simpanLayout() {
 
     } finally {
 
-        hideLoading();
+        await hideLoading();
     }
 }
 
 async function hapus() {
 
 
-    showLoading("Menghapus Data...");
+    await showLoading("Menghapus Data...");
 
     try {
         selectedStiker.offsetX = 0;
@@ -1278,7 +1278,7 @@ async function hapus() {
         console.error(e);
         showToast(e.message, "warning");
     } finally {
-        hideLoading();
+        await hideLoading();
     }
 }
 
@@ -1891,7 +1891,7 @@ async function processTifFile(file) {
 
     selectedTif = file;
 
-    showLoading("Memuat Gambar...");
+    await showLoading("Memuat Gambar...");
 
 
     try {

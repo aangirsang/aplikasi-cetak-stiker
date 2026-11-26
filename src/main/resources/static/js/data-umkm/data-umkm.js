@@ -545,7 +545,7 @@ async function simpanDataUmkm(){
             ? new Date(tanggalLahirString).getTime()
             : null;
 
-    showLoading(
+    await showLoading(
         isEditModeUmkm
             ? "Mengubah Data..."
             : "Menyimpan Data..."
@@ -621,7 +621,7 @@ async function simpanDataUmkm(){
     }
 }
 async function hapusDataUmkm(id) {
-    showLoading(
+    await showLoading(
         "Menghapus Data..."
     );
 

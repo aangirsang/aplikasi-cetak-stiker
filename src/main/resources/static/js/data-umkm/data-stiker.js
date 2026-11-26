@@ -97,7 +97,7 @@ function renderHalamanStiker(ukurUlang = true) {
 }
 async function loadTabelDataStiker(reload = false) {
     // loading hanya saat ambil data; sort, filter, dan ganti halaman cukup lokal
-    if (reload) showLoading("Memuat Data Stiker..");
+    if (reload) await showLoading("Memuat Data Stiker..");
 
     try {
         if (reload) {
@@ -338,7 +338,7 @@ function konfirmasiHapusDataStiker(id) {
     });
 }
 async function hapusDataStiker(id) {
-    showLoading("Menghapus Data Stiker...");
+    await showLoading("Menghapus Data Stiker...");
     try {
         const response = await apiFetch(`${BASE_URL_STIKER}/${id}`, {
             method: "DELETE"
