@@ -1,6 +1,5 @@
 package com.girsang.stiker.repository
 
-import com.girsang.stiker.model.dto.response.DataTabelOrderanResponse
 import com.girsang.stiker.model.dto.response.OrderanTabelResponse
 import com.girsang.stiker.model.dto.response.download.orderan.RekapOrderanBulananResponse
 import com.girsang.stiker.model.entity.DataOrderan
