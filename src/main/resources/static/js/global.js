@@ -608,8 +608,14 @@ async function cetakTIFF(id) {
         img.src = blobUrl;
 
         // ---------- LABEL POJOK KIRI BAWAH ----------
+        const sekarang = new Date();
+        const tgl = sekarang.toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" });
+        const jam = sekarang.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", hour12: false })
+            .replace(".", ":");
+        const tanggalCetak = `${tgl}`;
+
         const namaAnycut = stiker.namaAnycut ?? "";
-        const teksLabel = ["Rumah BUMN Batu Bara: ", stiker.namaUsaha, " - ", stiker.namaStiker, namaAnycut !== "" ? `(${namaAnycut})` : ""]
+        const teksLabel = [namaAnycut !== "" ? `${namaAnycut} | ` : "", tanggalCetak]
             .filter(Boolean)
             .join("  ");
 

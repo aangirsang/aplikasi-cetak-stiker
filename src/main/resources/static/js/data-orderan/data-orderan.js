@@ -1,3 +1,10 @@
+let observerOrderan = null;
+let totalElementsOrderan = 0;
+let totalCetakOrderan = null;
+let reqIdOrderan = 0;
+let timerCariOrderan = null;
+const cacheRincianOrderan = new Map();
+
 let isEdit = false;
 
 let currentPageOrderan = 1;
@@ -23,7 +30,8 @@ let selectUmkm = null;
 let stikerTerpilih = [];
 let rincian = [];
 
-
+const escHtml = s => String(s ?? "").replace(/[&<>"']/g,
+    c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c]));
 
 async function initDataOrderan() {
 
@@ -48,18 +56,17 @@ async function initDataOrderan() {
 
     // observer dipasang SETELAH data dimuat, pada card milik halaman ini
     const card = getEl("tbl-body-data-orderan").closest(".tabel-page-card");
-    const observer = new ResizeObserver(debounce(() => {
+    observerOrderan = new ResizeObserver(debounce(() => {
         // halaman sudah diganti: lepas sendiri
         if (!card.isConnected) {
-            observer.disconnect();
+            observerOrderan.disconnect();
             return;
         }
-        if (!dataOrderan) return;
-        if (hitungRowsPerPageOrderan() !== rowsPerPageOrderan) {
+        if (ukuranHalamanOrderan() !== rowsPerPageOrderan) {
             renderHalamanOrderan();
         }
     }, 150));
-    observer.observe(card);
+    observerOrderan.observe(card);
 
     getEl("btn-refresh-data-orderan")
         .addEventListener("click", async () => {
@@ -91,7 +98,7 @@ async function initDataOrderan() {
     getEl("txt-cari-data-orderan").addEventListener(
         "input",
         debounce(async (e) => {
-            cariDataOrderan = e.target.value.trim().toLowerCase();
+            cariDataOrderan = e.target.value.trim();
             currentPageOrderan = 1;
             openedDetailOrderanId = null;
             await loadTabelDataOrderan();
@@ -106,10 +113,16 @@ async function initDataOrderan() {
             if (selectedDates.length === 2) {
                 tanggalAwalOrderan = selectedDates[0];
                 tanggalAkhirOrderan = selectedDates[1];
-
-                currentPageOrderan = 1;
-                await loadTabelDataOrderan();
+            } else if (selectedDates.length === 0) {
+                tanggalAwalOrderan = "";
+                tanggalAkhirOrderan = "";
+            } else {
+                return; // baru satu tanggal dipilih, tunggu sampai lengkap
             }
+
+            currentPageOrderan = 1;
+            openedDetailOrderanId = null;
+            await loadTabelDataOrderan();
         }
     });
 
@@ -155,7 +168,8 @@ async function showPopupOrderan(id = null) {
     if(id) {
         popupTitle.textContent = "Edit Data Orderan";
         isEdit = true;
-        selectOrderan = dataOrderan.find(order => order.id === id);
+        selectOrderan = await getDataOrder(id);
+        if (!selectOrderan) return;   // getDataOrder sudah menampilkan toast error
         rincian = selectOrderan.rincian;
 
         isiPopupOrderan();
@@ -179,9 +193,10 @@ async function showPopupOrderan(id = null) {
 
     popup.classList.add("show");
 }
-function tampilPopupCetakOrderan(id) {
-    selectOrderan = dataOrderan.find(order => order.id === id);
-    if(selectOrderan){
+async function tampilPopupCetakOrderan(id) {
+    selectOrderan = await getDataOrder(id);
+    if (!selectOrderan) return;   // getDataOrder sudah menampilkan toast error
+    if (selectOrderan) {
         showPopupCetakOrderan(selectOrderan)
     }
 }
@@ -257,6 +272,23 @@ async function getFaktur() {
 
         getEl("data-order-faktur").textContent = faktur.faktur;
 
+    } catch (e) {
+        showToast(e.message, "error");
+    } finally {
+        await hideLoading();
+    }
+}
+async function getDataOrder(id) {
+    await showLoading("Mengambil data orderan..")
+    try {
+        const response = await apiFetch(`${BASE_URL_ORDERAN}/${id}`);
+
+        if(!response.ok) {
+            showToast("Gagal mengambil data orderan...", "error");
+            return;
+        }
+
+        return await response.json();
     } catch (e) {
         showToast(e.message, "error");
     } finally {
@@ -422,6 +454,9 @@ async function lihatStikerOrderan(id){
 }
 
 //TABEL
+function ukuranHalamanOrderan() {
+    return Math.min(100, hitungRowsPerPageOrderan());
+}
 function siapkanPencarian(data) {
     data.forEach(o => {
         o._cari = [
@@ -444,15 +479,16 @@ async function loadTabelDataOrderan(reload = false) {
 
     try {
         if (reload) {
-            dataOrderan = siapkanPencarian(await fetchDataOrderan());
             cariDataOrderan = "";
             tanggalAwalOrderan = "";
             tanggalAkhirOrderan = "";
+            currentPageOrderan = 1;
+            cacheRincianOrderan.clear();
             getEl("txt-cari-data-orderan").value = "";
             getEl("txt-cari-data-orderan").focus();
         }
 
-        renderHalamanOrderan();
+        await renderHalamanOrderan();
 
     } catch (error) {
         console.error(error);
@@ -461,14 +497,43 @@ async function loadTabelDataOrderan(reload = false) {
         if (reload) await hideLoading();
     }
 }
-async function fetchDataOrderan() {
-    const response = await apiFetch(BASE_URL_ORDERAN);
+function bangunQueryOrderan() {
+    const params = new URLSearchParams({
+        page: currentPageOrderan - 1,   // backend mulai dari 0
+        size: rowsPerPageOrderan
+    });
 
-    if(!response.ok){
+    if (tanggalAwalOrderan || tanggalAkhirOrderan) {
+        const a = new Date(tanggalAwalOrderan || tanggalAkhirOrderan);
+        a.setHours(0, 0, 0, 0);
+        const b = new Date(tanggalAkhirOrderan || tanggalAwalOrderan);
+        b.setHours(23, 59, 59, 999);
+        params.set("awal", a.getTime());
+        params.set("akhir", b.getTime());
+    }
+
+    const kata = (cariDataOrderan || "").trim();
+    if (kata) params.set("kata", kata);
+
+    return params;
+}
+// satu-satunya tempat yang tahu bentuk JSON dari backend
+function bacaResponseOrderan(json) {
+    return {
+        items:         json.content ?? [],
+        totalElements: json.page?.totalElements ?? json.totalElements ?? 0,
+        totalPages:    json.page?.totalPages    ?? json.totalPages    ?? 0,
+        totalCetak:    json.totalCetak ?? null
+    };
+}
+async function fetchDataOrderan() {
+    const response = await apiFetch(`${BASE_URL_ORDERAN}/data-tabel?${bangunQueryOrderan()}`);
+
+    if (!response.ok) {
         throw new Error("Gagal Memuat Data Orderan!");
     }
 
-    return await response.json();
+    return bacaResponseOrderan(await response.json());
 }
 function getFilterDataOrderan() {
     const keyword = cariDataOrderan;
@@ -542,78 +607,86 @@ function hitungRowsPerPageOrderan() {
     const available = card.clientHeight - (thead ? thead.offsetHeight : 0);
     return Math.max(1, Math.floor(available / rowHeight));
 }
-function renderHalamanOrderan(ukurUlang = true) {
+async function renderHalamanOrderan(ukurUlang = true) {
     if (!getEl("tbl-body-data-orderan")) return; // halaman sudah ditinggalkan
 
-    const filtered = getFilterDataOrderan();
-    const sorted   = getsortedDataOrderan(filtered);
+    const myReq = ++reqIdOrderan;
+    rowsPerPageOrderan = ukuranHalamanOrderan(); // backend membatasi 100
 
-    rowsPerPageOrderan = hitungRowsPerPageOrderan();
+    try {
+        const hasil = await fetchDataOrderan();
 
-    const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPageOrderan));
-    if (currentPageOrderan > totalPages) currentPageOrderan = totalPages;
+        // ada request yang lebih baru, atau halaman sudah ditinggalkan
+        if (myReq !== reqIdOrderan || !getEl("tbl-body-data-orderan")) return;
 
-    const paginated = getPaginatedData(sorted, currentPageOrderan, rowsPerPageOrderan);
+        // halaman sekarang melewati batas (misal setelah hapus data): mundur lalu muat ulang
+        if (hasil.totalPages > 0 && currentPageOrderan > hasil.totalPages) {
+            currentPageOrderan = hasil.totalPages;
+            return renderHalamanOrderan(ukurUlang);
+        }
 
-    const totalOrder = filtered.length;
-    const totalCetak = filtered.reduce((sum, item) => sum + (Number(item.totalStiker) || 0), 0);
+        totalElementsOrderan = hasil.totalElements;
+        totalCetakOrderan = hasil.totalCetak;
 
-    getEl("order-count").textContent = `Total Order: ${totalOrder} Order`;
-    getEl("print-count").textContent = `Total Cetak: ${totalCetak} Lembar`;
+        getEl("order-count").textContent = `Total Order: ${hasil.totalElements} Order`;
+        getEl("print-count").textContent =
+            `Total Cetak: ${hasil.totalCetak ?? "-"} Lembar`;
 
-    renderTabelOrderan(paginated);
-    loadPagination("pagination", filtered.length, currentPageOrderan, rowsPerPageOrderan, changePageOrderan);
+        renderTabelOrderan(hasil.items);
+        loadPagination("pagination", hasil.totalElements, currentPageOrderan,
+            rowsPerPageOrderan, changePageOrderan);
 
-    // sekarang baris asli sudah ada, cek apakah ukurannya beda dari perkiraan
-    if (ukurUlang && hitungRowsPerPageOrderan() !== rowsPerPageOrderan) {
-        renderHalamanOrderan(false);
+        // ukuran baris asli mungkin beda dari perkiraan: muat ulang sekali saja
+        if (ukurUlang && ukuranHalamanOrderan() !== rowsPerPageOrderan) {
+            return renderHalamanOrderan(false);
+        }
+    } catch (error) {
+        if (myReq !== reqIdOrderan) return;
+        console.error(error);
+        showToast(error.message, "error");
     }
 }
 function renderTabelOrderan(data) {
     const tbody = getEl("tbl-body-data-orderan");
     if (!tbody) return;
 
-    tbody.innerHTML = data.map(item => {
-        const isOpened = openedDetailOrderanId === item.id;
-        return createTabelOrderan(item, isOpened);
-    }).join("");
+    tbody.innerHTML = data.map(item =>
+        createTabelOrderan(item, openedDetailOrderanId === item.id)
+    ).join("");
+
+    // detail yang sedang terbuka tapi isinya belum ada (misal setelah ganti halaman)
+    if (openedDetailOrderanId && data.some(i => i.id === openedDetailOrderanId)) {
+        muatRincianOrderan(openedDetailOrderanId);
+    }
 }
 function createTabelOrderan(item, isOpened) {
     return `
-        <tr 
+        <tr
             class="orderan-row ${isOpened ? 'selected' : ''}"
-            data-id="${item.id}"
-            onclick="event.stopPropagation(); toggleDetailOrderan('${item.id}')"
+            data-id="${escHtml(item.id)}"
+            onclick="event.stopPropagation(); toggleDetailOrderan('${escHtml(item.id)}')"
         >
-            <td>${item.faktur}</td>
+            <td>${escHtml(item.faktur)}</td>
             <td>${formatTanggal(item.tanggal)}</td>
-            <td>${item.namaUmkm}</td>
-            <td>${item.totalStiker}</td>
+            <td>${escHtml(item.namaUmkm)}</td>
+            <td>${escHtml(item.totalStiker)}</td>
             <td>
                 <div class="actions">
-                    <button
-                        onclick="event.stopPropagation(); tampilPopupCetakOrderan('${item.id}')">
+                    <button onclick="event.stopPropagation(); tampilPopupCetakOrderan('${escHtml(item.id)}')">
                         <span class="material-symbols-sharp">print</span>
                     </button>
-
-                    <button
-                        onclick="event.stopPropagation(); showPopupOrderan('${item.id}')">
+                    <button onclick="event.stopPropagation(); showPopupOrderan('${escHtml(item.id)}')">
                         <span class="material-symbols-sharp">edit</span>
                     </button>
-
-                    <button
-                        onclick="event.stopPropagation(); konfirmasiHapusDataOrderan('${item.id}')">
+                    <button onclick="event.stopPropagation(); konfirmasiHapusDataOrderan('${escHtml(item.id)}')">
                         <span class="material-symbols-sharp">delete</span>
                     </button>
                 </div>
             </td>
         </tr>
 
-        <tr
-            class="detail-table ${isOpened ? "show" : ""}"
-            data-id="${item.id}"
-        >
-            <td colspan="6">
+        <tr class="detail-table ${isOpened ? "show" : ""}" data-id="${escHtml(item.id)}">
+            <td colspan="5">
                 <div class="detail-content">
                     <table class="detail-horizontal-table">
                         <thead>
@@ -624,22 +697,60 @@ function createTabelOrderan(item, isOpened) {
                                 <th>Jumlah</th>
                             </tr>
                         </thead>
-
-                        <tbody>
-                            ${item.rincian.map(rinci => `
-                                <tr>
-                                    <td>${rinci.kodeStiker}</td>
-                                    <td>${rinci.namaStiker}</td>
-                                    <td>${rinci.ukuranStiker}</td>
-                                    <td>${rinci.jumlah}</td>
-                                </tr>
-                            `).join("")}
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </td>
         </tr>
     `;
+}
+function htmlRincianOrderan(daftar) {
+    if (!daftar.length) {
+        return `<tr><td colspan="4">Tidak ada rincian</td></tr>`;
+    }
+    return daftar.map(r => `
+        <tr>
+            <td>${escHtml(r.kodeStiker)}</td>
+            <td>${escHtml(r.namaStiker)}</td>
+            <td>${escHtml(r.ukuranStiker)}</td>
+            <td>${escHtml(r.jumlah)}</td>
+        </tr>
+    `).join("");
+}
+function tbodyRincianOrderan(id) {
+    return document.querySelector(`.detail-table[data-id="${CSS.escape(id)}"] tbody`);
+}
+async function muatRincianOrderan(id) {
+    if (cacheRincianOrderan.has(id)) {
+        const tb = tbodyRincianOrderan(id);
+        if (tb) tb.innerHTML = htmlRincianOrderan(cacheRincianOrderan.get(id));
+        return;
+    }
+
+    const awal = tbodyRincianOrderan(id);
+    if (awal) awal.innerHTML = `<tr><td colspan="4">Memuat...</td></tr>`;
+
+    try {
+        const response = await apiFetch(`${BASE_URL_ORDERAN}/${encodeURIComponent(id)}/rincian`);
+        if (!response.ok) throw new Error("Gagal Memuat Rincian Orderan!");
+
+        const data = await response.json();
+        cacheRincianOrderan.set(id, data);
+
+        // tabel bisa saja sudah dirender ulang selama menunggu, ambil elemennya lagi
+        const tb = tbodyRincianOrderan(id);
+        if (tb) tb.innerHTML = htmlRincianOrderan(data);
+    } catch (error) {
+        console.error(error);
+        const tb = tbodyRincianOrderan(id);
+        if (tb) tb.innerHTML = `<tr><td colspan="4">Gagal memuat rincian</td></tr>`;
+        showToast(error.message, "error");
+    }
+}
+
+// panggil setelah edit atau hapus orderan
+function invalidasiRincianOrderan(id) {
+    id ? cacheRincianOrderan.delete(id) : cacheRincianOrderan.clear();
 }
 async function sortTabelOrderan(field) {
     if(sortFieldDataOrderan === field) {
@@ -651,9 +762,9 @@ async function sortTabelOrderan(field) {
 
     await loadTabelDataOrderan();
 }
-async function changePageOrderan(page){
+async function changePageOrderan(page) {
     currentPageOrderan = page;
-    await loadTabelDataOrderan();
+    await renderHalamanOrderan();
 }
 function toggleDetailOrderan(id) {
 
@@ -693,6 +804,7 @@ function toggleDetailOrderan(id) {
 
     row.classList.add("selected");
     detail.classList.add("show");
+    muatRincianOrderan(id);
 
     setTimeout(() => {
         detail.scrollIntoView({
@@ -723,18 +835,33 @@ function closeDetailOrderanOutside(event) {
     detail?.classList.remove("show");
 
     openedDetailOrderanId = null;
+    clearTimeout(timerCariOrderan);
+    reqIdOrderan++;                 // abaikan response yang masih berjalan
+    cacheRincianOrderan.clear();
 }
 async function destroyDataOrderan() {
+    document.removeEventListener("click", closeDetailOrderanOutside);
 
-    // Hapus event listener
-    document.removeEventListener(
-        "click",
-        closeDetailOrderanOutside
-    );
+    observerOrderan?.disconnect();
+    observerOrderan = null;
 
-    // Reset state
+    clearTimeout(timerCariOrderan);
+    reqIdOrderan++;
+    cacheRincianOrderan.clear();
     openedDetailOrderanId = null;
+}
+function cariOrderan(nilai) {
+    clearTimeout(timerCariOrderan);
+    timerCariOrderan = setTimeout(() => {
+        cariDataOrderan = nilai;
+        currentPageOrderan = 1;
+        renderHalamanOrderan();
+    }, 300);
+}
 
+function terapkanFilterTanggalOrderan() {
+    currentPageOrderan = 1;
+    renderHalamanOrderan();
 }
 
 //CRUD

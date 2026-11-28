@@ -90,4 +90,11 @@ interface DataOrderanRinciRepository: JpaRepository<DataOrderanRinci, String> {
         awal: Long?,
         akhir: Long?
     ): List<RekapStikerResponse>
+
+    @Query("""
+        SELECT r FROM DataOrderanRinci r
+        JOIN FETCH r.dataStiker
+        WHERE r.dataOrderan.id = :orderanId
+    """)
+    fun findByOrderanId(orderanId: String): List<DataOrderanRinci>
 }

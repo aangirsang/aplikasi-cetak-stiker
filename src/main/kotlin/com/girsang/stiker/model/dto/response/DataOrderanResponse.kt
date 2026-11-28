@@ -19,10 +19,31 @@ data class DataOrderanResponse(
     val rincian: List<DataOrderanRinciResponse>
 )
 
+data class OrderanTabelResponse(
+    val id: String,
+    val faktur: String,
+    val tanggal: Long,
+    val namaUmkm: String,
+    val totalStiker: Int
+)
+
 data class DataTabelOrderanResponse(
     val id: String,
     val faktur: String,
     val tanggal: Long,
     val namaUmkm: String,
     val totalStiker: Int,
+)
+
+data class PageInfo(
+    val size: Int,
+    val number: Int,
+    val totalElements: Long,
+    val totalPages: Int
+)
+
+data class OrderanTabelPageResponse(
+    val content: List<OrderanTabelResponse>,
+    val page: PageInfo,
+    val totalCetak: Long
 )

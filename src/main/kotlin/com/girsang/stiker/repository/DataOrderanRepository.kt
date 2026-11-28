@@ -1,7 +1,11 @@
 package com.girsang.stiker.repository
 
+import com.girsang.stiker.model.dto.response.DataTabelOrderanResponse
+import com.girsang.stiker.model.dto.response.OrderanTabelResponse
 import com.girsang.stiker.model.dto.response.download.orderan.RekapOrderanBulananResponse
 import com.girsang.stiker.model.entity.DataOrderan
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
@@ -19,7 +23,7 @@ interface DataOrderanRepository: JpaRepository<DataOrderan, String> {
     @Query("select o from DataOrderan o")
     fun findAllLengkap(): List<DataOrderan>
 
-        fun findTopByFakturStartingWithOrderByFakturDesc(
+    fun findTopByFakturStartingWithOrderByFakturDesc(
         prefix: String
     ): DataOrderan?
 
@@ -62,5 +66,54 @@ interface DataOrderanRepository: JpaRepository<DataOrderan, String> {
         awal: Long?,
         akhir: Long?
     ): List<RekapOrderanBulananResponse>
+
+
+    //YANG BARU
+    @Query(
+        value = """
+        SELECT new com.girsang.stiker.model.dto.response.OrderanTabelResponse(
+            o.id, o.faktur, o.tanggal, o.dataUMKM.namaUsaha, o.totalStiker
+        )
+        FROM DataOrderan o
+        WHERE (:awal IS NULL OR o.tanggal >= :awal)
+          AND (:akhir IS NULL OR o.tanggal <= :akhir)
+          AND (:kata IS NULL
+               OR LOWER(o.faktur) LIKE LOWER(CONCAT('%', :kata, '%'))
+               OR LOWER(o.dataUMKM.namaUsaha) LIKE LOWER(CONCAT('%', :kata, '%')))
+        ORDER BY o.tanggal DESC, o.id DESC
+    """,
+        countQuery = """
+        SELECT COUNT(o)
+        FROM DataOrderan o
+        WHERE (:awal IS NULL OR o.tanggal >= :awal)
+          AND (:akhir IS NULL OR o.tanggal <= :akhir)
+          AND (:kata IS NULL
+               OR LOWER(o.faktur) LIKE LOWER(CONCAT('%', :kata, '%'))
+               OR LOWER(o.dataUMKM.namaUsaha) LIKE LOWER(CONCAT('%', :kata, '%')))
+    """
+    )
+    fun findTabel(
+        awal: Long?,
+        akhir: Long?,
+        kata: String?,
+        pageable: Pageable
+    ): Page<OrderanTabelResponse>
+
+    @Query("""
+    SELECT COALESCE(SUM(o.totalStiker), 0L)
+    FROM DataOrderan o
+    WHERE (:awal IS NULL OR o.tanggal >= :awal)
+      AND (:akhir IS NULL OR o.tanggal <= :akhir)
+      AND (:kata IS NULL
+           OR LOWER(o.faktur) LIKE LOWER(CONCAT('%', :kata, '%'))
+           OR LOWER(o.dataUMKM.namaUsaha) LIKE LOWER(CONCAT('%', :kata, '%')))
+""")
+    fun totalCetak(
+        awal: Long?,
+        akhir: Long?,
+        kata: String?
+    ): Long
+
+
 }
 

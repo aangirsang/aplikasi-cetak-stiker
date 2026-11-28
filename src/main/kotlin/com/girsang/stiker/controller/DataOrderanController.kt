@@ -5,9 +5,13 @@ import com.girsang.stiker.model.dto.response.DataOrderanResponse
 import com.girsang.stiker.model.dto.response.DataOrderanRinciResponse
 import com.girsang.stiker.model.dto.response.DataTabelOrderanResponse
 import com.girsang.stiker.model.dto.response.DataTabelOrderanRinciResponse
+import com.girsang.stiker.model.dto.response.OrderanTabelPageResponse
+import com.girsang.stiker.model.dto.response.OrderanTabelResponse
 import com.girsang.stiker.model.dto.response.download.orderan.RekapOrderanBulananResponse
 import com.girsang.stiker.service.orderan.DataOrderanService
 import com.girsang.stiker.service.orderan.LaporanOrderanService
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.web.PagedModel
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -136,4 +140,20 @@ class DataOrderanController(
     ): List<RekapOrderanBulananResponse> {
         return service.getRekapOrderanBulanan(tanggalAwal, tanggalAkhir)
     }
+
+    //yang baru
+    @GetMapping("/data-tabel")
+    fun tabelDataOrderan(
+        @RequestParam(required = false) awal: Long?,
+        @RequestParam(required = false) akhir: Long?,
+        @RequestParam(required = false) kata: String?,
+        @RequestParam(defaultValue = "0") page: Int,
+        @RequestParam(defaultValue = "20") size: Int
+    ): OrderanTabelPageResponse {
+        return serviceOrder.tabelDataOrderan(awal, akhir, kata, page, size)
+    }
+
+    @GetMapping("/{id}/rincian")
+    fun rincian(@PathVariable id: String): ResponseEntity<List<DataTabelOrderanRinciResponse>> =
+    ResponseEntity.ok(serviceOrder.rincian(id))
 }

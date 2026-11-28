@@ -8,7 +8,7 @@ import jakarta.persistence.ManyToOne
 import jakarta.persistence.PrePersist
 
 @Entity
-data class DataOrderanRinci (
+class DataOrderanRinci (
     @Id
     var id: String,
 
@@ -16,7 +16,7 @@ data class DataOrderanRinci (
     @JoinColumn(name = "orderan_id")
     var dataOrderan: DataOrderan,
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)   // sebelumnya EAGER
     @JoinColumn(name = "stiker_id")
     var dataStiker: DataStiker,
 

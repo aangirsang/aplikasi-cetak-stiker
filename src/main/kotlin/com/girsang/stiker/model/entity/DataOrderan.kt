@@ -10,17 +10,17 @@ import jakarta.persistence.OneToMany
 import jakarta.persistence.PrePersist
 
 @Entity
-data class DataOrderan (
+ class DataOrderan (
     @Id
     var id: String = "",
 
     // 🔗 Relasi ke DataPengguna
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)   // sebelumnya EAGER
     @JoinColumn(name = "pengguna_id", nullable = false)
     var dataPengguna: DataPengguna,
 
     // 🔗 Relasi ke DataUMKM
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)   // sebelumnya EAGER
     @JoinColumn(name = "umkm_id", nullable = false)
     var dataUMKM: DataUmkm,
 

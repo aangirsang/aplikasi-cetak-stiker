@@ -137,9 +137,9 @@ async function showPopupStiker(id = null, onSaveSuccess = null) {
 
         //isiDataUmkm(selectedCariUmkm);
 
-        isiDataStiker(selectedPopupDataStiker);
+        await isiDataStiker(selectedPopupDataStiker);
 
-        popupTitle.textContent = `Edit Data Stiker: ${selectedUmkm.namaPemilik} - ${selectedUmkm.namaUsaha}`;
+        popupTitle.textContent = `Edit Data Stiker: ${selectedPopupDataStiker.namaPemilik} - ${selectedPopupDataStiker.namaUsaha}`;
     }
 
 

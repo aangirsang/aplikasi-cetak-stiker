@@ -7,6 +7,9 @@ import com.girsang.stiker.model.dto.response.DataOrderanResponse
 import com.girsang.stiker.model.dto.response.DataOrderanRinciResponse
 import com.girsang.stiker.model.dto.response.DataTabelOrderanResponse
 import com.girsang.stiker.model.dto.response.DataTabelOrderanRinciResponse
+import com.girsang.stiker.model.dto.response.OrderanTabelPageResponse
+import com.girsang.stiker.model.dto.response.OrderanTabelResponse
+import com.girsang.stiker.model.dto.response.PageInfo
 import com.girsang.stiker.model.entity.DataOrderan
 import com.girsang.stiker.model.entity.DataOrderanRinci
 import com.girsang.stiker.model.mapper.DataOrderanMapper
@@ -16,6 +19,8 @@ import com.girsang.stiker.repository.DataPenggunaRepository
 import com.girsang.stiker.repository.DataStikerRepository
 import com.girsang.stiker.repository.DataUmkmRepository
 import com.girsang.stiker.service.persediaan.StokService
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.web.PagedModel
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -232,4 +237,29 @@ class DataOrderanService(
             ?.minusNanos(1)
             ?.toInstant()
             ?.toEpochMilli()
+
+    //yang baru
+    @Transactional(readOnly = true)
+    fun tabelDataOrderan(
+        awal: Long?,
+        akhir: Long?,
+        kata: String?,
+        page: Int,
+        size: Int
+    ): OrderanTabelPageResponse {
+        val pageable = PageRequest.of(page.coerceAtLeast(0), size.coerceIn(1, 100))
+        val kataBersih = kata?.trim()?.ifBlank { null }
+
+        val hasil = repoOrder.findTabel(awal, akhir, kataBersih, pageable)
+        val total = repoOrder.totalCetak(awal, akhir, kataBersih)
+
+        return OrderanTabelPageResponse(
+            content = hasil.content,
+            page = PageInfo(hasil.size, hasil.number, hasil.totalElements, hasil.totalPages),
+            totalCetak = total
+        )
+    }
+
+    @Transactional(readOnly = true)
+    fun rincian(id: String): List<DataTabelOrderanRinciResponse> = repoRinci.findByOrderanId(id).map { mapper.toTabelResponse(it) }
 }
